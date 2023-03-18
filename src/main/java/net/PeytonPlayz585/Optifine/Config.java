@@ -56,4 +56,8 @@ public class Config {
     public static int getUpdatesPerFrame() {
         return GameSettings.ofChunkUpdates;
     }
+
+    public static boolean isSmoothWorld() {
+        return GameSettings.ofSmoothWorld;
+    }
 }

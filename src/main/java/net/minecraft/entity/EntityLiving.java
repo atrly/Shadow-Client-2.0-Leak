@@ -7,6 +7,7 @@ import net.minecraft.entity.ai.attributes.AttributeModifier;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.monster.EntityGhast;
 import net.minecraft.entity.monster.IMob;
+import net.minecraft.entity.monster.EntityMob;
 import net.minecraft.entity.passive.EntityTameable;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
@@ -27,6 +28,8 @@ import net.minecraft.util.MathHelper;
 import net.minecraft.world.DifficultyInstance;
 import net.minecraft.world.EnumDifficulty;
 import net.minecraft.world.World;
+
+import net.PeytonPlayz585.Optifine.Config;
 
 public abstract class EntityLiving extends EntityLivingBase {
 	public int livingSoundTime;
@@ -171,6 +174,15 @@ public abstract class EntityLiving extends EntityLivingBase {
 		}
 
 	}
+
+	public void onUpdate() {
+        if (Config.isSmoothWorld() && this.canSkipUpdate()) {
+            this.onUpdateMinimal();
+        } else {
+            super.onUpdate();
+			this.updateLeashedState();
+        }
+    }
 
 	protected float func_110146_f(float var1, float f) {
 		this.bodyHelper.updateRenderAngles();
@@ -920,6 +932,44 @@ public abstract class EntityLiving extends EntityLivingBase {
 	public boolean isAIDisabled() {
 		return this.dataWatcher.getWatchableObjectByte(15) != 0;
 	}
+
+	private boolean canSkipUpdate() {
+        if (this.isChild()) {
+            return false;
+        } else if (this.hurtTime > 0) {
+            return false;
+        } else if (this.ticksExisted < 20) {
+            return false;
+        } else {
+            World world = this.getEntityWorld();
+
+            if (world == null) {
+                return false;
+            } else if (world.playerEntities.size() != 1) {
+                return false;
+            } else {
+                Entity entity = (Entity)world.playerEntities.get(0);
+                double d0 = Math.max(Math.abs(this.posX - entity.posX) - 16.0D, 0.0D);
+                double d1 = Math.max(Math.abs(this.posZ - entity.posZ) - 16.0D, 0.0D);
+                double d2 = d0 * d0 + d1 * d1;
+                return !this.isInRangeToRenderDist(d2);
+            }
+        }
+    }
+
+	private void onUpdateMinimal() {
+        ++this.entityAge;
+
+        if (this instanceof EntityMob) {
+            float f = this.getBrightness(1.0F);
+
+            if (f > 0.5F) {
+                this.entityAge += 2;
+            }
+        }
+
+        this.despawnEntity();
+    }
 
 	public static enum SpawnPlacementType {
 		ON_GROUND, IN_AIR, IN_WATER;

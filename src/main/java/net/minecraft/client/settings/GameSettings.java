@@ -211,6 +211,7 @@ public class GameSettings {
 	public static boolean ofFireworkParticles = true;
 	public static boolean ofFastMath = true;
 	public static boolean ofSmoothFps = false;
+	public static boolean ofSmoothWorld = false;
 
 	public static int ofAnimatedWater = 0;
 	public static int ofAnimatedLava = 0;
@@ -604,6 +605,10 @@ public class GameSettings {
             }
         }
 
+		if (parOptions == GameSettings.Options.SMOOTH_WORLD) {
+            ofSmoothWorld = !ofSmoothWorld;
+        }
+
 		this.saveOptions();
 	}
 
@@ -710,6 +715,8 @@ public class GameSettings {
 			return ofFastMath;
 		case SMOOTH_FPS:
 			return ofSmoothFps;
+		case SMOOTH_WORLD:
+			return ofSmoothWorld;
 		default:
 			return false;
 		}
@@ -888,6 +895,8 @@ public class GameSettings {
 			return ofSmoothFps ? s + "ON" : s + "OFF";
 		} else if (parOptions == GameSettings.Options.CHUNK_UPDATES) {
             return s + ofChunkUpdates;
+        } else if (parOptions == GameSettings.Options.SMOOTH_WORLD) {
+            return ofSmoothWorld ? s + "ON" : s + "OFF";
         } else {
 			return s;
 		}
@@ -1283,6 +1292,10 @@ public class GameSettings {
 						ofChunkUpdates = ofChunkUpdates < 1 ? 1 : (ofChunkUpdates > 5 ? 5 : ofChunkUpdates);
                     }
 
+					if (astring[0].equals("ofSmoothWorld") && astring.length >= 2) {
+                        ofSmoothWorld = Boolean.valueOf(astring[1]).booleanValue();
+                    }
+
 					for (KeyBinding keybinding : this.keyBindings) {
 						if (astring[0].equals("key_" + keybinding.getKeyDescription())) {
 							keybinding.setKeyCode(Integer.parseInt(astring[1]));
@@ -1420,6 +1433,7 @@ public class GameSettings {
 			printwriter.println("ofFastMath:" + ofFastMath);
 			printwriter.println("ofSmoothFps:" + ofSmoothFps);
 			printwriter.println("ofChunkUpdates:" + ofChunkUpdates);
+			printwriter.println("ofSmoothWorld:" + ofSmoothWorld);
 
 			for (KeyBinding keybinding : this.keyBindings) {
 				printwriter.println("key_" + keybinding.getKeyDescription() + ":" + keybinding.getKeyCode());
@@ -1567,7 +1581,8 @@ public class GameSettings {
 		ANIMATED_TERRAIN("Terrain Animated", false, false),
 		FAST_MATH("Fast Math", false, true),
 		SMOOTH_FPS("Smooth FPS", false, true),
-		CHUNK_UPDATES("Chunk Updates", false, false);
+		CHUNK_UPDATES("Chunk Updates", false, false),
+		SMOOTH_WORLD("Smooth World", false, false);
 
 		private final boolean enumFloat;
 		private final boolean enumBoolean;
