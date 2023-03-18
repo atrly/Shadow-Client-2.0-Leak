@@ -55,7 +55,7 @@ public class GuiVideoSettings extends GuiScreen {
 			GameSettings.Options.AO_LEVEL,
 			GameSettings.Options.VIEW_BOBBING,
 			GameSettings.Options.GUI_SCALE,
-			//GameSettings.Options.DYNAMIC_FOV,
+			GameSettings.Options.DYNAMIC_FOV,
 			GameSettings.Options.GAMMA,
 			GameSettings.Options.BLOCK_ALTERNATIVES
 			//GameSettings.Options.FOG_FANCY,
