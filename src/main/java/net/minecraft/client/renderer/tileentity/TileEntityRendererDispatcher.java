@@ -23,6 +23,7 @@ import net.minecraft.tileentity.TileEntityPiston;
 import net.minecraft.tileentity.TileEntitySign;
 import net.minecraft.tileentity.TileEntitySkull;
 import net.minecraft.util.BlockPos;
+import net.minecraft.util.MathHelper;
 import net.minecraft.util.ReportedException;
 import net.minecraft.world.World;
 
@@ -117,8 +118,8 @@ public class TileEntityRendererDispatcher {
 		if (tileentityIn.getDistanceSq(this.entityX, this.entityY, this.entityZ) < tileentityIn
 				.getMaxRenderDistanceSquared()) {
 			int i = this.worldObj.getCombinedLight(tileentityIn.getPos(), 0);
-			int j = i % 65536;
-			int k = i / 65536;
+			int j = MathHelper.fastMath ? i % 65536 : i % 4096;
+			int k = MathHelper.fastMath ? i / 65536 : i / 4096;
 			OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, (float) j / 1.0F, (float) k / 1.0F);
 			GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
 			BlockPos blockpos = tileentityIn.getPos();

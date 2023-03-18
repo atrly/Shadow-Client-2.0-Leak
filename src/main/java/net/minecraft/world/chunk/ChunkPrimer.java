@@ -3,6 +3,7 @@ package net.minecraft.world.chunk;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.init.Blocks;
+import net.minecraft.util.MathHelper;
 
 /**+
  * This portion of EaglercraftX contains deobfuscated Minecraft 1.8 source code.
@@ -24,6 +25,7 @@ import net.minecraft.init.Blocks;
  */
 public class ChunkPrimer {
 	private final short[] data = new short[65536];
+	private final short[] data_fast = new short[4096];
 	private final IBlockState defaultState = Blocks.air.getDefaultState();
 
 	public IBlockState getBlockState(int x, int y, int z) {
@@ -32,11 +34,20 @@ public class ChunkPrimer {
 	}
 
 	public IBlockState getBlockState(int index) {
-		if (index >= 0 && index < this.data.length) {
-			IBlockState iblockstate = (IBlockState) Block.BLOCK_STATE_IDS.getByValue(this.data[index]);
-			return iblockstate != null ? iblockstate : this.defaultState;
-		} else {
-			throw new IndexOutOfBoundsException("The coordinate is out of range");
+		if (MathHelper.fastMath) {
+			if (index >= 0 && index < this.data.length) {
+				IBlockState iblockstate = (IBlockState) Block.BLOCK_STATE_IDS.getByValue(this.data[index]);
+				return iblockstate != null ? iblockstate : this.defaultState;
+			} else {
+				throw new IndexOutOfBoundsException("The coordinate is out of range");
+			}
+	    } else {
+			if (index >= 0 && index < this.data_fast.length) {
+				IBlockState iblockstate = (IBlockState) Block.BLOCK_STATE_IDS.getByValue(this.data_fast[index]);
+				return iblockstate != null ? iblockstate : this.defaultState;
+			} else {
+				throw new IndexOutOfBoundsException("The coordinate is out of range");
+			}
 		}
 	}
 
@@ -46,10 +57,18 @@ public class ChunkPrimer {
 	}
 
 	public void setBlockState(int index, IBlockState state) {
-		if (index >= 0 && index < this.data.length) {
-			this.data[index] = (short) Block.BLOCK_STATE_IDS.get(state);
-		} else {
-			throw new IndexOutOfBoundsException("The coordinate is out of range");
+		if(MathHelper.fastMath) {
+			if (index >= 0 && index < this.data.length) {
+				this.data[index] = (short) Block.BLOCK_STATE_IDS.get(state);
+			} else {
+				throw new IndexOutOfBoundsException("The coordinate is out of range");
+			}
+	    } else {
+			if (index >= 0 && index < this.data_fast.length) {
+				this.data_fast[index] = (short) Block.BLOCK_STATE_IDS.get(state);
+			} else {
+				throw new IndexOutOfBoundsException("The coordinate is out of range");
+			}
 		}
 	}
 }
