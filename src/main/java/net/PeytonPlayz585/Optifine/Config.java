@@ -1,9 +1,13 @@
 package net.PeytonPlayz585.Optifine;
 
+import net.minecraft.client.renderer.BlockModelRenderer;
 import net.minecraft.client.settings.GameSettings;
 import net.minecraft.client.Minecraft;
 
 public class Config {
+
+    public static float occlusionLevel = GameSettings.ofAoLevel;
+
     public static String getVersion() {
         return "OptiFine_1.8.8_HD_U_H8";
     }
@@ -60,4 +64,13 @@ public class Config {
     public static boolean isSmoothWorld() {
         return GameSettings.ofSmoothWorld;
     }
+
+    public static void setAmbientOcclusionLevel() {
+		occlusionLevel = GameSettings.ofAoLevel;
+		BlockModelRenderer.updateAoLightValue();
+	}
+
+    public static float getAmbientOcclusionLevel() {
+		return occlusionLevel;
+	}
 }

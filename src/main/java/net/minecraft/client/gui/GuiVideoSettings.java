@@ -52,7 +52,7 @@ public class GuiVideoSettings extends GuiScreen {
 			GameSettings.Options.RENDER_DISTANCE,
 			GameSettings.Options.AMBIENT_OCCLUSION,
 			GameSettings.Options.FRAMERATE_LIMIT,
-			//GameSettings.Options.AO_LEVEL,
+			GameSettings.Options.AO_LEVEL,
 			GameSettings.Options.VIEW_BOBBING,
 			GameSettings.Options.GUI_SCALE,
 			//GameSettings.Options.DYNAMIC_FOV,

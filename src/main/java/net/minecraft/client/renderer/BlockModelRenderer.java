@@ -21,6 +21,8 @@ import net.minecraft.util.ReportedException;
 import net.minecraft.util.Vec3i;
 import net.minecraft.world.IBlockAccess;
 
+import net.PeytonPlayz585.Optifine.Config;
+
 /**+
  * This portion of EaglercraftX contains deobfuscated Minecraft 1.8 source code.
  * 
@@ -40,6 +42,13 @@ import net.minecraft.world.IBlockAccess;
  * 
  */
 public class BlockModelRenderer {
+
+	private static float aoLightValueOpaque = 0.2F;
+
+	public static void updateAoLightValue() {
+        aoLightValueOpaque = 1.0F - Config.getAmbientOcclusionLevel() * 0.8F;
+    }
+
 	public boolean renderModel(IBlockAccess blockAccessIn, IBakedModel modelIn, IBlockState blockStateIn,
 			BlockPos blockPosIn, WorldRenderer worldRendererIn) {
 		Block block = blockStateIn.getBlock();
@@ -307,6 +316,10 @@ public class BlockModelRenderer {
 		this.renderModelBrightnessColorQuads(parFloat1, parFloat2, parFloat3, parFloat4, bakedModel.getGeneralQuads());
 	}
 
+	public static float fixAoLightValue(float p_fixAoLightValue_0_) {
+        return p_fixAoLightValue_0_ == 0.2F ? aoLightValueOpaque : p_fixAoLightValue_0_;
+    }
+
 	public void renderModelBrightness(IBakedModel parIBakedModel, IBlockState parIBlockState, float parFloat1,
 			boolean parFlag) {
 		Block block = parIBlockState.getBlock();
@@ -365,10 +378,10 @@ public class BlockModelRenderer {
 			int j = blockIn.getMixedBrightnessForBlock(blockAccessIn, blockpos2);
 			int k = blockIn.getMixedBrightnessForBlock(blockAccessIn, blockpos3);
 			int l = blockIn.getMixedBrightnessForBlock(blockAccessIn, blockpos4);
-			float f = blockAccessIn.getBlockState(blockpos1).getBlock().getAmbientOcclusionLightValue();
-			float f1 = blockAccessIn.getBlockState(blockpos2).getBlock().getAmbientOcclusionLightValue();
-			float f2 = blockAccessIn.getBlockState(blockpos3).getBlock().getAmbientOcclusionLightValue();
-			float f3 = blockAccessIn.getBlockState(blockpos4).getBlock().getAmbientOcclusionLightValue();
+			float f = BlockModelRenderer.fixAoLightValue(blockAccessIn.getBlockState(blockpos1).getBlock().getAmbientOcclusionLightValue());
+            float f1 = BlockModelRenderer.fixAoLightValue(blockAccessIn.getBlockState(blockpos2).getBlock().getAmbientOcclusionLightValue());
+            float f2 = BlockModelRenderer.fixAoLightValue(blockAccessIn.getBlockState(blockpos3).getBlock().getAmbientOcclusionLightValue());
+            float f3 = BlockModelRenderer.fixAoLightValue(blockAccessIn.getBlockState(blockpos4).getBlock().getAmbientOcclusionLightValue());
 			boolean flag = blockAccessIn.getBlockState(blockpos1.offset(facingIn)).getBlock().isTranslucent();
 			boolean flag1 = blockAccessIn.getBlockState(blockpos2.offset(facingIn)).getBlock().isTranslucent();
 			boolean flag2 = blockAccessIn.getBlockState(blockpos3.offset(facingIn)).getBlock().isTranslucent();
@@ -380,7 +393,7 @@ public class BlockModelRenderer {
 				i1 = i;
 			} else {
 				BlockPos blockpos5 = blockpos1.offset(blockmodelrenderer$enumneighborinfo.field_178276_g[2]);
-				f4 = blockAccessIn.getBlockState(blockpos5).getBlock().getAmbientOcclusionLightValue();
+				f4 = BlockModelRenderer.fixAoLightValue(blockAccessIn.getBlockState(blockpos5).getBlock().getAmbientOcclusionLightValue());
 				i1 = blockIn.getMixedBrightnessForBlock(blockAccessIn, blockpos5);
 			}
 
@@ -391,7 +404,7 @@ public class BlockModelRenderer {
 				j1 = i;
 			} else {
 				BlockPos blockpos6 = blockpos1.offset(blockmodelrenderer$enumneighborinfo.field_178276_g[3]);
-				f5 = blockAccessIn.getBlockState(blockpos6).getBlock().getAmbientOcclusionLightValue();
+				f5 = BlockModelRenderer.fixAoLightValue(blockAccessIn.getBlockState(blockpos6).getBlock().getAmbientOcclusionLightValue());
 				j1 = blockIn.getMixedBrightnessForBlock(blockAccessIn, blockpos6);
 			}
 
@@ -402,7 +415,7 @@ public class BlockModelRenderer {
 				k1 = j;
 			} else {
 				BlockPos blockpos7 = blockpos2.offset(blockmodelrenderer$enumneighborinfo.field_178276_g[2]);
-				f6 = blockAccessIn.getBlockState(blockpos7).getBlock().getAmbientOcclusionLightValue();
+				f6 = BlockModelRenderer.fixAoLightValue(blockAccessIn.getBlockState(blockpos7).getBlock().getAmbientOcclusionLightValue());
 				k1 = blockIn.getMixedBrightnessForBlock(blockAccessIn, blockpos7);
 			}
 
@@ -413,7 +426,7 @@ public class BlockModelRenderer {
 				l1 = j;
 			} else {
 				BlockPos blockpos8 = blockpos2.offset(blockmodelrenderer$enumneighborinfo.field_178276_g[3]);
-				f7 = blockAccessIn.getBlockState(blockpos8).getBlock().getAmbientOcclusionLightValue();
+				f7 = BlockModelRenderer.fixAoLightValue(blockAccessIn.getBlockState(blockpos8).getBlock().getAmbientOcclusionLightValue());
 				l1 = blockIn.getMixedBrightnessForBlock(blockAccessIn, blockpos8);
 			}
 
@@ -423,9 +436,8 @@ public class BlockModelRenderer {
 				i3 = blockIn.getMixedBrightnessForBlock(blockAccessIn, blockPosIn.offset(facingIn));
 			}
 
-			float f8 = boundsFlags.get(0)
-					? blockAccessIn.getBlockState(blockpos).getBlock().getAmbientOcclusionLightValue()
-					: blockAccessIn.getBlockState(blockPosIn).getBlock().getAmbientOcclusionLightValue();
+			float f8 = boundsFlags.get(0) ? blockAccessIn.getBlockState(blockpos).getBlock().getAmbientOcclusionLightValue() : blockAccessIn.getBlockState(blockPosIn).getBlock().getAmbientOcclusionLightValue();
+            f8 = BlockModelRenderer.fixAoLightValue(f8);
 			BlockModelRenderer.VertexTranslations blockmodelrenderer$vertextranslations = BlockModelRenderer.VertexTranslations
 					.getVertexTranslations(facingIn);
 			if (boundsFlags.get(1) && blockmodelrenderer$enumneighborinfo.field_178289_i) {

@@ -37,6 +37,8 @@ import net.minecraft.network.play.client.C15PacketClientSettings;
 import net.minecraft.util.MathHelper;
 import net.minecraft.world.EnumDifficulty;
 
+import net.PeytonPlayz585.Optifine.Config;
+
 /**+
  * This portion of EaglercraftX contains deobfuscated Minecraft 1.8 source code.
  * 
@@ -219,6 +221,8 @@ public class GameSettings {
 	public static int ofAnimatedTerrain = 0;
 	public static int ofChunkUpdates = 1;
 
+	public static float ofAoLevel = 1.0F;
+
 	public GameSettings(Minecraft mcIn) {
 		this.keyBindings = (KeyBinding[]) ArrayUtils.addAll(new KeyBinding[] { this.keyBindAttack, this.keyBindUseItem,
 				this.keyBindForward, this.keyBindLeft, this.keyBindBack, this.keyBindRight, this.keyBindJump,
@@ -353,6 +357,12 @@ public class GameSettings {
 		if (parOptions == GameSettings.Options.STREAM_FPS) {
 			this.streamFps = parFloat1;
 		}
+
+		if (parOptions == GameSettings.Options.AO_LEVEL) {
+            GameSettings.ofAoLevel = parFloat1;
+            Config.setAmbientOcclusionLevel();
+            this.mc.renderGlobal.loadRenderers();
+        }
 
 	}
 
@@ -614,35 +624,24 @@ public class GameSettings {
 
 	public float getOptionFloatValue(GameSettings.Options parOptions) {
 		return parOptions == GameSettings.Options.FOV ? this.fovSetting
-				: (parOptions == GameSettings.Options.GAMMA ? this.gammaSetting
-						: (parOptions == GameSettings.Options.SATURATION ? this.saturation
-								: (parOptions == GameSettings.Options.SENSITIVITY ? this.mouseSensitivity
-										: (parOptions == GameSettings.Options.CHAT_OPACITY ? this.chatOpacity
-												: (parOptions == GameSettings.Options.CHAT_HEIGHT_FOCUSED
-														? this.chatHeightFocused
-														: (parOptions == GameSettings.Options.CHAT_HEIGHT_UNFOCUSED
-																? this.chatHeightUnfocused
-																: (parOptions == GameSettings.Options.CHAT_SCALE
-																		? this.chatScale
-																		: (parOptions == GameSettings.Options.CHAT_WIDTH
-																				? this.chatWidth
-																				: (parOptions == GameSettings.Options.FRAMERATE_LIMIT
-																						? (float) this.limitFramerate
-																						: (parOptions == GameSettings.Options.MIPMAP_LEVELS
-																								? (float) this.mipmapLevels
-																								: (parOptions == GameSettings.Options.RENDER_DISTANCE
-																										? (float) this.renderDistanceChunks
-																										: (parOptions == GameSettings.Options.STREAM_BYTES_PER_PIXEL
-																												? this.streamBytesPerPixel
-																												: (parOptions == GameSettings.Options.STREAM_VOLUME_MIC
-																														? this.streamMicVolume
-																														: (parOptions == GameSettings.Options.STREAM_VOLUME_SYSTEM
-																																? this.streamGameVolume
-																																: (parOptions == GameSettings.Options.STREAM_KBPS
-																																		? this.streamKbps
-																																		: (parOptions == GameSettings.Options.STREAM_FPS
-																																				? this.streamFps
-																																				: 0.0F))))))))))))))));
+			    : (parOptions == GameSettings.Options.GAMMA ? this.gammaSetting
+			    : (parOptions == GameSettings.Options.SATURATION ? this.saturation
+			    : (parOptions == GameSettings.Options.SENSITIVITY ? this.mouseSensitivity
+			    : (parOptions == GameSettings.Options.CHAT_OPACITY ? this.chatOpacity
+			    : (parOptions == GameSettings.Options.CHAT_HEIGHT_FOCUSED ? this.chatHeightFocused
+			    : (parOptions == GameSettings.Options.CHAT_HEIGHT_UNFOCUSED ? this.chatHeightUnfocused
+				: (parOptions == GameSettings.Options.CHAT_SCALE ? this.chatScale
+				: (parOptions == GameSettings.Options.CHAT_WIDTH ? this.chatWidth
+				: (parOptions == GameSettings.Options.FRAMERATE_LIMIT ? (float) this.limitFramerate
+				: (parOptions == GameSettings.Options.MIPMAP_LEVELS ? (float) this.mipmapLevels
+				: (parOptions == GameSettings.Options.RENDER_DISTANCE ? (float) this.renderDistanceChunks
+				: (parOptions == GameSettings.Options.STREAM_BYTES_PER_PIXEL ? this.streamBytesPerPixel
+				: (parOptions == GameSettings.Options.STREAM_VOLUME_MIC ? this.streamMicVolume
+				: (parOptions == GameSettings.Options.STREAM_VOLUME_SYSTEM ? this.streamGameVolume
+				: (parOptions == GameSettings.Options.STREAM_KBPS ? this.streamKbps
+				: (parOptions == GameSettings.Options.STREAM_FPS ? this.streamFps
+				: (parOptions == GameSettings.Options.AO_LEVEL ? GameSettings.ofAoLevel
+				: 0.0F)))))))))))))))));
 	}
 
 	public boolean getOptionOrdinalValue(GameSettings.Options parOptions) {
@@ -744,61 +743,20 @@ public class GameSettings {
 		if (parOptions.getEnumFloat()) {
 			float f1 = this.getOptionFloatValue(parOptions);
 			float f = parOptions.normalizeValue(f1);
-			return parOptions == GameSettings.Options.SENSITIVITY
-					? (f == 0.0F ? s + I18n.format("options.sensitivity.min", new Object[0])
-							: (f == 1.0F ? s + I18n.format("options.sensitivity.max", new Object[0])
-									: s + (int) (f * 200.0F) + "%"))
-					: (parOptions == GameSettings.Options.FOV
-							? (f1 == 70.0F ? s + I18n.format("options.fov.min", new Object[0])
-									: (f1 == 110.0F ? s + I18n.format("options.fov.max", new Object[0]) : s + (int) f1))
-							: (parOptions == GameSettings.Options.FRAMERATE_LIMIT
-									? (f1 == parOptions.valueMax
-											? s + I18n.format("options.framerateLimit.max", new Object[0])
-											: s + (int) f1 + " fps")
-									: (parOptions == GameSettings.Options.RENDER_CLOUDS
-											? (f1 == parOptions.valueMin
-													? s + I18n.format("options.cloudHeight.min", new Object[0])
-													: s + ((int) f1 + 128))
-											: (parOptions == GameSettings.Options.GAMMA
-													? (f == 0.0F ? s + I18n.format("options.gamma.min", new Object[0])
-															: (f == 1.0F
-																	? s + I18n.format("options.gamma.max",
-																			new Object[0])
-																	: s + "+" + (int) (f * 100.0F) + "%"))
-													: (parOptions == GameSettings.Options.SATURATION
-															? s + (int) (f * 400.0F) + "%"
-															: (parOptions == GameSettings.Options.CHAT_OPACITY
-																	? s + (int) (f * 90.0F + 10.0F) + "%"
-																	: (parOptions == GameSettings.Options.CHAT_SCALE
-																			? s + (int) (f * 90.0F + 10.0F) + "%"
-																			: (parOptions == GameSettings.Options.CHAT_HEIGHT_UNFOCUSED
-																					? s + GuiNewChat
-																							.calculateChatboxHeight(f)
-																							+ "px"
-																					: (parOptions == GameSettings.Options.CHAT_HEIGHT_FOCUSED
-																							? s + GuiNewChat
-																									.calculateChatboxHeight(
-																											f)
-																									+ "px"
-																							: (parOptions == GameSettings.Options.CHAT_WIDTH
-																									? s + GuiNewChat
-																											.calculateChatboxWidth(
-																													f)
-																											+ "px"
-																									: (parOptions == GameSettings.Options.RENDER_DISTANCE
-																											? s + (int) f1
-																													+ (f1 == 1.0F
-																															? " chunk"
-																															: " chunks")
-																											: (parOptions == GameSettings.Options.MIPMAP_LEVELS
-																													? (f == 0.0F
-																															? s + I18n
-																																	.format("options.off",
-																																			new Object[0])
-																															: s + (int) (f
-																																	* 100.0F)
-																																	+ "%")
-																													: "yee"))))))))))));
+			return parOptions == GameSettings.Options.SENSITIVITY ? (f == 0.0F ? s + I18n.format("options.sensitivity.min", new Object[0]) : (f == 1.0F ? s + I18n.format("options.sensitivity.max", new Object[0]) : s + (int) (f * 200.0F) + "%"))
+					: (parOptions == GameSettings.Options.FOV ? (f1 == 70.0F ? s + I18n.format("options.fov.min", new Object[0]) : (f1 == 110.0F ? s + I18n.format("options.fov.max", new Object[0]) : s + (int) f1))
+					: (parOptions == GameSettings.Options.FRAMERATE_LIMIT ? (f1 == parOptions.valueMax ? s + I18n.format("options.framerateLimit.max", new Object[0]) : s + (int) f1 + " fps")
+                    : (parOptions == GameSettings.Options.RENDER_CLOUDS ? (f1 == parOptions.valueMin ? s + I18n.format("options.cloudHeight.min", new Object[0]) : s + ((int) f1 + 128))
+				    : (parOptions == GameSettings.Options.GAMMA ? (f == 0.0F ? s + I18n.format("options.gamma.min", new Object[0]) : (f == 1.0F ? s + I18n.format("options.gamma.max", new Object[0]) : s + "+" + (int) (f * 100.0F) + "%"))
+     				: (parOptions == GameSettings.Options.SATURATION ? s + (int) (f * 400.0F) + "%" : (parOptions == GameSettings.Options.CHAT_OPACITY ? s + (int) (f * 90.0F + 10.0F) + "%"
+                    : (parOptions == GameSettings.Options.CHAT_SCALE ? s + (int) (f * 90.0F + 10.0F) + "%"
+					: (parOptions == GameSettings.Options.CHAT_HEIGHT_UNFOCUSED ? s + GuiNewChat.calculateChatboxHeight(f) + "px"
+   					: (parOptions == GameSettings.Options.CHAT_HEIGHT_FOCUSED ? s + GuiNewChat.calculateChatboxHeight(f) + "px"
+ 					: (parOptions == GameSettings.Options.CHAT_WIDTH ? s + GuiNewChat.calculateChatboxWidth(f) + "px"
+					: (parOptions == GameSettings.Options.RENDER_DISTANCE ? s + (int) f1 + (f1 == 1.0F ? " chunk" : " chunks")
+					: (parOptions == GameSettings.Options.MIPMAP_LEVELS ? (f == 0.0F ? s + I18n.format("options.off", new Object[0]) : s + (int) (f * 100.0F) + "%")
+					: (parOptions == GameSettings.Options.AO_LEVEL ? (f == 0.0F ? s + I18n.format("options.off", new Object[0]) : s + (int) (f * 100.0F) + "%")
+					: "yee")))))))))))));
 		} else if (parOptions.getEnumBoolean()) {
 			boolean flag = this.getOptionOrdinalValue(parOptions);
 			return flag ? s + I18n.format("options.on", new Object[0]) : s + I18n.format("options.off", new Object[0]);
@@ -1296,6 +1254,12 @@ public class GameSettings {
                         ofSmoothWorld = Boolean.valueOf(astring[1]).booleanValue();
                     }
 
+					if (astring[0].equals("ofAoLevel") && astring.length >= 2) {
+						GameSettings.ofAoLevel = Float.valueOf(astring[1]).floatValue();
+                        GameSettings.ofAoLevel = GameSettings.ofAoLevel < 0.0F ? 0.0F : (GameSettings.ofAoLevel > 1.0F ? 1.0F : GameSettings.ofAoLevel);
+                        Config.setAmbientOcclusionLevel();
+                    }
+
 					for (KeyBinding keybinding : this.keyBindings) {
 						if (astring[0].equals("key_" + keybinding.getKeyDescription())) {
 							keybinding.setKeyCode(Integer.parseInt(astring[1]));
@@ -1434,6 +1398,7 @@ public class GameSettings {
 			printwriter.println("ofSmoothFps:" + ofSmoothFps);
 			printwriter.println("ofChunkUpdates:" + ofChunkUpdates);
 			printwriter.println("ofSmoothWorld:" + ofSmoothWorld);
+			printwriter.println("ofAoLevel:" + GameSettings.ofAoLevel);
 
 			for (KeyBinding keybinding : this.keyBindings) {
 				printwriter.println("key_" + keybinding.getKeyDescription() + ":" + keybinding.getKeyCode());
@@ -1582,7 +1547,8 @@ public class GameSettings {
 		FAST_MATH("Fast Math", false, true),
 		SMOOTH_FPS("Smooth FPS", false, true),
 		CHUNK_UPDATES("Chunk Updates", false, false),
-		SMOOTH_WORLD("Smooth World", false, false);
+		SMOOTH_WORLD("Smooth World", false, false),
+		AO_LEVEL("Smooth Lighting Level", true, false);
 
 		private final boolean enumFloat;
 		private final boolean enumBoolean;
