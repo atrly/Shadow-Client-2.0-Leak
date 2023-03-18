@@ -15,6 +15,7 @@ import net.lax1dude.eaglercraft.v1_8.opengl.WorldRenderer;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.multiplayer.WorldClient;
 import net.minecraft.client.renderer.BlockRendererDispatcher;
 import net.minecraft.client.renderer.RegionRenderCache;
 import net.minecraft.client.renderer.RenderGlobal;
@@ -60,6 +61,8 @@ public class RenderChunk {
 	private int frameIndex = -1;
 	private boolean needsUpdate = true;
 	private EnumMap<EnumFacing, BlockPos> field_181702_p = Maps.newEnumMap(EnumFacing.class);
+
+	public boolean playerUpdate = false;
 
 	public RenderChunk(World worldIn, RenderGlobal renderGlobalIn, BlockPos blockPosIn, int indexIn) {
 		this.world = worldIn;
@@ -260,7 +263,28 @@ public class RenderChunk {
 
 	public void setNeedsUpdate(boolean needsUpdateIn) {
 		this.needsUpdate = needsUpdateIn;
+		
+		if (this.needsUpdate) {
+            if (this.isWorldPlayerUpdate()) {
+                this.playerUpdate = true;
+            }
+        } else {
+            this.playerUpdate = false;
+        }
 	}
+
+	private boolean isWorldPlayerUpdate() {
+        if (this.world instanceof WorldClient) {
+            WorldClient worldclient = (WorldClient)this.world;
+            return worldclient.isPlayerUpdate();
+        } else {
+            return false;
+        }
+    }
+	
+	public boolean isPlayerUpdate() {
+        return this.playerUpdate;
+    }
 
 	public boolean isNeedsUpdate() {
 		return this.needsUpdate;

@@ -52,4 +52,8 @@ public class Config {
     public static boolean isFireworkParticles() {
         return GameSettings.ofFireworkParticles;
     }
+
+    public static int getUpdatesPerFrame() {
+        return GameSettings.ofChunkUpdates;
+    }
 }

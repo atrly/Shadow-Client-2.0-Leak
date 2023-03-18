@@ -216,6 +216,7 @@ public class GameSettings {
 	public static int ofAnimatedLava = 0;
 	public static int ofAnimatedFire = 0;
 	public static int ofAnimatedTerrain = 0;
+	public static int ofChunkUpdates = 1;
 
 	public GameSettings(Minecraft mcIn) {
 		this.keyBindings = (KeyBinding[]) ArrayUtils.addAll(new KeyBinding[] { this.keyBindAttack, this.keyBindUseItem,
@@ -595,6 +596,14 @@ public class GameSettings {
 			}
 		}
 
+		if (parOptions == GameSettings.Options.CHUNK_UPDATES) {
+            ++ofChunkUpdates;
+
+            if (ofChunkUpdates > 5) {
+                ofChunkUpdates = 1;
+            }
+        }
+
 		this.saveOptions();
 	}
 
@@ -877,7 +886,9 @@ public class GameSettings {
             return ofFastMath ? s + "ON" : s + "OFF";
         } else if (parOptions == GameSettings.Options.SMOOTH_FPS) {
 			return ofSmoothFps ? s + "ON" : s + "OFF";
-		} else {
+		} else if (parOptions == GameSettings.Options.CHUNK_UPDATES) {
+            return s + ofChunkUpdates;
+        } else {
 			return s;
 		}
 	}
@@ -1267,6 +1278,11 @@ public class GameSettings {
 						}
 					}
 
+					if (astring[0].equals("ofChunkUpdates") && astring.length >= 2) {
+                        ofChunkUpdates = Integer.valueOf(astring[1]).intValue();
+						ofChunkUpdates = ofChunkUpdates < 1 ? 1 : (ofChunkUpdates > 5 ? 5 : ofChunkUpdates);
+                    }
+
 					for (KeyBinding keybinding : this.keyBindings) {
 						if (astring[0].equals("key_" + keybinding.getKeyDescription())) {
 							keybinding.setKeyCode(Integer.parseInt(astring[1]));
@@ -1403,6 +1419,7 @@ public class GameSettings {
 			printwriter.println("ofAnimatedTerrain:" + GameSettings.ofAnimatedTerrain);
 			printwriter.println("ofFastMath:" + ofFastMath);
 			printwriter.println("ofSmoothFps:" + ofSmoothFps);
+			printwriter.println("ofChunkUpdates:" + ofChunkUpdates);
 
 			for (KeyBinding keybinding : this.keyBindings) {
 				printwriter.println("key_" + keybinding.getKeyDescription() + ":" + keybinding.getKeyCode());
@@ -1549,7 +1566,8 @@ public class GameSettings {
 		ANIMATED_FIRE("Fire Animated", false, false),
 		ANIMATED_TERRAIN("Terrain Animated", false, false),
 		FAST_MATH("Fast Math", false, true),
-		SMOOTH_FPS("Smooth FPS", false, true);
+		SMOOTH_FPS("Smooth FPS", false, true),
+		CHUNK_UPDATES("Chunk Updates", false, false);
 
 		private final boolean enumFloat;
 		private final boolean enumBoolean;

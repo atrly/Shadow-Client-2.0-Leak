@@ -5,6 +5,7 @@ import static net.lax1dude.eaglercraft.v1_8.opengl.RealOpenGLEnums.*;
 import java.util.Collection;
 import java.util.EnumSet;
 import java.util.Iterator;
+import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -170,6 +171,9 @@ public class RenderGlobal implements IWorldAccess, IResourceManagerReloadListene
 	private double prevRenderSortY;
 	private double prevRenderSortZ;
 	private boolean displayListEntitiesDirty = true;
+
+	public Set<RenderChunk> chunksToUpdateForced = new LinkedHashSet<RenderChunk>();
+	public Set<RenderChunk> chunksToResortTransparency = new LinkedHashSet<RenderChunk>();
 
 	public RenderGlobal(Minecraft mcIn) {
 		this.mc = mcIn;
@@ -702,12 +706,15 @@ public class RenderGlobal implements IWorldAccess, IResourceManagerReloadListene
 			RenderChunk renderchunk4 = renderglobal$containerlocalrenderinformation2.renderChunk;
 			if (renderchunk4.isNeedsUpdate() || set.contains(renderchunk4)) {
 				this.displayListEntitiesDirty = true;
-				if (this.mc.gameSettings.chunkFix ? this.isPositionInRenderChunkHack(blockpos1, renderchunk4)
-						: this.isPositionInRenderChunk(blockpos, renderchunk4)) {
-					this.mc.mcProfiler.startSection("build near");
-					this.renderDispatcher.updateChunkNow(renderchunk4);
-					renderchunk4.setNeedsUpdate(false);
-					this.mc.mcProfiler.endSection();
+				if (this.mc.gameSettings.chunkFix ? this.isPositionInRenderChunkHack(blockpos1, renderchunk4) : this.isPositionInRenderChunk(blockpos, renderchunk4)) {
+					if(!renderchunk4.isPlayerUpdate()) {
+						this.chunksToUpdateForced.add(renderchunk4);
+					} else {
+						this.mc.mcProfiler.startSection("build near");
+						this.renderDispatcher.updateChunkNow(renderchunk4);
+						renderchunk4.setNeedsUpdate(false);
+						this.mc.mcProfiler.endSection();
+					}
 				} else {
 					this.chunksToUpdate.add(renderchunk4);
 				}
@@ -812,49 +819,55 @@ public class RenderGlobal implements IWorldAccess, IResourceManagerReloadListene
 
 	public int renderBlockLayer(EnumWorldBlockLayer blockLayerIn, double partialTicks, int pass, Entity entityIn) {
 		RenderHelper.disableStandardItemLighting();
-		if (blockLayerIn == EnumWorldBlockLayer.TRANSLUCENT) {
-			this.mc.mcProfiler.startSection("translucent_sort");
-			double d0 = entityIn.posX - this.prevRenderSortX;
-			double d1 = entityIn.posY - this.prevRenderSortY;
-			double d2 = entityIn.posZ - this.prevRenderSortZ;
-			if (d0 * d0 + d1 * d1 + d2 * d2 > 1.0D) {
+
+        if (blockLayerIn == EnumWorldBlockLayer.TRANSLUCENT) {
+            this.mc.mcProfiler.startSection("translucent_sort");
+            double d0 = entityIn.posX - this.prevRenderSortX;
+            double d1 = entityIn.posY - this.prevRenderSortY;
+            double d2 = entityIn.posZ - this.prevRenderSortZ;
+
+            if (d0 * d0 + d1 * d1 + d2 * d2 > 1.0D) {
 				this.prevRenderSortX = entityIn.posX;
 				this.prevRenderSortY = entityIn.posY;
 				this.prevRenderSortZ = entityIn.posZ;
+				this.chunksToResortTransparency.clear();
 				int k = 0;
 
 				for (RenderGlobal.ContainerLocalRenderInformation renderglobal$containerlocalrenderinformation : this.renderInfos) {
-					if (renderglobal$containerlocalrenderinformation.renderChunk.compiledChunk
-							.isLayerStarted(blockLayerIn) && k++ < 15) {
-						this.renderDispatcher
-								.updateTransparencyLater(renderglobal$containerlocalrenderinformation.renderChunk);
+					if (renderglobal$containerlocalrenderinformation.renderChunk.compiledChunk.isLayerStarted(blockLayerIn) && k++ < 15) {
+						this.chunksToResortTransparency.add(renderglobal$containerlocalrenderinformation.renderChunk);
 					}
 				}
 			}
 
-			this.mc.mcProfiler.endSection();
-		}
+            this.mc.mcProfiler.endSection();
+        }
 
-		this.mc.mcProfiler.startSection("filterempty");
-		int l = 0;
-		boolean flag = blockLayerIn == EnumWorldBlockLayer.TRANSLUCENT;
-		int i1 = flag ? this.renderInfos.size() - 1 : 0;
-		int i = flag ? -1 : this.renderInfos.size();
-		int j1 = flag ? -1 : 1;
+        this.mc.mcProfiler.startSection("filterempty");
+        int l = 0;
+        boolean flag = blockLayerIn == EnumWorldBlockLayer.TRANSLUCENT;
+        int i1 = flag ? this.renderInfos.size() - 1 : 0;
+        int i = flag ? -1 : this.renderInfos.size();
+        int j1 = flag ? -1 : 1;
 
-		for (int j = i1; j != i; j += j1) {
-			RenderChunk renderchunk = ((RenderGlobal.ContainerLocalRenderInformation) this.renderInfos
-					.get(j)).renderChunk;
-			if (!renderchunk.getCompiledChunk().isLayerEmpty(blockLayerIn)) {
-				++l;
-				this.renderContainer.addRenderChunk(renderchunk, blockLayerIn);
-			}
-		}
+        for (int j = i1; j != i; j += j1) {
+            RenderChunk renderchunk = ((RenderGlobal.ContainerLocalRenderInformation)this.renderInfos.get(j)).renderChunk;
 
-		this.mc.mcProfiler.endStartSection("render_" + blockLayerIn);
-		this.renderBlockLayer(blockLayerIn);
-		this.mc.mcProfiler.endSection();
-		return l;
+            if (!renderchunk.getCompiledChunk().isLayerEmpty(blockLayerIn)) {
+                ++l;
+                this.renderContainer.addRenderChunk(renderchunk, blockLayerIn);
+            }
+        }
+
+        if (l == 0) {
+            this.mc.mcProfiler.endSection();
+            return l;
+        } else {
+            this.mc.mcProfiler.endStartSection("render_" + blockLayerIn);
+            this.renderBlockLayer(blockLayerIn);
+            this.mc.mcProfiler.endSection();
+            return l;
+        }
 	}
 
 	private void renderBlockLayer(EnumWorldBlockLayer blockLayerIn) {
@@ -1425,25 +1438,64 @@ public class RenderGlobal implements IWorldAccess, IResourceManagerReloadListene
 	}
 
 	public void updateChunks(long finishTimeNano) {
-		this.displayListEntitiesDirty |= this.renderDispatcher.updateChunks(finishTimeNano);
-		if (!this.chunksToUpdate.isEmpty()) {
-			Iterator iterator = this.chunksToUpdate.iterator();
+        finishTimeNano = (long)((double)finishTimeNano + 1.0E8D);
+        this.displayListEntitiesDirty |= this.renderDispatcher.updateChunks(finishTimeNano);
 
-			while (iterator.hasNext()) {
-				RenderChunk renderchunk = (RenderChunk) iterator.next();
-				if (!this.renderDispatcher.updateChunkLater(renderchunk)) {
-					break;
-				}
+        if (this.chunksToUpdateForced.size() > 0) {
+            Iterator<RenderChunk> iterator = this.chunksToUpdateForced.iterator();
 
-				renderchunk.setNeedsUpdate(false);
-				iterator.remove();
-				long i = finishTimeNano - System.nanoTime();
-				if (i < 0L) {
-					break;
-				}
-			}
-		}
-	}
+            while (iterator.hasNext()) {
+                RenderChunk renderchunk = (RenderChunk)iterator.next();
+
+                if (!this.renderDispatcher.updateChunkLater(renderchunk)) {
+                    break;
+                }
+
+                renderchunk.setNeedsUpdate(false);
+                iterator.remove();
+                this.chunksToUpdate.remove(renderchunk);
+                this.chunksToResortTransparency.remove(renderchunk);
+            }
+        }
+
+        if (this.chunksToResortTransparency.size() > 0) {
+            Iterator<RenderChunk> iterator2 = this.chunksToResortTransparency.iterator();
+
+            if (iterator2.hasNext()) {
+                RenderChunk renderchunk2 = (RenderChunk)iterator2.next();
+
+                if (this.renderDispatcher.updateTransparencyLater(renderchunk2)) {
+                    iterator2.remove();
+                }
+            }
+        }
+
+        int j = 0;
+        int k = Config.getUpdatesPerFrame();
+        int i = k * 2;
+        Iterator<RenderChunk> iterator1 = this.chunksToUpdate.iterator();
+
+        while (iterator1.hasNext()) {
+            RenderChunk renderchunk1 = (RenderChunk)iterator1.next();
+
+            if (!this.renderDispatcher.updateChunkLater(renderchunk1)) {
+                break;
+            }
+
+            renderchunk1.setNeedsUpdate(false);
+            iterator1.remove();
+
+            if (renderchunk1.getCompiledChunk().isEmpty() && k < i) {
+                ++k;
+            }
+
+            ++j;
+
+            if (j >= k) {
+                break;
+            }
+        }
+    }
 
 	public void renderWorldBorder(Entity partialTicks, float parFloat1) {
 		Tessellator tessellator = Tessellator.getInstance();

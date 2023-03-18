@@ -37,6 +37,8 @@ import net.minecraft.world.storage.SaveDataMemoryStorage;
 import net.minecraft.world.storage.SaveHandlerMP;
 import net.minecraft.world.storage.WorldInfo;
 
+import net.PeytonPlayz585.Optifine.PlayerControllerOF;
+
 /**+
  * This portion of EaglercraftX contains deobfuscated Minecraft 1.8 source code.
  * 
@@ -72,6 +74,7 @@ public class WorldClient extends World {
 	private final Set<Entity> entitySpawnQueue = Sets.newHashSet();
 	private final Minecraft mc = Minecraft.getMinecraft();
 	private final Set<ChunkCoordIntPair> previousActiveChunkSet = Sets.newHashSet();
+	private boolean playerUpdate = false;
 
 	public WorldClient(NetHandlerPlayClient parNetHandlerPlayClient, WorldSettings parWorldSettings, int parInt1,
 			EnumDifficulty parEnumDifficulty, Profiler parProfiler) {
@@ -428,4 +431,30 @@ public class WorldClient extends World {
 
 		super.setWorldTime(i);
 	}
+
+	/**
+     * Sets the block state at a given location. Flag 1 will cause a block update. Flag 2 will send the change to
+     * clients (you almost always want this). Flag 4 prevents the block from being re-rendered, if this is a client
+     * world. Flags can be added together.
+     */
+    public boolean setBlockState(BlockPos pos, IBlockState newState, int flags) {
+        this.playerUpdate = this.isPlayerActing();
+        boolean flag = super.setBlockState(pos, newState, flags);
+        this.playerUpdate = false;
+        return flag;
+    }
+
+    private boolean isPlayerActing() {
+        if (this.mc.playerController instanceof PlayerControllerOF) {
+            PlayerControllerOF playercontrollerof = (PlayerControllerOF)this.mc.playerController;
+            return playercontrollerof.isActing();
+        } else {
+            return false;
+        }
+    }
+
+
+	public boolean isPlayerUpdate() {
+        return this.playerUpdate;
+    }
 }
