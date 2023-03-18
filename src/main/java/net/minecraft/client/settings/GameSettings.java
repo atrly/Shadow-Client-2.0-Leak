@@ -210,6 +210,7 @@ public class GameSettings {
 	public static boolean ofDrippingWaterLava = true;
 	public static boolean ofFireworkParticles = true;
 	public static boolean ofFastMath = true;
+	public static boolean ofSmoothFps = false;
 
 	public static int ofAnimatedWater = 0;
 	public static int ofAnimatedLava = 0;
@@ -584,6 +585,16 @@ public class GameSettings {
             MathHelper.fastMath = ofFastMath;
         }
 
+		if (parOptions == GameSettings.Options.SMOOTH_FPS) {
+			ofSmoothFps = !ofSmoothFps;
+
+			if (ofSmoothFps) {
+				Thread.currentThread().setPriority(10);
+			} else {
+				Thread.currentThread().setPriority(5);
+			}
+		}
+
 		this.saveOptions();
 	}
 
@@ -688,6 +699,8 @@ public class GameSettings {
 			return ofFireworkParticles;
 		case FAST_MATH:
 			return ofFastMath;
+		case SMOOTH_FPS:
+			return ofSmoothFps;
 		default:
 			return false;
 		}
@@ -862,7 +875,9 @@ public class GameSettings {
             }
         } else if (parOptions == GameSettings.Options.FAST_MATH) {
             return ofFastMath ? s + "ON" : s + "OFF";
-        } else {
+        } else if (parOptions == GameSettings.Options.SMOOTH_FPS) {
+			return ofSmoothFps ? s + "ON" : s + "OFF";
+		} else {
 			return s;
 		}
 	}
@@ -1242,6 +1257,16 @@ public class GameSettings {
                         MathHelper.fastMath = ofFastMath;
                     }
 
+					if (astring[0].equals("ofSmoothFps") && astring.length >= 2) {
+						ofSmoothFps = Boolean.valueOf(astring[1]).booleanValue();
+
+						if (ofSmoothFps) {
+							Thread.currentThread().setPriority(10);
+						} else {
+							Thread.currentThread().setPriority(5);
+						}
+					}
+
 					for (KeyBinding keybinding : this.keyBindings) {
 						if (astring[0].equals("key_" + keybinding.getKeyDescription())) {
 							keybinding.setKeyCode(Integer.parseInt(astring[1]));
@@ -1377,6 +1402,7 @@ public class GameSettings {
 			printwriter.println("ofAnimatedFire:" + GameSettings.ofAnimatedFire);
 			printwriter.println("ofAnimatedTerrain:" + GameSettings.ofAnimatedTerrain);
 			printwriter.println("ofFastMath:" + ofFastMath);
+			printwriter.println("ofSmoothFps:" + ofSmoothFps);
 
 			for (KeyBinding keybinding : this.keyBindings) {
 				printwriter.println("key_" + keybinding.getKeyDescription() + ":" + keybinding.getKeyCode());
@@ -1522,7 +1548,8 @@ public class GameSettings {
 		ANIMATED_LAVA("Lava Animated", false, false),
 		ANIMATED_FIRE("Fire Animated", false, false),
 		ANIMATED_TERRAIN("Terrain Animated", false, false),
-		FAST_MATH("Fast Math", false, true);
+		FAST_MATH("Fast Math", false, true),
+		SMOOTH_FPS("Smooth FPS", false, true);
 
 		private final boolean enumFloat;
 		private final boolean enumBoolean;
