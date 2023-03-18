@@ -23,6 +23,7 @@ import net.minecraft.client.resources.IResource;
 import net.minecraft.client.resources.IResourceManager;
 import net.minecraft.client.resources.data.AnimationMetadataSection;
 import net.minecraft.client.resources.data.TextureMetadataSection;
+import net.minecraft.client.settings.GameSettings;
 import net.minecraft.crash.CrashReport;
 import net.minecraft.crash.CrashReportCategory;
 import net.minecraft.util.MathHelper;
@@ -276,10 +277,11 @@ public class TextureMap extends AbstractTexture implements ITickableTextureObjec
 		TextureUtil.bindTexture(this.getGlTextureId());
 
 		for (EaglerTextureAtlasSprite textureatlassprite : this.listAnimatedSprites) {
-			textureatlassprite.updateAnimation();
+			if (this.isTerrainAnimationActive(textureatlassprite)) {
+				textureatlassprite.updateAnimation();
+			}
 		}
-
-	}
+    }
 
 	private void destroyAnimationCaches() {
 		for (EaglerTextureAtlasSprite textureatlassprite : this.listAnimatedSprites) {
@@ -321,5 +323,15 @@ public class TextureMap extends AbstractTexture implements ITickableTextureObjec
 	public int getHeight() {
 		return height;
 	}
+
+	private boolean isTerrainAnimationActive(EaglerTextureAtlasSprite isTerrainActive) {
+		String terrain = isTerrainActive+"";
+		if(terrain.contains("water") && GameSettings.ofAnimatedWater == 1 || terrain.contains("fire") && GameSettings.ofAnimatedFire == 1 || terrain.contains("portal") && GameSettings.ofAnimatedPortal == 1 || terrain.contains("lava") && GameSettings.ofAnimatedLava == 1) {
+			return false;
+		} else if(terrain.contains("clock") && GameSettings.ofAnimatedTerrain == 1 || terrain.contains("compass") && GameSettings.ofAnimatedTerrain == 1) {
+			return false;
+		}
+		return true;
+    }
 
 }

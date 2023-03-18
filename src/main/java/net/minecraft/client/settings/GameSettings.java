@@ -199,6 +199,22 @@ public class GameSettings {
 	public boolean fog = true;
 	public int fxaa = 0;
 
+	public static int ofAnimatedPortal = 0;
+	public static boolean ofAnimatedExplosion = true;
+	public static boolean ofWaterParticles = true;
+	public static boolean ofVoidParticles = true;
+	public static boolean ofAnimatedSmoke = true;
+	public static boolean ofPotionParticles = true;
+	public static boolean ofAnimatedFlame = true;
+	public static boolean ofAnimatedRedstone = true;
+	public static boolean ofDrippingWaterLava = true;
+	public static boolean ofFireworkParticles = true;
+
+	public static int ofAnimatedWater = 0;
+	public static int ofAnimatedLava = 0;
+	public static int ofAnimatedFire = 0;
+	public static int ofAnimatedTerrain = 0;
+
 	public GameSettings(Minecraft mcIn) {
 		this.keyBindings = (KeyBinding[]) ArrayUtils.addAll(new KeyBinding[] { this.keyBindAttack, this.keyBindUseItem,
 				this.keyBindForward, this.keyBindLeft, this.keyBindBack, this.keyBindRight, this.keyBindJump,
@@ -486,6 +502,82 @@ public class GameSettings {
 			this.mc.toggleFullscreen();
 		}
 
+		if (parOptions == GameSettings.Options.ANIMATED_PORTAL) {
+            ofAnimatedPortal++;
+            
+            if (ofAnimatedPortal > 1) {
+            	ofAnimatedPortal = 0;
+            }
+        }
+
+		if (parOptions == GameSettings.Options.ANIMATED_EXPLOSION) {
+            ofAnimatedExplosion = !ofAnimatedExplosion;
+        }
+		
+		if (parOptions == GameSettings.Options.WATER_PARTICLES) {
+            ofWaterParticles = !ofWaterParticles;
+        }
+		
+		if (parOptions == GameSettings.Options.VOID_PARTICLES) {
+            ofVoidParticles = !ofVoidParticles;
+        }
+		
+		if (parOptions == GameSettings.Options.ANIMATED_SMOKE) {
+            ofAnimatedSmoke = !ofAnimatedSmoke;
+        }
+		
+		if (parOptions == GameSettings.Options.POTION_PARTICLES) {
+            ofPotionParticles = !ofPotionParticles;
+        }
+		
+		if (parOptions == GameSettings.Options.ANIMATED_FLAME) {
+            ofAnimatedFlame = !ofAnimatedFlame;
+        }
+		
+		if (parOptions == GameSettings.Options.ANIMATED_REDSTONE) {
+            ofAnimatedRedstone = !ofAnimatedRedstone;
+        }
+		
+		if (parOptions == GameSettings.Options.DRIPPING_WATER_LAVA) {
+            ofDrippingWaterLava = !ofDrippingWaterLava;
+        }
+		
+		if (parOptions == GameSettings.Options.FIREWORK_PARTICLES) {
+            ofFireworkParticles = !ofFireworkParticles;
+        }
+
+		if (parOptions == GameSettings.Options.ANIMATED_WATER) {
+            ++GameSettings.ofAnimatedWater;
+
+            if (GameSettings.ofAnimatedWater > 1) {
+                GameSettings.ofAnimatedWater = 0;
+            }
+        }
+
+		if (parOptions == GameSettings.Options.ANIMATED_LAVA) {
+           ofAnimatedLava++;
+           
+           if(ofAnimatedLava > 1) {
+        	   ofAnimatedLava = 0;
+           }
+        }
+
+		if (parOptions == GameSettings.Options.ANIMATED_FIRE) {
+			++GameSettings.ofAnimatedFire;
+
+			   if (GameSettings.ofAnimatedFire > 1) {
+				   GameSettings.ofAnimatedFire = 0;
+			   }
+	   }
+
+	   if (parOptions == GameSettings.Options.ANIMATED_TERRAIN) {
+            ofAnimatedTerrain++;
+            
+            if (ofAnimatedTerrain > 1) {
+            	ofAnimatedTerrain = 0;
+            }
+        }
+
 		this.saveOptions();
 	}
 
@@ -570,6 +662,24 @@ public class GameSettings {
 			return this.fog;
 		case FULLSCREEN:
 			return this.mc.isFullScreen();
+		case ANIMATED_EXPLOSION:
+			return ofAnimatedExplosion;
+		case WATER_PARTICLES:
+			return ofWaterParticles;
+		case VOID_PARTICLES:
+			return ofVoidParticles;
+		case ANIMATED_SMOKE:
+			return ofAnimatedSmoke;
+		case POTION_PARTICLES:
+			return ofPotionParticles;
+		case ANIMATED_FLAME:
+			return ofAnimatedFlame;
+		case ANIMATED_REDSTONE:
+			return ofAnimatedRedstone;
+		case DRIPPING_WATER_LAVA:
+			return ofDrippingWaterLava;
+		case FIREWORK_PARTICLES:
+			return ofFireworkParticles;
 		default:
 			return false;
 		}
@@ -688,7 +798,61 @@ public class GameSettings {
 			} else {
 				return s + I18n.format("options.off");
 			}
-		} else {
+		} else if (parOptions == GameSettings.Options.ANIMATED_PORTAL) {
+        	switch (GameSettings.ofAnimatedPortal) {
+    		case 1:
+    			return s + "OFF";
+    		default:
+    			return s + "ON";
+            }
+        }   else if (parOptions == GameSettings.Options.ANIMATED_REDSTONE) {
+            return ofAnimatedRedstone ? s + "ON" : s + "OFF";
+        } else if (parOptions == GameSettings.Options.ANIMATED_EXPLOSION) {
+            return ofAnimatedExplosion ? s + "ON" : s + "OFF";
+        } else if (parOptions == GameSettings.Options.ANIMATED_FLAME) {
+            return ofAnimatedFlame ? s + "ON" : s + "OFF";
+        } else if (parOptions == GameSettings.Options.ANIMATED_SMOKE) {
+            return ofAnimatedSmoke ? s + "ON" : s + "OFF";
+        } else if (parOptions == GameSettings.Options.VOID_PARTICLES) {
+            return ofVoidParticles ? s + "ON" : s + "OFF";
+        } else if (parOptions == GameSettings.Options.WATER_PARTICLES) {
+            return ofWaterParticles ? s + "ON" : s + "OFF";
+        } else if (parOptions == GameSettings.Options.POTION_PARTICLES) {
+            return ofPotionParticles ? s + "ON" : s + "OFF";
+        } else if (parOptions == GameSettings.Options.DRIPPING_WATER_LAVA) {
+            return ofDrippingWaterLava ? s + "ON" : s + "OFF";
+        } else if (parOptions == GameSettings.Options.FIREWORK_PARTICLES) {
+            return ofFireworkParticles ? s + "ON" : s + "OFF";
+        } else if (parOptions == GameSettings.Options.ANIMATED_WATER) {
+            switch (GameSettings.ofAnimatedWater) {
+                case 1:
+                    return s + "OFF";
+
+                default:
+                    return s + "ON";
+            }
+        } else if (parOptions == GameSettings.Options.ANIMATED_LAVA) {
+        	switch (GameSettings.ofAnimatedLava) {
+        		case 1:
+        			return s + "OFF";
+        		default:
+        			return s + "ON";
+        	}
+        } else if (parOptions == GameSettings.Options.ANIMATED_FIRE) {
+        	switch (GameSettings.ofAnimatedFire) {
+    		case 1:
+    			return s + "OFF";
+    		default:
+    			return s + "ON";
+            }
+        } else if (parOptions == GameSettings.Options.ANIMATED_TERRAIN) {
+        	switch (GameSettings.ofAnimatedTerrain) {
+    		case 1:
+    			return s + "OFF";
+    		default:
+    			return s + "ON";
+            }
+        } else {
 			return s;
 		}
 	}
@@ -1002,6 +1166,67 @@ public class GameSettings {
 								: Integer.parseInt(astring[1]);
 					}
 
+					if (astring[0].equals("ofAnimatedPortal") && astring.length >= 2) {
+						 GameSettings.ofAnimatedPortal = Integer.valueOf(astring[1]).intValue();
+	                     GameSettings.ofAnimatedPortal = GameSettings.ofAnimatedPortal < 0 ? 0 : (GameSettings.ofAnimatedPortal > 2 ? 2 : GameSettings.ofAnimatedPortal);
+                    }
+
+					if (astring[0].equals("ofAnimatedExplosion") && astring.length >= 2) {
+                        ofAnimatedExplosion = Boolean.valueOf(astring[1]).booleanValue();
+                    }
+					
+					if (astring[0].equals("ofWaterParticles") && astring.length >= 2) {
+                        ofWaterParticles = Boolean.valueOf(astring[1]).booleanValue();
+                    }
+					
+					if (astring[0].equals("ofVoidParticles") && astring.length >= 2) {
+                        ofVoidParticles = Boolean.valueOf(astring[1]).booleanValue();
+                    }
+					
+					if (astring[0].equals("ofAnimatedSmoke") && astring.length >= 2) {
+                        ofAnimatedSmoke = Boolean.valueOf(astring[1]).booleanValue();
+                    }
+					
+					if (astring[0].equals("ofPotionParticles") && astring.length >= 2) {
+                        ofPotionParticles = Boolean.valueOf(astring[1]).booleanValue();
+                    }
+					
+					if (astring[0].equals("ofAnimatedFlame") && astring.length >= 2) {
+                        ofAnimatedFlame = Boolean.valueOf(astring[1]).booleanValue();
+                    }
+					
+					if (astring[0].equals("ofAnimatedRedstone") && astring.length >= 2) {
+                        ofAnimatedRedstone = Boolean.valueOf(astring[1]).booleanValue();
+                    }
+					
+					if (astring[0].equals("ofDrippingWaterLava") && astring.length >= 2) {
+                        ofDrippingWaterLava = Boolean.valueOf(astring[1]).booleanValue();
+                    }
+					
+					if (astring[0].equals("ofFireworkParticles") && astring.length >= 2) {
+                        ofFireworkParticles = Boolean.valueOf(astring[1]).booleanValue();
+                    }
+
+					if (astring[0].equals("ofAnimatedWater") && astring.length >= 2) {
+                        GameSettings.ofAnimatedWater = Integer.valueOf(astring[1]).intValue();
+                        GameSettings.ofAnimatedWater = GameSettings.ofAnimatedWater < 0 ? 0 : (GameSettings.ofAnimatedWater > 2 ? 2 : GameSettings.ofAnimatedWater);
+                    }
+
+					if (astring[0].equals("ofAnimatedLava") && astring.length >= 2) {
+						GameSettings.ofAnimatedLava = Integer.valueOf(astring[1]).intValue();
+                        GameSettings.ofAnimatedLava = GameSettings.ofAnimatedLava < 0 ? 0 : (GameSettings.ofAnimatedLava > 2 ? 2 : GameSettings.ofAnimatedLava);
+                    }
+
+					if (astring[0].equals("ofAnimatedFire") && astring.length >= 2) {
+						GameSettings.ofAnimatedFire = Integer.valueOf(astring[1]).intValue();
+                        GameSettings.ofAnimatedFire = GameSettings.ofAnimatedFire < 0 ? 0 : (GameSettings.ofAnimatedFire > 2 ? 2 : GameSettings.ofAnimatedFire);
+                    }
+
+					if (astring[0].equals("ofAnimatedTerrain") && astring.length >= 2) {
+						GameSettings.ofAnimatedTerrain = Integer.valueOf(astring[1]).intValue();
+	                     GameSettings.ofAnimatedTerrain = GameSettings.ofAnimatedTerrain < 0 ? 0 : (GameSettings.ofAnimatedTerrain > 2 ? 2 : GameSettings.ofAnimatedTerrain);
+                    }
+
 					for (KeyBinding keybinding : this.keyBindings) {
 						if (astring[0].equals("key_" + keybinding.getKeyDescription())) {
 							keybinding.setKeyCode(Integer.parseInt(astring[1]));
@@ -1122,6 +1347,20 @@ public class GameSettings {
 			printwriter.println("chunkFix:" + this.chunkFix);
 			printwriter.println("fog:" + this.fog);
 			printwriter.println("fxaa:" + this.fxaa);
+			printwriter.println("ofAnimatedPortal:" + GameSettings.ofAnimatedPortal);
+			printwriter.println("ofAnimatedExplosion:" + ofAnimatedExplosion);
+			printwriter.println("ofWaterParticles:" + ofWaterParticles);
+			printwriter.println("ofVoidParticles:" + ofVoidParticles);
+			printwriter.println("ofAnimatedSmoke:" + ofAnimatedSmoke);
+			printwriter.println("ofPotionParticles:" + ofPotionParticles);
+			printwriter.println("ofAnimatedFlame:" + ofAnimatedFlame);
+			printwriter.println("ofAnimatedRedstone:" + ofAnimatedRedstone);
+			printwriter.println("ofDrippingWaterLava:" + ofDrippingWaterLava);
+			printwriter.println("ofFireworkParticles:" + ofFireworkParticles);
+			printwriter.println("ofAnimatedWater:" + GameSettings.ofAnimatedWater);
+			printwriter.println("ofAnimatedLava:" + GameSettings.ofAnimatedLava);
+			printwriter.println("ofAnimatedFire:" + GameSettings.ofAnimatedFire);
+			printwriter.println("ofAnimatedTerrain:" + GameSettings.ofAnimatedTerrain);
 
 			for (KeyBinding keybinding : this.keyBindings) {
 				printwriter.println("key_" + keybinding.getKeyDescription() + ":" + keybinding.getKeyCode());
@@ -1252,7 +1491,21 @@ public class GameSettings {
 		HUD_WORLD("options.hud.world", false, true), HUD_PLAYER("options.hud.player", false, true),
 		HUD_24H("options.hud.24h", false, true), CHUNK_FIX("options.chunkFix", false, true),
 		FOG("options.fog", false, true), FXAA("options.fxaa", false, false),
-		FULLSCREEN("options.fullscreen", false, true);
+		FULLSCREEN("options.fullscreen", false, true),
+		ANIMATED_PORTAL("Portal Animated", false, false),
+		ANIMATED_EXPLOSION("Explosion Animated", false, false),
+		WATER_PARTICLES("Water Particles", false, false),
+		VOID_PARTICLES("Void Particles", false, false),
+		ANIMATED_SMOKE("Smoke Animated", false, false),
+		POTION_PARTICLES("Potion Particles", false, false),
+		ANIMATED_FLAME("Flame Animated", false, false),
+		ANIMATED_REDSTONE("Redstone Animated", false, false),
+		DRIPPING_WATER_LAVA("Dripping Water/Lava", false, false),
+		FIREWORK_PARTICLES("Firework Particles", false, false),
+		ANIMATED_WATER("Water Animated", false, false),
+		ANIMATED_LAVA("Lava Animated", false, false),
+		ANIMATED_FIRE("Fire Animated", false, false),
+		ANIMATED_TERRAIN("Terrain Animated", false, false);
 
 		private final boolean enumFloat;
 		private final boolean enumBoolean;

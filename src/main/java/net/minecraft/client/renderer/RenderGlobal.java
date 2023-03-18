@@ -84,6 +84,8 @@ import net.minecraft.world.IWorldAccess;
 import net.minecraft.world.border.WorldBorder;
 import net.minecraft.world.chunk.Chunk;
 
+import net.PeytonPlayz585.Optifine.Config;
+
 /**+
  * This portion of EaglercraftX contains deobfuscated Minecraft 1.8 source code.
  * 
@@ -1835,31 +1837,77 @@ public class RenderGlobal implements IWorldAccess, IResourceManagerReloadListene
 				parDouble3, parDouble4, parDouble5, parDouble6, parArrayOfInt);
 	}
 
-	private EntityFX spawnEntityFX(int ignoreRange, boolean parFlag, double parDouble1, double parDouble2,
-			double parDouble3, double parDouble4, double parDouble5, double parDouble6, int... parArrayOfInt) {
-		if (this.mc != null && this.mc.getRenderViewEntity() != null && this.mc.effectRenderer != null) {
-			int i = this.mc.gameSettings.particleSetting;
-			if (i == 1 && this.theWorld.rand.nextInt(3) == 0) {
-				i = 2;
-			}
+	private EntityFX spawnEntityFX(int p_174974_1_, boolean ignoreRange, double p_174974_3_, double p_174974_5_, double p_174974_7_, double p_174974_9_, double p_174974_11_, double p_174974_13_, int... p_174974_15_) {
+        if (this.mc != null && this.mc.getRenderViewEntity() != null && this.mc.effectRenderer != null) {
+            int i = this.mc.gameSettings.particleSetting;
 
-			double d0 = this.mc.getRenderViewEntity().posX - parDouble1;
-			double d1 = this.mc.getRenderViewEntity().posY - parDouble2;
-			double d2 = this.mc.getRenderViewEntity().posZ - parDouble3;
-			if (parFlag) {
-				return this.mc.effectRenderer.spawnEffectParticle(ignoreRange, parDouble1, parDouble2, parDouble3,
-						parDouble4, parDouble5, parDouble6, parArrayOfInt);
-			} else {
-				double d3 = 16.0D;
-				return d0 * d0 + d1 * d1 + d2 * d2 > 256.0D ? null
-						: (i > 1 ? null
-								: this.mc.effectRenderer.spawnEffectParticle(ignoreRange, parDouble1, parDouble2,
-										parDouble3, parDouble4, parDouble5, parDouble6, parArrayOfInt));
-			}
-		} else {
-			return null;
-		}
-	}
+            if (i == 1 && this.theWorld.rand.nextInt(3) == 0) {
+                i = 2;
+            }
+
+            double d0 = this.mc.getRenderViewEntity().posX - p_174974_3_;
+            double d1 = this.mc.getRenderViewEntity().posY - p_174974_5_;
+            double d2 = this.mc.getRenderViewEntity().posZ - p_174974_7_;
+
+            if (p_174974_1_ == EnumParticleTypes.EXPLOSION_HUGE.getParticleID() && !Config.isAnimatedExplosion()) {
+                return null;
+            } else if (p_174974_1_ == EnumParticleTypes.EXPLOSION_LARGE.getParticleID() && !Config.isAnimatedExplosion()) {
+                return null;
+            } else if (p_174974_1_ == EnumParticleTypes.EXPLOSION_NORMAL.getParticleID() && !Config.isAnimatedExplosion()) {
+                return null;
+            } else if (p_174974_1_ == EnumParticleTypes.SUSPENDED.getParticleID() && !Config.isWaterParticles()) {
+                return null;
+            } else if (p_174974_1_ == EnumParticleTypes.SUSPENDED_DEPTH.getParticleID() && !Config.isVoidParticles()) {
+                return null;
+            } else if (p_174974_1_ == EnumParticleTypes.SMOKE_NORMAL.getParticleID() && !Config.isAnimatedSmoke()) {
+                return null;
+            } else if (p_174974_1_ == EnumParticleTypes.SMOKE_LARGE.getParticleID() && !Config.isAnimatedSmoke()) {
+                return null;
+            } else if (p_174974_1_ == EnumParticleTypes.SPELL_MOB.getParticleID() && !Config.isPotionParticles()) {
+                return null;
+            } else if (p_174974_1_ == EnumParticleTypes.SPELL_MOB_AMBIENT.getParticleID() && !Config.isPotionParticles()) {
+                return null;
+            } else if (p_174974_1_ == EnumParticleTypes.SPELL.getParticleID() && !Config.isPotionParticles()) {
+                return null;
+            } else if (p_174974_1_ == EnumParticleTypes.SPELL_INSTANT.getParticleID() && !Config.isPotionParticles()) {
+                return null;
+            } else if (p_174974_1_ == EnumParticleTypes.SPELL_WITCH.getParticleID() && !Config.isPotionParticles()) {
+                return null;
+            } else if (p_174974_1_ == EnumParticleTypes.PORTAL.getParticleID() && !Config.isAnimatedPortal()) {
+                return null;
+            } else if (p_174974_1_ == EnumParticleTypes.FLAME.getParticleID() && !Config.isAnimatedFlame()) {
+                return null;
+            } else if (p_174974_1_ == EnumParticleTypes.REDSTONE.getParticleID() && !Config.isAnimatedRedstone()) {
+                return null;
+            } else if (p_174974_1_ == EnumParticleTypes.DRIP_WATER.getParticleID() && !Config.isDrippingWaterLava()) {
+                return null;
+            } else if (p_174974_1_ == EnumParticleTypes.DRIP_LAVA.getParticleID() && !Config.isDrippingWaterLava()) {
+                return null;
+            } else if (p_174974_1_ == EnumParticleTypes.FIREWORKS_SPARK.getParticleID() && !Config.isFireworkParticles()) {
+                return null;
+            }
+            if (ignoreRange) {
+                return this.mc.effectRenderer.spawnEffectParticle(p_174974_1_, p_174974_3_, p_174974_5_, p_174974_7_, p_174974_9_, p_174974_11_, p_174974_13_, p_174974_15_);
+            } else {
+                double d4 = 256.0D;
+
+                if (p_174974_1_ == EnumParticleTypes.CRIT.getParticleID()) {
+                    d4 = 38416.0D;
+                }
+
+                if (d0 * d0 + d1 * d1 + d2 * d2 > d4) {
+                    return null;
+                } else if (i > 1) {
+                    return null;
+                } else {
+                    EntityFX entityfx = this.mc.effectRenderer.spawnEffectParticle(p_174974_1_, p_174974_3_, p_174974_5_, p_174974_7_, p_174974_9_, p_174974_11_, p_174974_13_, p_174974_15_);
+                    return entityfx;
+                }
+            }
+        } else {
+            return null;
+        }
+    }
 
 	/**+
 	 * Called on all IWorldAccesses when an entity is created or
