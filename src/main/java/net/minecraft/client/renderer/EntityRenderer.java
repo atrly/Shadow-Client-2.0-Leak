@@ -66,6 +66,8 @@ import net.minecraft.util.Vec3;
 import net.minecraft.world.WorldSettings;
 import net.minecraft.world.biome.BiomeGenBase;
 
+import net.PeytonPlayz585.Optifine.Config;
+
 /**+
  * This portion of EaglercraftX contains deobfuscated Minecraft 1.8 source code.
  * 
@@ -383,8 +385,15 @@ public class EntityRenderer implements IResourceManagerReloadListener {
 			Entity entity = this.mc.getRenderViewEntity();
 			float f = 70.0F;
 			if (parFlag) {
-				f = this.mc.gameSettings.keyBindZoomCamera.isKeyDown() ? 17.0f : this.mc.gameSettings.fovSetting;
-				f = f * (this.fovModifierHandPrev + (this.fovModifierHand - this.fovModifierHandPrev) * partialTicks);
+				if (this.mc.gameSettings.keyBindZoomCamera.isKeyDown()) {
+					f = 17.0f;
+				} else {
+					f = this.mc.gameSettings.fovSetting;
+				}
+				
+                if (Config.isDynamicFov()) {
+                    f *= this.fovModifierHandPrev + (this.fovModifierHand - this.fovModifierHandPrev) * partialTicks;
+                }
 			}
 
 			if (entity instanceof EntityLivingBase && ((EntityLivingBase) entity).getHealth() <= 0.0F) {

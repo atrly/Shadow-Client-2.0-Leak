@@ -214,6 +214,7 @@ public class GameSettings {
 	public static boolean ofFastMath = true;
 	public static boolean ofSmoothFps = false;
 	public static boolean ofSmoothWorld = false;
+	public static boolean ofDynamicFov = true;
 
 	public static int ofAnimatedWater = 0;
 	public static int ofAnimatedLava = 0;
@@ -619,6 +620,10 @@ public class GameSettings {
             ofSmoothWorld = !ofSmoothWorld;
         }
 
+		if (parOptions == GameSettings.Options.DYNAMIC_FOV) {
+            GameSettings.ofDynamicFov = !GameSettings.ofDynamicFov;
+        }
+
 		this.saveOptions();
 	}
 
@@ -855,6 +860,8 @@ public class GameSettings {
             return s + ofChunkUpdates;
         } else if (parOptions == GameSettings.Options.SMOOTH_WORLD) {
             return ofSmoothWorld ? s + "ON" : s + "OFF";
+        } else if (parOptions == GameSettings.Options.DYNAMIC_FOV) {
+        	return GameSettings.ofDynamicFov ? s + "ON" : s + "OFF";
         } else {
 			return s;
 		}
@@ -1260,6 +1267,10 @@ public class GameSettings {
                         Config.setAmbientOcclusionLevel();
                     }
 
+					if (astring[0].equals("ofDynamicFov") && astring.length >= 2) {
+                        GameSettings.ofDynamicFov = Boolean.valueOf(astring[1]).booleanValue();
+                    }
+
 					for (KeyBinding keybinding : this.keyBindings) {
 						if (astring[0].equals("key_" + keybinding.getKeyDescription())) {
 							keybinding.setKeyCode(Integer.parseInt(astring[1]));
@@ -1399,6 +1410,7 @@ public class GameSettings {
 			printwriter.println("ofChunkUpdates:" + ofChunkUpdates);
 			printwriter.println("ofSmoothWorld:" + ofSmoothWorld);
 			printwriter.println("ofAoLevel:" + GameSettings.ofAoLevel);
+			printwriter.println("ofDynamicFov:" + GameSettings.ofDynamicFov);
 
 			for (KeyBinding keybinding : this.keyBindings) {
 				printwriter.println("key_" + keybinding.getKeyDescription() + ":" + keybinding.getKeyCode());
@@ -1548,7 +1560,8 @@ public class GameSettings {
 		SMOOTH_FPS("Smooth FPS", false, true),
 		CHUNK_UPDATES("Chunk Updates", false, false),
 		SMOOTH_WORLD("Smooth World", false, false),
-		AO_LEVEL("Smooth Lighting Level", true, false);
+		AO_LEVEL("Smooth Lighting Level", true, false),
+		DYNAMIC_FOV("Dynamic FOV", false, false);
 
 		private final boolean enumFloat;
 		private final boolean enumBoolean;

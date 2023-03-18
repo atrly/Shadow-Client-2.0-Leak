@@ -73,4 +73,8 @@ public class Config {
     public static float getAmbientOcclusionLevel() {
 		return occlusionLevel;
 	}
+
+    public static boolean isDynamicFov() {
+    	return GameSettings.ofDynamicFov;
+    }
 }
