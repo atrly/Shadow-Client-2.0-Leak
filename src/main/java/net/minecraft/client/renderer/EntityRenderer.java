@@ -560,6 +560,15 @@ public class EntityRenderer implements IResourceManagerReloadListener {
 	 */
 	private void setupCameraTransform(float partialTicks, int pass) {
 		this.farPlaneDistance = (float) (this.mc.gameSettings.renderDistanceChunks * 16);
+
+		if (Config.isFogFancy()) {
+            this.farPlaneDistance *= 0.95F;
+        }
+
+        if (Config.isFogFast()) {
+            this.farPlaneDistance *= 0.83F;
+        }
+
 		GlStateManager.matrixMode(GL_PROJECTION);
 		GlStateManager.loadIdentity();
 		float f = 0.07F;
@@ -1633,74 +1642,89 @@ public class EntityRenderer implements IResourceManagerReloadListener {
 	 * the fog starts at 0 and goes to 80% of far plane distance and
 	 * is used for sky rendering.
 	 */
-	private void setupFog(int partialTicks, float parFloat1) {
-		Entity entity = this.mc.getRenderViewEntity();
-		boolean flag = false;
-		if (entity instanceof EntityPlayer) {
-			flag = ((EntityPlayer) entity).capabilities.isCreativeMode;
-		}
+	private void setupFog(int p_78468_1_, float partialTicks) {
+        Entity entity = this.mc.getRenderViewEntity();
+        boolean flag = false;
 
-		EaglercraftGPU.glFog(GL_FOG_COLOR,
-				this.setFogColorBuffer(this.fogColorRed, this.fogColorGreen, this.fogColorBlue, 1.0F));
-		EaglercraftGPU.glNormal3f(0.0F, -1.0F, 0.0F);
-		GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
-		Block block = ActiveRenderInfo.getBlockAtEntityViewpoint(this.mc.theWorld, entity, parFloat1);
-		if (entity instanceof EntityLivingBase && ((EntityLivingBase) entity).isPotionActive(Potion.blindness)) {
-			float f1 = 5.0F;
-			int i = ((EntityLivingBase) entity).getActivePotionEffect(Potion.blindness).getDuration();
-			if (i < 20) {
-				f1 = 5.0F + (this.farPlaneDistance - 5.0F) * (1.0F - (float) i / 20.0F);
-			}
+        if (entity instanceof EntityPlayer) {
+            flag = ((EntityPlayer)entity).capabilities.isCreativeMode;
+        }
 
-			GlStateManager.setFog(GL_LINEAR);
-			if (partialTicks == -1) {
-				GlStateManager.setFogStart(0.0F);
-				GlStateManager.setFogEnd(f1 * 0.8F);
-			} else {
-				GlStateManager.setFogStart(f1 * 0.25F);
-				GlStateManager.setFogEnd(f1);
-			}
-			EaglercraftGPU.glFogi('\u855a', '\u855b');
-		} else if (this.cloudFog) {
-			GlStateManager.setFog(GL_EXP);
-			GlStateManager.setFogDensity(0.1F);
-		} else if (block.getMaterial() == Material.water) {
-			GlStateManager.setFog(GL_EXP);
-			if (entity instanceof EntityLivingBase
-					&& ((EntityLivingBase) entity).isPotionActive(Potion.waterBreathing)) {
-				GlStateManager.setFogDensity(0.01F);
-			} else {
-				GlStateManager.setFogDensity(0.1F - (float) EnchantmentHelper.getRespiration(entity) * 0.03F);
-			}
-		} else if (block.getMaterial() == Material.lava) {
-			GlStateManager.setFog(GL_EXP);
-			GlStateManager.setFogDensity(2.0F);
-		} else if (!this.mc.gameSettings.fog) {
-			GlStateManager.setFog(GL_EXP);
-			GlStateManager.setFogDensity(0.0F);
-		} else {
-			GlStateManager.setFogDensity(0.001F);
-			float f = this.farPlaneDistance;
-			GlStateManager.setFog(GL_LINEAR);
-			if (partialTicks == -1) {
-				GlStateManager.setFogStart(0.0F);
-				GlStateManager.setFogEnd(f);
-			} else {
-				GlStateManager.setFogStart(f * 0.75F);
-				GlStateManager.setFogEnd(f);
-			}
+        EaglercraftGPU.glFog(GL_FOG_COLOR, (FloatBuffer)this.setFogColorBuffer(this.fogColorRed, this.fogColorGreen, this.fogColorBlue, 1.0F));
+        EaglercraftGPU.glNormal3f(0.0F, -1.0F, 0.0F);
+        GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
+        Block block = ActiveRenderInfo.getBlockAtEntityViewpoint(this.mc.theWorld, entity, partialTicks);
+        float f1 = -1.0F;
 
-			EaglercraftGPU.glFogi('\u855a', '\u855b');
+        if (f1 >= 0.0F) {
+            GlStateManager.setFogDensity(f1);
+        } else if (entity instanceof EntityLivingBase && ((EntityLivingBase)entity).isPotionActive(Potion.blindness)) {
+            float f2 = 5.0F;
+            int i = ((EntityLivingBase)entity).getActivePotionEffect(Potion.blindness).getDuration();
 
-			if (this.mc.theWorld.provider.doesXZShowFog((int) entity.posX, (int) entity.posZ)) {
-				GlStateManager.setFogStart(f * 0.05F);
-				GlStateManager.setFogEnd(Math.min(f, 192.0F) * 0.5F);
-			}
-		}
+            if (i < 20) {
+                f2 = 5.0F + (this.farPlaneDistance - 5.0F) * (1.0F - (float)i / 20.0F);
+            }
 
-		GlStateManager.enableColorMaterial();
-		GlStateManager.enableFog();
-	}
+            GlStateManager.setFog(9729);
+
+            if (p_78468_1_ == -1) {
+                GlStateManager.setFogStart(0.0F);
+                GlStateManager.setFogEnd(f2 * 0.8F);
+            } else {
+                GlStateManager.setFogStart(f2 * 0.25F);
+                GlStateManager.setFogEnd(f2);
+            }
+
+            if (Config.isFogFancy()) {
+                EaglercraftGPU.glFogi(34138, 34139);
+            }
+        } else if (this.cloudFog) {
+            GlStateManager.setFog(2048);
+
+            GlStateManager.setFogDensity(0.1F);
+        } else if (block.getMaterial() == Material.water) {
+            GlStateManager.setFog(2048);
+
+            if (entity instanceof EntityLivingBase && ((EntityLivingBase)entity).isPotionActive(Potion.waterBreathing)) {
+                GlStateManager.setFogDensity(0.01F);
+            } else {
+                GlStateManager.setFogDensity(0.1F - (float)EnchantmentHelper.getRespiration(entity) * 0.03F);
+            }
+        } else if (block.getMaterial() == Material.lava) {
+            GlStateManager.setFog(2048);
+
+            GlStateManager.setFogDensity(2.0F);
+        } else {
+            float f = this.farPlaneDistance;
+
+            GlStateManager.setFog(9729);
+
+            if (p_78468_1_ == -1) {
+                GlStateManager.setFogStart(0.0F);
+                GlStateManager.setFogEnd(f);
+            } else {
+                GlStateManager.setFogStart(f * Config.getFogStart());
+                GlStateManager.setFogEnd(f);
+            }
+
+                if (Config.isFogFancy()) {
+                    EaglercraftGPU.glFogi(34138, 34139);
+                }
+
+                if (Config.isFogFast()) {
+                    EaglercraftGPU.glFogi(34138, 34140);
+                }
+
+            if (this.mc.theWorld.provider.doesXZShowFog((int)entity.posX, (int)entity.posZ)) {
+                GlStateManager.setFogStart(f * 0.05F);
+                GlStateManager.setFogEnd(f);
+            }
+        }
+
+        GlStateManager.enableColorMaterial();
+        GlStateManager.enableFog();
+    }
 
 	/**+
 	 * Update and return fogColorBuffer with the RGBA values passed

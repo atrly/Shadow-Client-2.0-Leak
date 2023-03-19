@@ -57,9 +57,9 @@ public class GuiVideoSettings extends GuiScreen {
 			GameSettings.Options.GUI_SCALE,
 			GameSettings.Options.DYNAMIC_FOV,
 			GameSettings.Options.GAMMA,
-			GameSettings.Options.BLOCK_ALTERNATIVES
-			//GameSettings.Options.FOG_FANCY,
-			//GameSettings.Options.FOG_START
+			GameSettings.Options.BLOCK_ALTERNATIVES,
+			GameSettings.Options.FOG_FANCY,
+			GameSettings.Options.FOG_START
 	};
 	private static final String __OBFID = "CL_00000718";
 	//private TooltipManager tooltipManager = new TooltipManager(this);

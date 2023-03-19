@@ -215,6 +215,7 @@ public class GameSettings {
 	public static boolean ofSmoothFps = false;
 	public static boolean ofSmoothWorld = false;
 	public static boolean ofDynamicFov = true;
+	public static int ofFogType = 1;
 
 	public static int ofAnimatedWater = 0;
 	public static int ofAnimatedLava = 0;
@@ -223,6 +224,7 @@ public class GameSettings {
 	public static int ofChunkUpdates = 1;
 
 	public static float ofAoLevel = 1.0F;
+	public static float ofFogStart = 0.8F;
 
 	public GameSettings(Minecraft mcIn) {
 		this.keyBindings = (KeyBinding[]) ArrayUtils.addAll(new KeyBinding[] { this.keyBindAttack, this.keyBindUseItem,
@@ -624,6 +626,40 @@ public class GameSettings {
             GameSettings.ofDynamicFov = !GameSettings.ofDynamicFov;
         }
 
+		if (parOptions == GameSettings.Options.FOG_FANCY) {
+            switch (GameSettings.ofFogType) {
+                case 1:
+                    GameSettings.ofFogType = 2;
+
+                    if (!Config.isFancyFogAvailable()) {
+                        GameSettings.ofFogType = 3;
+                    }
+
+                    break;
+
+                case 2:
+                    GameSettings.ofFogType = 3;
+                    break;
+
+                case 3:
+                    GameSettings.ofFogType = 1;
+                    break;
+
+                default:
+                    GameSettings.ofFogType = 1;
+            }
+        }
+
+		if (parOptions == GameSettings.Options.FOG_START) {
+            GameSettings.ofFogStart += 0.2F;
+
+            if (GameSettings.ofFogStart > 0.81F) {
+                GameSettings.ofFogStart = 0.2F;
+            }
+
+            //this.mc.renderGlobal.loadRenderers(); //Idk why this is here! It still works without this! 
+        }
+
 		this.saveOptions();
 	}
 
@@ -862,6 +898,22 @@ public class GameSettings {
             return ofSmoothWorld ? s + "ON" : s + "OFF";
         } else if (parOptions == GameSettings.Options.DYNAMIC_FOV) {
         	return GameSettings.ofDynamicFov ? s + "ON" : s + "OFF";
+        } else if (parOptions == GameSettings.Options.FOG_FANCY) {
+			switch (GameSettings.ofFogType) {
+             	case 1:
+                	return s + "Fast";
+
+                case 2:
+                    return s + "Fancy";
+
+                case 3:
+                    return s + "OFF";
+
+                default:
+                    return s + "OFF";
+            } 
+		} else if (parOptions == GameSettings.Options.FOG_START) {
+            return s + GameSettings.ofFogStart;
         } else {
 			return s;
 		}
@@ -1271,6 +1323,23 @@ public class GameSettings {
                         GameSettings.ofDynamicFov = Boolean.valueOf(astring[1]).booleanValue();
                     }
 
+					if (astring[0].equals("ofFogType") && astring.length >= 2) {
+                        GameSettings.ofFogType = Integer.valueOf(astring[1]).intValue();
+                        GameSettings.ofFogType = ofFogType < 1 ? 1 : (ofFogType > 3 ? 3 : ofFogType);
+                    }
+
+					if (astring[0].equals("ofFogStart") && astring.length >= 2) {
+                        GameSettings.ofFogStart = Float.valueOf(astring[1]).floatValue();
+
+                        if (GameSettings.ofFogStart < 0.2F) {
+                            GameSettings.ofFogStart = 0.2F;
+                        }
+
+                        if (GameSettings.ofFogStart > 0.81F) {
+                            GameSettings.ofFogStart = 0.8F;
+                        }
+                    }
+
 					for (KeyBinding keybinding : this.keyBindings) {
 						if (astring[0].equals("key_" + keybinding.getKeyDescription())) {
 							keybinding.setKeyCode(Integer.parseInt(astring[1]));
@@ -1411,6 +1480,8 @@ public class GameSettings {
 			printwriter.println("ofSmoothWorld:" + ofSmoothWorld);
 			printwriter.println("ofAoLevel:" + GameSettings.ofAoLevel);
 			printwriter.println("ofDynamicFov:" + GameSettings.ofDynamicFov);
+			printwriter.println("ofFogType:" + GameSettings.ofFogType);
+			printwriter.println("ofFogStart:" + GameSettings.ofFogStart);
 
 			for (KeyBinding keybinding : this.keyBindings) {
 				printwriter.println("key_" + keybinding.getKeyDescription() + ":" + keybinding.getKeyCode());
@@ -1561,7 +1632,9 @@ public class GameSettings {
 		CHUNK_UPDATES("Chunk Updates", false, false),
 		SMOOTH_WORLD("Smooth World", false, false),
 		AO_LEVEL("Smooth Lighting Level", true, false),
-		DYNAMIC_FOV("Dynamic FOV", false, false);
+		DYNAMIC_FOV("Dynamic FOV", false, false),
+		FOG_FANCY("Fog", false, false),
+		FOG_START("Fog Start", false, false);
 
 		private final boolean enumFloat;
 		private final boolean enumBoolean;

@@ -74,7 +74,27 @@ public class Config {
 		return occlusionLevel;
 	}
 
+    public static float getFogStart() {
+    	return GameSettings.ofFogStart;
+    }
+
     public static boolean isDynamicFov() {
     	return GameSettings.ofDynamicFov;
+    }
+
+    public static boolean isFancyFogAvailable() {
+        return true;
+    }
+
+    public static boolean isFogFancy() {
+        return !isFancyFogAvailable() ? false : GameSettings.ofFogType == 2;
+    }
+
+    public static boolean isFogFast() {
+        return GameSettings.ofFogType == 1;
+    }
+
+    public static boolean isFogOff() {
+        return GameSettings.ofFogType == 3;
     }
 }

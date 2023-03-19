@@ -175,6 +175,9 @@ public class RenderGlobal implements IWorldAccess, IResourceManagerReloadListene
 	public Set<RenderChunk> chunksToUpdateForced = new LinkedHashSet<RenderChunk>();
 	public Set<RenderChunk> chunksToResortTransparency = new LinkedHashSet<RenderChunk>();
 
+	private int renderDistance = 0;
+    private int renderDistanceSq = 0;
+
 	public RenderGlobal(Minecraft mcIn) {
 		this.mc = mcIn;
 		this.renderManager = mcIn.getRenderManager();
@@ -347,6 +350,9 @@ public class RenderGlobal implements IWorldAccess, IResourceManagerReloadListene
 	 * set null to clear
 	 */
 	public void setWorldAndLoadRenderers(WorldClient worldClientIn) {
+		this.renderDistance = this.renderDistanceChunks * 16;
+        this.renderDistanceSq = this.renderDistance * this.renderDistance;
+
 		if (this.theWorld != null) {
 			this.theWorld.removeWorldAccess(this);
 		}
@@ -436,6 +442,11 @@ public class RenderGlobal implements IWorldAccess, IResourceManagerReloadListene
 			this.mc.entityRenderer.enableLightmap();
 			this.theWorld.theProfiler.endStartSection("global");
 			List list = this.theWorld.getLoadedEntityList();
+
+			if (Config.isFogOff()) {
+                GlStateManager.disableFog();
+            }
+
 			this.countEntitiesTotal = list.size();
 
 			for (int i = 0; i < this.theWorld.weatherEffects.size(); ++i) {
@@ -759,13 +770,27 @@ public class RenderGlobal implements IWorldAccess, IResourceManagerReloadListene
 
 	private RenderChunk func_181562_a(BlockPos parBlockPos, RenderChunk parRenderChunk, EnumFacing parEnumFacing) {
 		BlockPos blockpos = parRenderChunk.func_181701_a(parEnumFacing);
-		return MathHelper
-				.abs_int(parBlockPos.getX() - blockpos.getX()) > this.renderDistanceChunks * 16
-						? null
-						: (blockpos.getY() >= 0 && blockpos.getY() < 256
-								? (MathHelper.abs_int(parBlockPos.getZ() - blockpos.getZ()) > this.renderDistanceChunks
-										* 16 ? null : this.viewFrustum.getRenderChunk(blockpos))
-								: null);
+
+        if (blockpos.getY() >= 0 && blockpos.getY() < 256) {
+            int i = MathHelper.abs_int(blockpos.getX() - blockpos.getX());
+            int j = MathHelper.abs_int(blockpos.getZ() - blockpos.getZ());
+
+            if (Config.isFogOff()) {
+                if (i > this.renderDistance || j > this.renderDistance) {
+                    return null;
+                }
+            } else {
+                int k = i * i + j * j;
+
+                if (k > this.renderDistanceSq) {
+                    return null;
+                }
+            }
+
+            return this.viewFrustum.getRenderChunk(blockpos);
+        } else {
+            return null;
+        }
 	}
 
 	private void fixTerrainFrustum(double x, double y, double z) {
@@ -863,6 +888,11 @@ public class RenderGlobal implements IWorldAccess, IResourceManagerReloadListene
             this.mc.mcProfiler.endSection();
             return l;
         } else {
+
+			if (Config.isFogOff()) {
+                GlStateManager.disableFog();
+            }
+
             this.mc.mcProfiler.endStartSection("render_" + blockLayerIn);
             this.renderBlockLayer(blockLayerIn);
             this.mc.mcProfiler.endSection();
