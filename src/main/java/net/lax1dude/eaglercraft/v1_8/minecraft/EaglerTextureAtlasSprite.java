@@ -53,10 +53,21 @@ public class EaglerTextureAtlasSprite {
 	private static String locationNameClock = "builtin/clock";
 	private static String locationNameCompass = "builtin/compass";
 
+	public float baseU;
+    public float baseV;
+    public int sheetWidth;
+    public int sheetHeight;
+
 	protected TextureAnimationCache animationCache = null;
+
+	public EaglerTextureAtlasSprite spriteSingle = null;
 
 	public EaglerTextureAtlasSprite(String spriteName) {
 		this.iconName = spriteName;
+
+		//if (Config.isMultiTexture()) {
+            //this.spriteSingle = new TextureAtlasSprite(this);
+        //}
 	}
 
 	public static EaglerTextureAtlasSprite makeAtlasSprite(ResourceLocation spriteResourceLocation) {
@@ -83,6 +94,13 @@ public class EaglerTextureAtlasSprite {
 		this.maxU = (float) (originInX + this.width) / (float) ((double) inX) - f;
 		this.minV = (float) originInY / (float) inY + f1;
 		this.maxV = (float) (originInY + this.height) / (float) inY - f1;
+
+		this.baseU = Math.min(this.minU, this.maxU);
+        this.baseV = Math.min(this.minV, this.maxV);
+
+		if (this.spriteSingle != null) {
+            this.spriteSingle.initSprite(this.width, this.height, 0, 0, false);
+        }
 	}
 
 	public void copyFrom(EaglerTextureAtlasSprite atlasSpirit) {
@@ -95,6 +113,10 @@ public class EaglerTextureAtlasSprite {
 		this.maxU = atlasSpirit.maxU;
 		this.minV = atlasSpirit.minV;
 		this.maxV = atlasSpirit.maxV;
+
+		if (this.spriteSingle != null) {
+            this.spriteSingle.initSprite(this.width, this.height, 0, 0, false);
+        }
 	}
 
 	public int getOriginX() {
@@ -180,10 +202,18 @@ public class EaglerTextureAtlasSprite {
 
 	public void setIconWidth(int newWidth) {
 		this.width = newWidth;
+
+		if (this.spriteSingle != null) {
+            this.spriteSingle.setIconWidth(this.width);
+        }
 	}
 
 	public void setIconHeight(int newHeight) {
 		this.height = newHeight;
+
+		if (this.spriteSingle != null) {
+            this.spriteSingle.setIconHeight(this.height);
+        }
 	}
 
 	public void loadSprite(ImageData[] images, AnimationMetadataSection meta) throws IOException {
@@ -248,6 +278,10 @@ public class EaglerTextureAtlasSprite {
 			}
 		}
 
+		if (this.spriteSingle != null) {
+        	this.spriteSingle.loadSprite(images, meta);
+        }
+
 	}
 
 	public void generateMipmaps(int level) {
@@ -284,6 +318,10 @@ public class EaglerTextureAtlasSprite {
 
 		this.setFramesTextureData(arraylist);
 		this.bakeAnimationCache();
+
+		if (this.spriteSingle != null) {
+            this.spriteSingle.generateMipmaps(level);
+        }
 	}
 
 	public void bakeAnimationCache() {
@@ -303,6 +341,10 @@ public class EaglerTextureAtlasSprite {
 			}
 
 		}
+
+		if (this.spriteSingle != null) {
+            this.spriteSingle.allocateFrameTextureData(index);
+        }
 	}
 
 	private static int[][] getFrameTextureData(int[][] data, int rows, int columns, int parInt3) {
@@ -325,6 +367,10 @@ public class EaglerTextureAtlasSprite {
 			this.animationCache.free();
 			this.animationCache = null;
 		}
+
+		if (this.spriteSingle != null) {
+            this.spriteSingle.clearFramesTextureData();
+        }
 	}
 
 	public boolean hasAnimationMetadata() {
@@ -333,6 +379,10 @@ public class EaglerTextureAtlasSprite {
 
 	public void setFramesTextureData(List<int[][]> newFramesTextureData) {
 		this.framesTextureData = newFramesTextureData;
+
+		if (this.spriteSingle != null) {
+            this.spriteSingle.setFramesTextureData(newFramesTextureData);
+        }
 	}
 
 	private void resetSprite() {
@@ -344,6 +394,10 @@ public class EaglerTextureAtlasSprite {
 			this.animationCache.free();
 			this.animationCache = null;
 		}
+
+		if (this.spriteSingle != null) {
+            this.spriteSingle.resetSprite();
+        }
 	}
 
 	public String toString() {
@@ -352,4 +406,18 @@ public class EaglerTextureAtlasSprite {
 				+ this.height + ", width=" + this.width + ", u0=" + this.minU + ", u1=" + this.maxU + ", v0="
 				+ this.minV + ", v1=" + this.maxV + '}';
 	}
+
+	public float toSingleU(float p_toSingleU_1_) {
+        p_toSingleU_1_ = p_toSingleU_1_ - this.baseU;
+        float f = (float)this.sheetWidth / (float)this.width;
+        p_toSingleU_1_ = p_toSingleU_1_ * f;
+        return p_toSingleU_1_;
+    }
+
+    public float toSingleV(float p_toSingleV_1_) {
+        p_toSingleV_1_ = p_toSingleV_1_ - this.baseV;
+        float f = (float)this.sheetHeight / (float)this.height;
+        p_toSingleV_1_ = p_toSingleV_1_ * f;
+        return p_toSingleV_1_;
+    }
 }

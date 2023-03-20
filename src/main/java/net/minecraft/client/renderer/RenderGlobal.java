@@ -383,8 +383,8 @@ public class RenderGlobal implements IWorldAccess, IResourceManagerReloadListene
 	public void loadRenderers() {
 		if (this.theWorld != null) {
 			this.displayListEntitiesDirty = true;
-			Blocks.leaves.setGraphicsLevel(this.mc.gameSettings.fancyGraphics);
-			Blocks.leaves2.setGraphicsLevel(this.mc.gameSettings.fancyGraphics);
+			Blocks.leaves.setGraphicsLevel(Config.isTreesFancy());
+            Blocks.leaves2.setGraphicsLevel(Config.isTreesFancy());
 			this.renderDistanceChunks = this.mc.gameSettings.renderDistanceChunks;
 
 			if (this.viewFrustum != null) {

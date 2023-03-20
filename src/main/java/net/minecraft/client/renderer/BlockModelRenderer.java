@@ -7,6 +7,7 @@ import net.lax1dude.eaglercraft.v1_8.opengl.GlStateManager;
 import net.lax1dude.eaglercraft.v1_8.opengl.WorldRenderer;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.block.BlockLeavesBase;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.client.renderer.texture.TextureUtil;
@@ -22,6 +23,7 @@ import net.minecraft.util.Vec3i;
 import net.minecraft.world.IBlockAccess;
 
 import net.PeytonPlayz585.Optifine.Config;
+import net.PeytonPlayz585.Optifine.SmartLeaves;
 
 /**+
  * This portion of EaglercraftX contains deobfuscated Minecraft 1.8 source code.
@@ -63,10 +65,12 @@ public class BlockModelRenderer {
 
 		try {
 			Block block = blockStateIn.getBlock();
-			return flag
-					? this.renderModelAmbientOcclusion(blockAccessIn, modelIn, block, blockPosIn, worldRendererIn,
-							checkSides)
-					: this.renderModelStandard(blockAccessIn, modelIn, block, blockPosIn, worldRendererIn, checkSides);
+
+			if (Config.isTreesSmart() && blockStateIn.getBlock() instanceof BlockLeavesBase) {
+                modelIn = SmartLeaves.getLeavesModel(modelIn);
+            }
+
+			return flag ? this.renderModelAmbientOcclusion(blockAccessIn, modelIn, block, blockPosIn, worldRendererIn, checkSides) : this.renderModelStandard(blockAccessIn, modelIn, block, blockPosIn, worldRendererIn, checkSides);
 		} catch (Throwable throwable) {
 			CrashReport crashreport = CrashReport.makeCrashReport(throwable, "Tesselating block model");
 			CrashReportCategory crashreportcategory = crashreport.makeCategory("Block model being tesselated");

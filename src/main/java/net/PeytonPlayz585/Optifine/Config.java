@@ -1,12 +1,18 @@
 package net.PeytonPlayz585.Optifine;
 
 import net.minecraft.client.renderer.BlockModelRenderer;
+import net.minecraft.client.resources.model.ModelManager;
 import net.minecraft.client.settings.GameSettings;
 import net.minecraft.client.Minecraft;
+
+import net.lax1dude.eaglercraft.v1_8.log4j.Logger;
+import net.lax1dude.eaglercraft.v1_8.log4j.LogManager;
 
 public class Config {
 
     public static float occlusionLevel = GameSettings.ofAoLevel;
+
+    private static final Logger LOGGER = LogManager.getLogger();
 
     public static String getVersion() {
         return "OptiFine_1.8.8_HD_U_H8";
@@ -108,5 +114,69 @@ public class Config {
     
     public static boolean isCloudsFancy() {
     	return GameSettings.clouds == 2;
+    }
+
+    public static boolean isTreesFancy() {
+        return GameSettings.ofTrees == 0 ? GameSettings.fancyGraphics : GameSettings.ofTrees != 1;
+    }
+
+    public static boolean isTreesSmart() {
+        return GameSettings.ofTrees == 4;
+    }
+
+    public static boolean isCullFacesLeaves() {
+        return GameSettings.ofTrees == 0 ? !GameSettings.fancyGraphics : GameSettings.ofTrees == 4;
+    }
+
+    public static void dbg(String p_dbg_0_) {
+        LOGGER.info("[Shadow Client] " + p_dbg_0_);
+    }
+
+    public static void warn(String p_warn_0_) {
+        LOGGER.warn("[Shadow Client] " + p_warn_0_);
+    }
+
+    public static ModelManager getModelManager() {
+        return Minecraft.getMinecraft().getRenderItem().modelManager;
+    }
+
+    public static String arrayToString(Object[] p_arrayToString_0_) {
+        if (p_arrayToString_0_ == null) {
+            return "";
+        } else {
+            StringBuffer stringbuffer = new StringBuffer(p_arrayToString_0_.length * 5);
+
+            for (int i = 0; i < p_arrayToString_0_.length; ++i) {
+                Object object = p_arrayToString_0_[i];
+
+                if (i > 0) {
+                    stringbuffer.append(", ");
+                }
+
+                stringbuffer.append(String.valueOf(object));
+            }
+
+            return stringbuffer.toString();
+        }
+    }
+
+    public static String arrayToString(int[] p_arrayToString_0_) {
+        if (p_arrayToString_0_ == null) {
+            return "";
+        } else {
+            StringBuffer stringbuffer = new StringBuffer(p_arrayToString_0_.length * 5);
+
+            for (int i = 0; i < p_arrayToString_0_.length; ++i) {
+                int j = p_arrayToString_0_[i];
+
+                if (i > 0) {
+                    stringbuffer.append(", ");
+                }
+
+                stringbuffer.append(String.valueOf(j));
+            }
+
+            return stringbuffer.toString();
+        }
     }
 }

@@ -5,6 +5,9 @@ import net.minecraft.util.BlockPos;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.world.IBlockAccess;
 
+import net.PeytonPlayz585.Optifine.Config;
+import net.PeytonPlayz585.Optifine.SmartLeaves;
+
 /**+
  * This portion of EaglercraftX contains deobfuscated Minecraft 1.8 source code.
  * 
@@ -39,8 +42,7 @@ public class BlockLeavesBase extends Block {
 		return false;
 	}
 
-	public boolean shouldSideBeRendered(IBlockAccess iblockaccess, BlockPos blockpos, EnumFacing enumfacing) {
-		return !this.fancyGraphics && iblockaccess.getBlockState(blockpos).getBlock() == this ? false
-				: super.shouldSideBeRendered(iblockaccess, blockpos, enumfacing);
-	}
+	public boolean shouldSideBeRendered(IBlockAccess worldIn, BlockPos pos, EnumFacing side) {
+        return Config.isCullFacesLeaves() && worldIn.getBlockState(pos).getBlock() == this ? false : super.shouldSideBeRendered(worldIn, pos, side);
+    }
 }

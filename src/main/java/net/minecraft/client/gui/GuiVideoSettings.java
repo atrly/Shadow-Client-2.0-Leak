@@ -2,7 +2,7 @@ package net.minecraft.client.gui;
 
 import net.PeytonPlayz585.Optifine.Config;
 import net.PeytonPlayz585.Optifine.GuiAnimations;
-//import net.PeytonPlayz585.Optifine.GuiDetails;
+import net.PeytonPlayz585.Optifine.GuiDetails;
 import net.PeytonPlayz585.Optifine.GuiPerformance;
 //import net.PeytonPlayz585.Optifine.GuiQuality;
 import net.minecraft.client.Minecraft;
@@ -136,7 +136,7 @@ public class GuiVideoSettings extends GuiScreen {
             }
             
             if (button.id == 201) {
-            	//this.mc.displayGuiScreen(new GuiDetails(this, guiGameSettings));
+            	this.mc.displayGuiScreen(new GuiDetails(this, guiGameSettings));
             }
             
             if (button.id == 211) {

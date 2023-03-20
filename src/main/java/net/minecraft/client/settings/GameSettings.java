@@ -90,7 +90,7 @@ public class GameSettings {
 	 * Clouds flag
 	 */
 	public static int clouds = 1;
-	public boolean fancyGraphics = false;
+	public static boolean fancyGraphics = false;
 	/**+
 	 * Smooth Lighting
 	 */
@@ -222,6 +222,8 @@ public class GameSettings {
 	public static int ofAnimatedFire = 0;
 	public static int ofAnimatedTerrain = 0;
 	public static int ofChunkUpdates = 1;
+	public static int ofTrees = 0;
+	private static final int[] OF_TREES_VALUES = new int[] {0, 1, 4, 2};
 
 	public static float ofAoLevel = 1.0F;
 	public static float ofFogStart = 0.8F;
@@ -418,7 +420,7 @@ public class GameSettings {
 		}
 
 		if (parOptions == GameSettings.Options.GRAPHICS) {
-			this.fancyGraphics = !this.fancyGraphics;
+			fancyGraphics = !fancyGraphics;
 			this.mc.renderGlobal.loadRenderers();
 		}
 
@@ -666,6 +668,11 @@ public class GameSettings {
             //this.mc.renderGlobal.loadRenderers(); //Idk why this is here! It still works without this! 
         }
 
+		if (parOptions == GameSettings.Options.TREES) {
+            GameSettings.ofTrees = nextValue(GameSettings.ofTrees, OF_TREES_VALUES);
+            this.mc.renderGlobal.loadRenderers();
+        }
+
 		this.saveOptions();
 	}
 
@@ -828,7 +835,7 @@ public class GameSettings {
 		} else if (parOptions == GameSettings.Options.RENDER_CLOUDS) {
 			return s + getTranslation(field_181149_aW, clouds);
 		} else if (parOptions == GameSettings.Options.GRAPHICS) {
-			if (this.fancyGraphics) {
+			if (fancyGraphics) {
 				return s + I18n.format("options.graphics.fancy", new Object[0]);
 			} else {
 				String s1 = "options.graphics.fast";
@@ -922,6 +929,21 @@ public class GameSettings {
             } 
 		} else if (parOptions == GameSettings.Options.FOG_START) {
             return s + GameSettings.ofFogStart;
+        } else if (parOptions == GameSettings.Options.TREES) {
+            switch (GameSettings.ofTrees) {
+                case 1:
+                    return s + "Fast";
+
+                case 2:
+                    return s + "Fancy";
+
+                case 3:
+                default:
+                    return s + "Default";
+
+                case 4:
+                    return s + "Smart";
+            }
         } else {
 			return s;
 		}
@@ -999,7 +1021,7 @@ public class GameSettings {
 					}
 
 					if (astring[0].equals("fancyGraphics")) {
-						this.fancyGraphics = astring[1].equals("true");
+						fancyGraphics = astring[1].equals("true");
 					}
 
 					if (astring[0].equals("ao")) {
@@ -1353,6 +1375,11 @@ public class GameSettings {
                         ofCloudsHeight = ofCloudsHeight < 0.0F ? 0.0F : (ofCloudsHeight > 1.0F ? 1.0F : ofCloudsHeight);
                     }
 
+					if (astring[0].equals("ofTrees") && astring.length >= 2) {
+                        GameSettings.ofTrees = Integer.valueOf(astring[1]).intValue();
+                        GameSettings.ofTrees = limit(GameSettings.ofTrees, OF_TREES_VALUES);
+                    }
+
 					for (KeyBinding keybinding : this.keyBindings) {
 						if (astring[0].equals("key_" + keybinding.getKeyDescription())) {
 							keybinding.setKeyCode(Integer.parseInt(astring[1]));
@@ -1411,7 +1438,7 @@ public class GameSettings {
 			printwriter.println("maxFps:" + this.limitFramerate);
 			printwriter.println("fboEnable:" + this.fboEnable);
 			printwriter.println("difficulty:" + this.difficulty.getDifficultyId());
-			printwriter.println("fancyGraphics:" + this.fancyGraphics);
+			printwriter.println("fancyGraphics:" + fancyGraphics);
 			printwriter.println("ao:" + this.ambientOcclusion);
 			switch (clouds) {
 			case 0:
@@ -1496,6 +1523,7 @@ public class GameSettings {
 			printwriter.println("ofFogType:" + GameSettings.ofFogType);
 			printwriter.println("ofFogStart:" + GameSettings.ofFogStart);
 			printwriter.println("ofCloudsHeight:" + ofCloudsHeight);
+			printwriter.println("ofTrees:" + GameSettings.ofTrees);
 
 			for (KeyBinding keybinding : this.keyBindings) {
 				printwriter.println("key_" + keybinding.getKeyDescription() + ":" + keybinding.getKeyCode());
@@ -1649,7 +1677,8 @@ public class GameSettings {
 		DYNAMIC_FOV("Dynamic FOV", false, false),
 		FOG_FANCY("Fog", false, false),
 		FOG_START("Fog Start", false, false),
-		CLOUD_HEIGHT("Cloud Height", true, false);
+		CLOUD_HEIGHT("Cloud Height", true, false),
+		TREES("Trees", false, false);
 
 		private final boolean enumFloat;
 		private final boolean enumBoolean;
@@ -1729,4 +1758,35 @@ public class GameSettings {
 			return parFloat1;
 		}
 	}
+
+	private static int limit(int p_limit_0_, int[] p_limit_1_) {
+        int i = indexOf(p_limit_0_, p_limit_1_);
+        return i < 0 ? p_limit_1_[0] : p_limit_0_;
+    }
+	
+	private static int indexOf(int p_indexOf_0_, int[] p_indexOf_1_) {
+        for (int i = 0; i < p_indexOf_1_.length; ++i) {
+            if (p_indexOf_1_[i] == p_indexOf_0_) {
+                return i;
+            }
+        }
+
+        return -1;
+    }
+
+	private static int nextValue(int p_nextValue_0_, int[] p_nextValue_1_) {
+        int i = indexOf(p_nextValue_0_, p_nextValue_1_);
+
+        if (i < 0) {
+            return p_nextValue_1_[0];
+        } else {
+            ++i;
+
+            if (i >= p_nextValue_1_.length) {
+                i = 0;
+            }
+
+            return p_nextValue_1_[i];
+        }
+    }
 }

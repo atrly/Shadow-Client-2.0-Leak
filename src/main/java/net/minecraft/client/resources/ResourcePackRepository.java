@@ -45,8 +45,8 @@ import net.minecraft.util.ResourceLocation;
  */
 public class ResourcePackRepository {
 	private static final Logger logger = LogManager.getLogger();
-	public final IResourcePack rprDefaultResourcePack;
-	public final IMetadataSerializer rprMetadataSerializer;
+	public static IResourcePack rprDefaultResourcePack;
+	public static IMetadataSerializer rprMetadataSerializer;
 	private IResourcePack resourcePackInstance;
 	private ListenableFuture<Object> field_177322_i;
 	private List<ResourcePackRepository.Entry> repositoryEntriesAll = Lists.newArrayList();
@@ -54,8 +54,8 @@ public class ResourcePackRepository {
 
 	public ResourcePackRepository(IResourcePack rprDefaultResourcePackIn, IMetadataSerializer rprMetadataSerializerIn,
 			GameSettings settings) {
-		this.rprDefaultResourcePack = rprDefaultResourcePackIn;
-		this.rprMetadataSerializer = rprMetadataSerializerIn;
+		rprDefaultResourcePack = rprDefaultResourcePackIn;
+		rprMetadataSerializer = rprMetadataSerializerIn;
 		this.updateRepositoryEntriesAll();
 		Iterator iterator = settings.resourcePacks.iterator();
 
@@ -161,9 +161,9 @@ public class ResourcePackRepository {
 		}
 	}
 
-	public class Entry {
+	public static class Entry {
 		private final String resourcePackFile;
-		private IResourcePack reResourcePack;
+		private static IResourcePack reResourcePack;
 		private PackMetadataSection rePackMetadataSection;
 		private ImageData texturePackIcon;
 		private ResourceLocation locationTexturePackIcon;
@@ -176,19 +176,19 @@ public class ResourcePackRepository {
 		public void updateResourcePack() throws IOException {
 			if (SYS.VFS == null)
 				return;
-			this.reResourcePack = (IResourcePack) new FolderResourcePack(this.resourcePackFile, "resourcepacks/");
-			this.rePackMetadataSection = (PackMetadataSection) this.reResourcePack
-					.getPackMetadata(ResourcePackRepository.this.rprMetadataSerializer, "pack");
+			reResourcePack = (IResourcePack) new FolderResourcePack(this.resourcePackFile, "resourcepacks/");
+			this.rePackMetadataSection = (PackMetadataSection) reResourcePack
+					.getPackMetadata(ResourcePackRepository.rprMetadataSerializer, "pack");
 
 			try {
-				this.texturePackIcon = this.reResourcePack.getPackImage();
+				texturePackIcon = reResourcePack.getPackImage();
 			} catch (IOException var2) {
 				logger.error("Failed to load resource pack icon for \"{}\"!", resourcePackFile);
 				logger.error(var2);
 			}
 
 			if (this.texturePackIcon == null) {
-				this.texturePackIcon = ResourcePackRepository.this.rprDefaultResourcePack.getPackImage();
+				this.texturePackIcon = ResourcePackRepository.rprDefaultResourcePack.getPackImage();
 			}
 
 			this.closeResourcePack();
@@ -209,18 +209,18 @@ public class ResourcePackRepository {
 				this.iconTextureManager.deleteTexture(this.locationTexturePackIcon);
 				this.locationTexturePackIcon = null;
 			}
-			if (this.reResourcePack instanceof Closeable) {
-				IOUtils.closeQuietly((Closeable) this.reResourcePack);
+			if (reResourcePack instanceof Closeable) {
+				IOUtils.closeQuietly((Closeable) reResourcePack);
 			}
 
 		}
 
-		public IResourcePack getResourcePack() {
-			return this.reResourcePack;
+		public static IResourcePack getResourcePack() {
+			return reResourcePack;
 		}
 
 		public String getResourcePackName() {
-			return this.reResourcePack.getPackName();
+			return reResourcePack.getPackName();
 		}
 
 		public String getTexturePackDescription() {

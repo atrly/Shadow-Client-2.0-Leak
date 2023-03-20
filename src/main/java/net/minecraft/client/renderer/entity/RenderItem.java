@@ -86,10 +86,12 @@ public class RenderItem implements IResourceManagerReloadListener {
 	public float zLevel;
 	private final ItemModelMesher itemModelMesher;
 	private final TextureManager textureManager;
+	public ModelManager modelManager = null;
 
-	public RenderItem(TextureManager textureManager, ModelManager modelManager) {
+	public RenderItem(TextureManager textureManager, ModelManager modelManagerIn) {
+		modelManager = modelManagerIn;
 		this.textureManager = textureManager;
-		this.itemModelMesher = new ItemModelMesher(modelManager);
+		this.itemModelMesher = new ItemModelMesher(modelManagerIn);
 		this.registerItems();
 	}
 
