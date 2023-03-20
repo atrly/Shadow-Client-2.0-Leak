@@ -23,9 +23,10 @@ if this project has to be taken down because of any legal reasons please email m
 - Find a bug or want to contribute? Message me on Discord at PeytonPlayz585#0766
 
 # Known Bugs
-- Flickering void
-- Clouds not rendering (Patched in next update)
-- Smooth FPS crashing games (Patched in next update)
+- Flickering void. Status: Unknown
+- Clouds not rendering. Status: (Patched in next update)
+- Smooth FPS crashing games. Status: (Patched in next update)
+- Smart Leaves break with a texture pack. Status: (Patched in next update)
 
 # TODO list 
 - Fix TeaVM compile warning (Not necessary but its annoying)
