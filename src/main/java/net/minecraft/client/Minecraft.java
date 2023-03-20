@@ -16,6 +16,7 @@ import org.apache.commons.lang3.Validate;
 
 import com.google.common.collect.Lists;
 
+import net.PeytonPlayz585.Optifine.Config;
 import net.lax1dude.eaglercraft.v1_8.Display;
 import net.lax1dude.eaglercraft.v1_8.EagRuntime;
 import net.lax1dude.eaglercraft.v1_8.HString;
@@ -150,6 +151,8 @@ import net.minecraft.world.EnumDifficulty;
 import net.minecraft.world.WorldProviderEnd;
 import net.minecraft.world.WorldProviderHell;
 import net.minecraft.world.WorldSettings;
+
+import net.PeytonPlayz585.Optifine.Config;
 
 /**+
  * This portion of EaglercraftX contains deobfuscated Minecraft 1.8 source code.
@@ -359,6 +362,7 @@ public class Minecraft implements IThreadListener {
 
 		logger.info("EagRuntime Version: " + EagRuntime.getVersion());
 		this.createDisplay();
+		Config.initDisplay();
 		this.registerMetadataSerializers();
 		this.mcResourcePackRepository = new ResourcePackRepository(this.mcDefaultResourcePack, this.metadataSerializer_,
 				this.gameSettings);

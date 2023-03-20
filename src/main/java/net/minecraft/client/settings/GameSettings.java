@@ -608,16 +608,6 @@ public class GameSettings {
             MathHelper.fastMath = ofFastMath;
         }
 
-		if (parOptions == GameSettings.Options.SMOOTH_FPS) {
-			ofSmoothFps = !ofSmoothFps;
-
-			if (ofSmoothFps) {
-				Thread.currentThread().setPriority(10);
-			} else {
-				Thread.currentThread().setPriority(5);
-			}
-		}
-
 		if (parOptions == GameSettings.Options.CHUNK_UPDATES) {
             ++ofChunkUpdates;
 

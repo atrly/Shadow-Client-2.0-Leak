@@ -14,6 +14,13 @@ public class Config {
 
     private static final Logger LOGGER = LogManager.getLogger();
 
+    private static Thread minecraftThread = null;
+
+    public static void initDisplay() {
+        minecraftThread = Thread.currentThread();
+        updateThreadPriorities();
+    }
+
     public static String getVersion() {
         return "OptiFine_1.8.8_HD_U_H8";
     }
@@ -177,6 +184,49 @@ public class Config {
             }
 
             return stringbuffer.toString();
+        }
+    }
+
+    public static boolean isSingleProcessor() {
+        return true;
+    }
+
+    public static void updateThreadPriorities() {
+        if (isSingleProcessor()) {
+            if (isSmoothWorld()) {
+                minecraftThread.setPriority(10);
+                setThreadPriority("Server thread", 1);
+            } else {
+                minecraftThread.setPriority(5);
+                setThreadPriority("Server thread", 5);
+            }
+        } else {
+            minecraftThread.setPriority(10);
+            setThreadPriority("Server thread", 5);
+        }
+    }
+
+    private static void setThreadPriority(String p_setThreadPriority_0_, int p_setThreadPriority_1_) {
+        try {
+            ThreadGroup threadgroup = Thread.currentThread().getThreadGroup();
+
+            if (threadgroup == null) {
+                return;
+            }
+
+            int i = (threadgroup.activeCount() + 10) * 2;
+            Thread[] athread = new Thread[i];
+            threadgroup.enumerate(athread, false);
+
+            for (int j = 0; j < athread.length; ++j) {
+                Thread thread = athread[j];
+
+                if (thread != null && thread.getName().startsWith(p_setThreadPriority_0_)) {
+                    thread.setPriority(p_setThreadPriority_1_);
+                }
+            }
+        } catch (Throwable throwable) {
+            warn(throwable.getClass().getName() + ": " + throwable.getMessage());
         }
     }
 }
