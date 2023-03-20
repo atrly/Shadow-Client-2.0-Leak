@@ -25,9 +25,11 @@ if this project has to be taken down because of any legal reasons please email m
 # Known Bugs
 - Flickering void. Status: Unknown
 - Clouds not rendering. Status: (Patched in next update)
-- Smooth FPS crashing games. Status: (Patched in next update)
 - Smart Leaves break with a texture pack. Status: (Patched in next update)
-- Chunk loading breaks. Status: (Patched in next update)
+
+# Patched Bugs
+- C̶h̶u̶n̶k̶ ̶l̶o̶a̶d̶i̶n̶g̶ ̶b̶r̶e̶a̶k̶s̶.̶ Status: Patched
+- S̶m̶o̶o̶t̶h̶ ̶F̶P̶S̶ ̶c̶r̶a̶s̶h̶i̶n̶g̶ ̶g̶a̶m̶e̶s̶.̶ Status: Patched
 
 # TODO list 
 - Fix TeaVM compile warning (Not necessary but its annoying)
