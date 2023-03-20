@@ -20,7 +20,7 @@ if this project has to be taken down because of any legal reasons please email m
 # Bugs/Contributing
 - Find a bug or want to contribute? Message me on Discord at PeytonPlayz585#0766
 
-# Known Bug
+# Known Bugs
 - Flickering void
 - Clouds not rendering (Will be fixed in next update)
 
