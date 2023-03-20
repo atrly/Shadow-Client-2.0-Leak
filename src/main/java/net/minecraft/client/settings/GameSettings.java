@@ -673,6 +673,10 @@ public class GameSettings {
             ofProfiler = !ofProfiler;
         }
 
+		if (parOptions == GameSettings.Options.SMOOTH_FPS) {
+			ofSmoothFps =! ofSmoothFps;
+		}
+
 		this.saveOptions();
 	}
 
@@ -1393,7 +1397,7 @@ public class GameSettings {
                     }
 
 					if (astring[0].equals("ofProfiler") && astring.length >= 2) {
-                        this.ofProfiler = Boolean.valueOf(astring[1]).booleanValue();
+                        ofProfiler = Boolean.valueOf(astring[1]).booleanValue();
                     }
 
 					for (KeyBinding keybinding : this.keyBindings) {
