@@ -1,6 +1,8 @@
 # Shadow Client
 
-The official Shadow Client repository owned by JessePinkman27 (PeytonPlayz585!
+The official Shadow Client repository owned by JessePinkman27 (PeytonPlayz585)!
+
+![image](https://user-images.githubusercontent.com/114885346/226247382-a5f46a8a-1c15-416d-9607-2319fd8d1a9a.png)
 
 # About
 - Shadow client is a optifine-like client with optine-like feature such as Fast Math, Smooth FPS, Smooth World, Better Grass, Better Snow, Connected Textures, and more!
