@@ -130,40 +130,20 @@ public class GuiAnimations extends GuiScreen {
 	        this.drawDefaultBackground();
 	        this.drawCenteredString(this.fontRendererObj, this.screenTitle, this.width / 2, 15, 16777215);
 	        String s;
-	        if (Minecraft.getMinecraft().theWorld != null) {
-	        	s = Config.getVersion();
-	        } else {
-	        	s = "";
-	        }
+	        s = Config.getVersion();
 	        String s1;
-	        if (Minecraft.getMinecraft().theWorld != null) {
-	        	s1 = "HD_U";
-	        } else {
-	        	s1 = "";
-	        }
+	        s1 = "HD_U";
 
 	        if (s1.equals("HD")) {
-	        	if (Minecraft.getMinecraft().theWorld != null)  {
-	        		s = "Shadow Client HD H8";
-	        	} else {
-	        		s = "";
-	        	}
+	        	s = "Shadow Client HD H8";
 	        }
 
 	        if (s1.equals("HD_U")) {
-	        	if (Minecraft.getMinecraft().theWorld != null) {
-	        		s = "Shadow Client HD H8 Ultra";
-	        	} else {
-	        		s = "";
-	        	}
+	        	s = "Shadow Client HD H8 Ultra";
 	        }
 
 	        if (s1.equals("L")) {
-	        	if (Minecraft.getMinecraft().theWorld != null) {
-	        		s = "Shadow Client H8 Light";
-	        	} else {
-	        		s = "";
-	        	}
+	        	s = "Shadow Client H8 Light";
 	        }
 
 	        this.drawString(this.fontRendererObj, s, 2, this.height - 10, 8421504);
