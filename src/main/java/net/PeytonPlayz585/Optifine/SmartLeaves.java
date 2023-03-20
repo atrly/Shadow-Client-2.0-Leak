@@ -75,13 +75,9 @@ public class SmartLeaves {
         if (modelmanager == null) {
             return null;
         } else {
-            ResourceLocation resourcelocation = new ResourceLocation("blockstates/" + p_getModelCull_0_ + "_leaves.json");
-
             if (ResourcePackRepository.Entry.getResourcePack() != ResourcePackRepository.rprDefaultResourcePack) {
                 return null;
             } else {
-                ResourceLocation resourcelocation1 = new ResourceLocation("models/block/" + p_getModelCull_0_ + "_leaves.json");
-
                 if (ResourcePackRepository.Entry.getResourcePack() != ResourcePackRepository.rprDefaultResourcePack) {
                     return null;
                 } else {
@@ -138,8 +134,7 @@ public class SmartLeaves {
             }
 
             IBakedModel ibakedmodel = ModelUtils.duplicateModel(p_getModelDoubleFace_0_);
-            List[] alist = new List[aenumfacing.length];
-
+            
             for (int k = 0; k < aenumfacing.length; ++k) {
                 EnumFacing enumfacing1 = aenumfacing[k];
                 List<BakedQuad> list1 = ibakedmodel.getFaceQuads(enumfacing1);

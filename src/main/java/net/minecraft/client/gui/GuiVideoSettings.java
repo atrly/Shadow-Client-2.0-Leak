@@ -61,8 +61,6 @@ public class GuiVideoSettings extends GuiScreen {
 			GameSettings.Options.FOG_FANCY,
 			GameSettings.Options.FOG_START
 	};
-	private static final String __OBFID = "CL_00000718";
-	//private TooltipManager tooltipManager = new TooltipManager(this);
 
 	public GuiVideoSettings(GuiScreen parentScreenIn, GameSettings gameSettingsIn) {
         this.parentGuiScreen = parentScreenIn;
@@ -85,12 +83,9 @@ public class GuiVideoSettings extends GuiScreen {
                 int j = this.width / 2 - 155 + i % 2 * 160;
                 int k = this.height / 6 + 21 * (i / 2) - 12;
 
-                if (gamesettings$options.getEnumFloat())
-                {
+                if (gamesettings$options.getEnumFloat()) {
                     this.buttonList.add(new GuiOptionSlider(gamesettings$options.returnEnumOrdinal(), j, k, gamesettings$options));
-                }
-                else
-                {
+                } else {
                     this.buttonList.add(new GuiOptionButton(gamesettings$options.returnEnumOrdinal(), j, k, gamesettings$options, this.guiGameSettings.getKeyBinding(gamesettings$options)));
                 }
             }
@@ -200,8 +195,7 @@ public class GuiVideoSettings extends GuiScreen {
 	 * Draws the screen and all the components in it. Args : mouseX,
 	 * mouseY, renderPartialTicks
 	 */
-	 public void drawScreen(int mouseX, int mouseY, float partialTicks)
-	    {
+	 public void drawScreen(int mouseX, int mouseY, float partialTicks) {
 	        this.drawDefaultBackground();
 	        this.drawCenteredString(this.fontRendererObj, this.screenTitle, this.width / 2, 15, 16777215);
 	        String s;
@@ -217,8 +211,7 @@ public class GuiVideoSettings extends GuiScreen {
 	        	s1 = "";
 	        }
 
-	        if (s1.equals("HD"))
-	        {
+	        if (s1.equals("HD")) {
 	        	if (Minecraft.getMinecraft().theWorld != null)  {
 	        		s = "Shadow Client HD H8";
 	        	} else {
@@ -226,8 +219,7 @@ public class GuiVideoSettings extends GuiScreen {
 	        	}
 	        }
 
-	        if (s1.equals("HD_U"))
-	        {
+	        if (s1.equals("HD_U")) {
 	        	if (Minecraft.getMinecraft().theWorld != null) {
 	        		s = "Shadow Client HD H8 Ultra";
 	        	} else {
@@ -235,8 +227,7 @@ public class GuiVideoSettings extends GuiScreen {
 	        	}
 	        }
 
-	        if (s1.equals("L"))
-	        {
+	        if (s1.equals("L")) {
 	        	if (Minecraft.getMinecraft().theWorld != null) {
 	        		s = "Shadow Client H8 Light";
 	        	} else {
@@ -249,7 +240,6 @@ public class GuiVideoSettings extends GuiScreen {
 	        int i = this.fontRendererObj.getStringWidth(s2);
 	        this.drawString(this.fontRendererObj, s2, this.width - i - 2, this.height - 10, 8421504);
 	        super.drawScreen(mouseX, mouseY, partialTicks);
-	        //this.tooltipManager.drawTooltips(mouseX, mouseY, this.buttonList);
 	    }
 
 	
@@ -257,13 +247,11 @@ public class GuiVideoSettings extends GuiScreen {
         return guiButtonIn.width;
     }
 
-    public static int getButtonHeight(GuiButton guiButtonIn)
-    {
+    public static int getButtonHeight(GuiButton guiButtonIn) {
         return guiButtonIn.height;
     }
 
-    public static void drawGradientRect(GuiScreen guiScreenIn, int parInt1, int parInt2, int parInt3, int parInt4, int parInt5, int parInt6)
-    {
+    public static void drawGradientRect(GuiScreen guiScreenIn, int parInt1, int parInt2, int parInt3, int parInt4, int parInt5, int parInt6) {
     	guiScreenIn.drawGradientRect(parInt1, parInt2, parInt3, parInt4, parInt5, parInt6);
     }
 }

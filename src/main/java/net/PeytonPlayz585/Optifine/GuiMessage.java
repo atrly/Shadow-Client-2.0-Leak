@@ -9,8 +9,7 @@ import net.minecraft.client.gui.GuiOptionButton;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.resources.I18n;
 
-public class GuiMessage extends GuiScreen
-{
+public class GuiMessage extends GuiScreen {
     private GuiScreen parentScreen;
     private String messageLine1;
     private String messageLine2;
@@ -19,8 +18,7 @@ public class GuiMessage extends GuiScreen
     protected String confirmButtonText;
     private int ticksUntilEnable;
 
-    public GuiMessage(GuiScreen p_i33_1_, String p_i33_2_, String p_i33_3_)
-    {
+    public GuiMessage(GuiScreen p_i33_1_, String p_i33_2_, String p_i33_3_) {
         this.parentScreen = p_i33_1_;
         this.messageLine1 = p_i33_2_;
         this.messageLine2 = p_i33_3_;
@@ -32,8 +30,7 @@ public class GuiMessage extends GuiScreen
      * window resizes, the buttonList is cleared beforehand.
      */
     @SuppressWarnings("unchecked")
-	public void initGui()
-    {
+	public void initGui() {
         this.buttonList.add(new GuiOptionButton(0, this.width / 2 - 74, this.height / 6 + 96, this.confirmButtonText));
         this.listLines2.clear();
         this.listLines2.addAll(this.fontRendererObj.listFormattedStringToWidth(this.messageLine2, this.width - 50));
@@ -42,22 +39,19 @@ public class GuiMessage extends GuiScreen
     /**
      * Called by the controls from the buttonList when activated. (Mouse pressed for buttons)
      */
-    protected void actionPerformed(GuiButton button)
-    {
+    protected void actionPerformed(GuiButton button) {
     	Minecraft.getMinecraft().displayGuiScreen(this.parentScreen);
     }
 
     /**
      * Draws the screen and all the components in it.
      */
-    public void drawScreen(int mouseX, int mouseY, float partialTicks)
-    {
+    public void drawScreen(int mouseX, int mouseY, float partialTicks) {
         this.drawDefaultBackground();
         this.drawCenteredString(this.fontRendererObj, this.messageLine1, this.width / 2, 70, 16777215);
         int i = 90;
 
-        for (Object s : this.listLines2)
-        {
+        for (Object s : this.listLines2) {
             this.drawCenteredString(this.fontRendererObj, (String) s, this.width / 2, i, 16777215);
             i += this.fontRendererObj.FONT_HEIGHT;
         }
@@ -76,8 +70,7 @@ public class GuiMessage extends GuiScreen
 	        	s1 = "";
 	        }
 
-	        if (s1.equals("HD"))
-	        {
+	        if (s1.equals("HD")) {
 	        	if (Minecraft.getMinecraft().theWorld != null)  {
 	        		s = "Shadow Client HD H8";
 	        	} else {
@@ -85,8 +78,7 @@ public class GuiMessage extends GuiScreen
 	        	}
 	        }
 
-	        if (s1.equals("HD_U"))
-	        {
+	        if (s1.equals("HD_U")) {
 	        	if (Minecraft.getMinecraft().theWorld != null) {
 	        		s = "Shadow Client HD H8 Ultra";
 	        	} else {
@@ -94,8 +86,7 @@ public class GuiMessage extends GuiScreen
 	        	}
 	        }
 
-	        if (s1.equals("L"))
-	        {
+	        if (s1.equals("L")) {
 	        	if (Minecraft.getMinecraft().theWorld != null) {
 	        		s = "Shadow Client H8 Light";
 	        	} else {
@@ -109,12 +100,10 @@ public class GuiMessage extends GuiScreen
         this.drawString(this.fontRendererObj, s2, this.width - i1 - 2, this.height - 10, 8421504);
     }
 
-    public void setButtonDelay(int p_setButtonDelay_1_)
-    {
+    public void setButtonDelay(int p_setButtonDelay_1_) {
         this.ticksUntilEnable = p_setButtonDelay_1_;
 
-        for (GuiButton guibutton : this.buttonList)
-        {
+        for (GuiButton guibutton : this.buttonList) {
             guibutton.enabled = false;
         }
     }
@@ -122,14 +111,11 @@ public class GuiMessage extends GuiScreen
     /**
      * Called from the main game loop to update the screen.
      */
-    public void updateScreen()
-    {
+    public void updateScreen() {
         super.updateScreen();
 
-        if (--this.ticksUntilEnable == 0)
-        {
-            for (GuiButton guibutton : this.buttonList)
-            {
+        if (--this.ticksUntilEnable == 0) {
+            for (GuiButton guibutton : this.buttonList) {
                 guibutton.enabled = true;
             }
         }

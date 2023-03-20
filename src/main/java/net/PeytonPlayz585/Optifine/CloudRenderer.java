@@ -8,8 +8,7 @@ import net.minecraft.client.renderer.GLAllocation;
 import net.minecraft.client.settings.GameSettings;
 import net.minecraft.entity.Entity;
 
-public class CloudRenderer
-{
+public class CloudRenderer {
     private boolean updated = false;
     private boolean renderFancy = false;
     int cloudTickCounter;
@@ -20,15 +19,12 @@ public class CloudRenderer
     private double cloudPlayerY = 0.0D;
     private double cloudPlayerZ = 0.0D;
 
-    public CloudRenderer()
-    {
+    public CloudRenderer() {
         this.glListClouds = GLAllocation.generateDisplayLists();
     }
 
-    public void prepareToRender(boolean p_prepareToRender_1_, int p_prepareToRender_2_, float p_prepareToRender_3_)
-    {
-        if (this.renderFancy != p_prepareToRender_1_)
-        {
+    public void prepareToRender(boolean p_prepareToRender_1_, int p_prepareToRender_2_, float p_prepareToRender_3_) {
+        if (this.renderFancy != p_prepareToRender_1_) {
             this.updated = false;
         }
 
@@ -37,18 +33,12 @@ public class CloudRenderer
         this.partialTicks = p_prepareToRender_3_;
     }
 
-    public boolean shouldUpdateGlList()
-    {
-        if (!this.updated)
-        {
+    public boolean shouldUpdateGlList() {
+        if (!this.updated) {
             return true;
-        }
-        else if (this.cloudTickCounter >= this.cloudTickCounterUpdate + 20)
-        {
+        } else if (this.cloudTickCounter >= this.cloudTickCounterUpdate + 20) {
             return true;
-        }
-        else
-        {
+        } else {
             Entity entity = Minecraft.getMinecraft().getRenderViewEntity();
             boolean flag = this.cloudPlayerY + (double)entity.getEyeHeight() < 128.0D + (double)(GameSettings.ofCloudsHeight * 128.0F);
             boolean flag1 = entity.prevPosY + (double)entity.getEyeHeight() < 128.0D + (double)(GameSettings.ofCloudsHeight * 128.0F);
@@ -56,13 +46,11 @@ public class CloudRenderer
         }
     }
 
-    public void startUpdateGlList()
-    {
+    public void startUpdateGlList() {
     	EaglercraftGPU.glNewList(this.glListClouds, RealOpenGLEnums.GL_COMPILE);
     }
 
-    public void endUpdateGlList()
-    {
+    public void endUpdateGlList() {
         EaglercraftGPU.glEndList();
         this.cloudTickCounterUpdate = this.cloudTickCounter;
         this.cloudPlayerX = Minecraft.getMinecraft().getRenderViewEntity().prevPosX;
@@ -72,8 +60,7 @@ public class CloudRenderer
         GlStateManager.resetColor();
     }
 
-    public void renderGlList()
-    {
+    public void renderGlList() {
         Entity entity = Minecraft.getMinecraft().getRenderViewEntity();
         double d0 = entity.prevPosX + (entity.posX - entity.prevPosX) * (double)this.partialTicks;
         double d1 = entity.prevPosY + (entity.posY - entity.prevPosY) * (double)this.partialTicks;
@@ -84,12 +71,9 @@ public class CloudRenderer
         float f2 = (float)(d2 - this.cloudPlayerZ);
         GlStateManager.pushMatrix();
 
-        if (this.renderFancy)
-        {
+        if (this.renderFancy) {
             GlStateManager.translate(-f / 12.0F, -f1, -f2 / 12.0F);
-        }
-        else
-        {
+        } else {
             GlStateManager.translate(-f, -f1, -f2);
         }
 
@@ -98,8 +82,7 @@ public class CloudRenderer
         GlStateManager.resetColor();
     }
 
-    public void reset()
-    {
+    public void reset() {
         this.updated = false;
     }
 }
