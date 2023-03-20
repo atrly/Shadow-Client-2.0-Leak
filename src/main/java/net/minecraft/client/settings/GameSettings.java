@@ -217,6 +217,7 @@ public class GameSettings {
 	public static boolean ofDynamicFov = true;
 	public static int ofFogType = 1;
 	public static boolean ofLagometer = false;
+	public static boolean ofProfiler = false;
 
 	public static int ofAnimatedWater = 0;
 	public static int ofAnimatedLava = 0;
@@ -668,6 +669,10 @@ public class GameSettings {
             ofLagometer = !ofLagometer;
         }
 
+		if (parOptions == GameSettings.Options.PROFILER) {
+            ofProfiler = !ofProfiler;
+        }
+
 		this.saveOptions();
 	}
 
@@ -768,6 +773,8 @@ public class GameSettings {
 			return ofSmoothWorld;
 		case LAGOMETER: 
 			return ofLagometer;
+		case PROFILER:
+			return ofProfiler;
 		default:
 			return false;
 		}
@@ -943,6 +950,8 @@ public class GameSettings {
             }
         } else if (parOptions == GameSettings.Options.LAGOMETER) {
             return ofLagometer ? s + "ON" : s + "OFF";
+        } else if (parOptions == GameSettings.Options.PROFILER) {
+            return ofProfiler ? s + "ON" : s + "OFF";
         } else {
 			return s;
 		}
@@ -1383,6 +1392,10 @@ public class GameSettings {
                         ofLagometer = Boolean.valueOf(astring[1]).booleanValue();
                     }
 
+					if (astring[0].equals("ofProfiler") && astring.length >= 2) {
+                        this.ofProfiler = Boolean.valueOf(astring[1]).booleanValue();
+                    }
+
 					for (KeyBinding keybinding : this.keyBindings) {
 						if (astring[0].equals("key_" + keybinding.getKeyDescription())) {
 							keybinding.setKeyCode(Integer.parseInt(astring[1]));
@@ -1527,7 +1540,8 @@ public class GameSettings {
 			printwriter.println("ofFogStart:" + GameSettings.ofFogStart);
 			printwriter.println("ofCloudsHeight:" + ofCloudsHeight);
 			printwriter.println("ofTrees:" + GameSettings.ofTrees);
-			printwriter.println("ofLagometer:" + this.ofLagometer);
+			printwriter.println("ofLagometer:" + ofLagometer);
+			printwriter.println("ofProfiler:" + ofProfiler);
 
 			for (KeyBinding keybinding : this.keyBindings) {
 				printwriter.println("key_" + keybinding.getKeyDescription() + ":" + keybinding.getKeyCode());
@@ -1683,7 +1697,8 @@ public class GameSettings {
 		FOG_START("Fog Start", false, false),
 		CLOUD_HEIGHT("Cloud Height", true, false),
 		TREES("Trees", false, false),
-		LAGOMETER("Lagometer", false, false);
+		LAGOMETER("Lagometer", false, false),
+		PROFILER("Debug Profiler", false, false);
 
 		private final boolean enumFloat;
 		private final boolean enumBoolean;

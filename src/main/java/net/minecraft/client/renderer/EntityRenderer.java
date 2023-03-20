@@ -1008,6 +1008,10 @@ public class EntityRenderer implements IResourceManagerReloadListener {
 
 		}
 		Lagometer.updateLagometer();
+
+		if (GameSettings.ofProfiler) {
+            this.mc.gameSettings.showDebugProfilerChart = true;
+        }
 	}
 
 	public void renderStreamIndicator(float partialTicks) {
