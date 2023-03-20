@@ -97,4 +97,16 @@ public class Config {
     public static boolean isFogOff() {
         return GameSettings.ofFogType == 3;
     }
+
+    public static boolean isCloudsOff() {
+    	return GameSettings.clouds == 0;
+    }
+    
+    public static boolean isCloudsFast() {
+    	return GameSettings.clouds == 1;
+    }
+    
+    public static boolean isCloudsFancy() {
+    	return GameSettings.clouds == 2;
+    }
 }

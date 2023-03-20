@@ -35,6 +35,13 @@ dependencies {
     implementation('org.teavm:teavm-classlib:0.6.1') {
     	exclude group: 'com.google.code.gson', module: 'gson'
     }
+    
+    implementation files('desktopRuntime/lwjgl.jar')
+    implementation files('desktopRuntime/lwjgl-egl.jar')
+    implementation files('desktopRuntime/lwjgl-glfw.jar')
+    implementation files('desktopRuntime/lwjgl-jemalloc.jar')
+    implementation files('desktopRuntime/lwjgl-openal.jar')
+    implementation files('desktopRuntime/lwjgl-opengles.jar')
 }
 
 teavm {

@@ -39,6 +39,7 @@ import net.minecraft.client.audio.ISound;
 import net.minecraft.client.audio.PositionedSoundRecord;
 import net.minecraft.client.multiplayer.WorldClient;
 import net.minecraft.client.particle.EntityFX;
+import net.minecraft.client.settings.GameSettings;
 import net.minecraft.client.renderer.chunk.CompiledChunk;
 import net.minecraft.client.renderer.chunk.IRenderChunkFactory;
 import net.minecraft.client.renderer.chunk.ListChunkFactory;
@@ -86,6 +87,7 @@ import net.minecraft.world.border.WorldBorder;
 import net.minecraft.world.chunk.Chunk;
 
 import net.PeytonPlayz585.Optifine.Config;
+import net.PeytonPlayz585.Optifine.CloudRenderer;
 
 /**+
  * This portion of EaglercraftX contains deobfuscated Minecraft 1.8 source code.
@@ -178,7 +180,10 @@ public class RenderGlobal implements IWorldAccess, IResourceManagerReloadListene
 	private int renderDistance = 0;
     private int renderDistanceSq = 0;
 
+	private CloudRenderer cloudRenderer;
+
 	public RenderGlobal(Minecraft mcIn) {
+		this.cloudRenderer = new CloudRenderer();
 		this.mc = mcIn;
 		this.renderManager = mcIn.getRenderManager();
 		this.renderEngine = mcIn.getTextureManager();
@@ -1138,80 +1143,71 @@ public class RenderGlobal implements IWorldAccess, IResourceManagerReloadListene
 	}
 
 	public void renderClouds(float partialTicks, int pass) {
-		if (this.mc.theWorld.provider.isSurfaceWorld()) {
-			if (this.mc.gameSettings.func_181147_e() == 2) {
-				this.renderCloudsFancy(partialTicks, pass);
-			} else {
-				GlStateManager.disableCull();
-				float f = (float) (this.mc.getRenderViewEntity().lastTickPosY
-						+ (this.mc.getRenderViewEntity().posY - this.mc.getRenderViewEntity().lastTickPosY)
-								* (double) partialTicks);
-				boolean flag = true;
-				boolean flag1 = true;
-				Tessellator tessellator = Tessellator.getInstance();
-				WorldRenderer worldrenderer = tessellator.getWorldRenderer();
-				this.renderEngine.bindTexture(locationCloudsPng);
-				GlStateManager.enableBlend();
-				GlStateManager.tryBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, 1, 0);
-				Vec3 vec3 = this.theWorld.getCloudColour(partialTicks);
-				float f1 = (float) vec3.xCoord;
-				float f2 = (float) vec3.yCoord;
-				float f3 = (float) vec3.zCoord;
-				if (pass != 2) {
-					float f4 = (f1 * 30.0F + f2 * 59.0F + f3 * 11.0F) / 100.0F;
-					float f5 = (f1 * 30.0F + f2 * 70.0F) / 100.0F;
-					float f6 = (f1 * 30.0F + f3 * 70.0F) / 100.0F;
-					f1 = f4;
-					f2 = f5;
-					f3 = f6;
-				}
+        if (!Config.isCloudsOff()) {
+            if (this.mc.theWorld.provider.isSurfaceWorld()) {
+                if (Config.isCloudsFancy()) {
+                    this.renderCloudsFancy(partialTicks, pass);
+                } else {
+                    this.cloudRenderer.prepareToRender(false, this.cloudTickCounter, partialTicks);
+                    partialTicks = 0.0F;
+                    GlStateManager.disableCull();
+                    float f9 = (float)(this.mc.getRenderViewEntity().lastTickPosY + (this.mc.getRenderViewEntity().posY - this.mc.getRenderViewEntity().lastTickPosY) * (double)partialTicks);
+                    Tessellator tessellator = Tessellator.getInstance();
+                    WorldRenderer worldrenderer = tessellator.getWorldRenderer();
+                    this.renderEngine.bindTexture(locationCloudsPng);
+                    GlStateManager.enableBlend();
+                    GlStateManager.tryBlendFuncSeparate(770, 771, 1, 0);
 
-				float f10 = 4.8828125E-4F;
-				double d2 = (double) ((float) this.cloudTickCounter + partialTicks);
-				double d0 = this.mc.getRenderViewEntity().prevPosX
-						+ (this.mc.getRenderViewEntity().posX - this.mc.getRenderViewEntity().prevPosX)
-								* (double) partialTicks
-						+ d2 * 0.029999999329447746D;
-				double d1 = this.mc.getRenderViewEntity().prevPosZ
-						+ (this.mc.getRenderViewEntity().posZ - this.mc.getRenderViewEntity().prevPosZ)
-								* (double) partialTicks;
-				int i = MathHelper.floor_double(d0 / 2048.0D);
-				int j = MathHelper.floor_double(d1 / 2048.0D);
-				d0 = d0 - (double) (i * 2048);
-				d1 = d1 - (double) (j * 2048);
-				float f7 = this.theWorld.provider.getCloudHeight() - f + 0.33F;
-				float f8 = (float) (d0 * 4.8828125E-4D);
-				float f9 = (float) (d1 * 4.8828125E-4D);
-				worldrenderer.begin(7, DefaultVertexFormats.POSITION_TEX_COLOR);
+                    if (this.cloudRenderer.shouldUpdateGlList()) {
+                        this.cloudRenderer.startUpdateGlList();
+                        Vec3 vec3 = this.theWorld.getCloudColour(partialTicks);
+                        float f = (float)vec3.xCoord;
+                        float f1 = (float)vec3.yCoord;
+                        float f2 = (float)vec3.zCoord;
 
-				for (int k = -256; k < 256; k += 32) {
-					for (int l = -256; l < 256; l += 32) {
-						worldrenderer.pos((double) (k + 0), (double) f7, (double) (l + 32))
-								.tex((double) ((float) (k + 0) * 4.8828125E-4F + f8),
-										(double) ((float) (l + 32) * 4.8828125E-4F + f9))
-								.color(f1, f2, f3, 0.8F).endVertex();
-						worldrenderer.pos((double) (k + 32), (double) f7, (double) (l + 32))
-								.tex((double) ((float) (k + 32) * 4.8828125E-4F + f8),
-										(double) ((float) (l + 32) * 4.8828125E-4F + f9))
-								.color(f1, f2, f3, 0.8F).endVertex();
-						worldrenderer.pos((double) (k + 32), (double) f7, (double) (l + 0))
-								.tex((double) ((float) (k + 32) * 4.8828125E-4F + f8),
-										(double) ((float) (l + 0) * 4.8828125E-4F + f9))
-								.color(f1, f2, f3, 0.8F).endVertex();
-						worldrenderer.pos((double) (k + 0), (double) f7, (double) (l + 0))
-								.tex((double) ((float) (k + 0) * 4.8828125E-4F + f8),
-										(double) ((float) (l + 0) * 4.8828125E-4F + f9))
-								.color(f1, f2, f3, 0.8F).endVertex();
-					}
-				}
+                        if (pass != 2) {
+                            float f3 = (f * 30.0F + f1 * 59.0F + f2 * 11.0F) / 100.0F;
+                            float f4 = (f * 30.0F + f1 * 70.0F) / 100.0F;
+                            float f5 = (f * 30.0F + f2 * 70.0F) / 100.0F;
+                            f = f3;
+                            f1 = f4;
+                            f2 = f5;
+                        }
 
-				tessellator.draw();
-				GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
-				GlStateManager.disableBlend();
-				GlStateManager.enableCull();
-			}
-		}
-	}
+                        double d2 = (double)((float)this.cloudTickCounter + partialTicks);
+                        double d0 = this.mc.getRenderViewEntity().prevPosX + (this.mc.getRenderViewEntity().posX - this.mc.getRenderViewEntity().prevPosX) * (double)partialTicks + d2 * 0.029999999329447746D;
+                        double d1 = this.mc.getRenderViewEntity().prevPosZ + (this.mc.getRenderViewEntity().posZ - this.mc.getRenderViewEntity().prevPosZ) * (double)partialTicks;
+                        int i = MathHelper.floor_double(d0 / 2048.0D);
+                        int j = MathHelper.floor_double(d1 / 2048.0D);
+                        d0 = d0 - (double)(i * 2048);
+                        d1 = d1 - (double)(j * 2048);
+                        float f6 = this.theWorld.provider.getCloudHeight() - f9 + 0.33F;
+                        f6 = f6 + GameSettings.ofCloudsHeight * 128.0F;
+                        float f7 = (float)(d0 * 4.8828125E-4D);
+                        float f8 = (float)(d1 * 4.8828125E-4D);
+                        worldrenderer.begin(7, DefaultVertexFormats.POSITION_TEX_COLOR);
+
+                        for (int k = -256; k < 256; k += 32) {
+                            for (int l = -256; l < 256; l += 32) {
+                                worldrenderer.pos((double)(k + 0), (double)f6, (double)(l + 32)).tex((double)((float)(k + 0) * 4.8828125E-4F + f7), (double)((float)(l + 32) * 4.8828125E-4F + f8)).color(f, f1, f2, 0.8F).endVertex();
+                                worldrenderer.pos((double)(k + 32), (double)f6, (double)(l + 32)).tex((double)((float)(k + 32) * 4.8828125E-4F + f7), (double)((float)(l + 32) * 4.8828125E-4F + f8)).color(f, f1, f2, 0.8F).endVertex();
+                                worldrenderer.pos((double)(k + 32), (double)f6, (double)(l + 0)).tex((double)((float)(k + 32) * 4.8828125E-4F + f7), (double)((float)(l + 0) * 4.8828125E-4F + f8)).color(f, f1, f2, 0.8F).endVertex();
+                                worldrenderer.pos((double)(k + 0), (double)f6, (double)(l + 0)).tex((double)((float)(k + 0) * 4.8828125E-4F + f7), (double)((float)(l + 0) * 4.8828125E-4F + f8)).color(f, f1, f2, 0.8F).endVertex();
+                            }
+                        }
+
+                        tessellator.draw();
+                        this.cloudRenderer.endUpdateGlList();
+                    }
+
+                    this.cloudRenderer.renderGlList();
+                    GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
+                    GlStateManager.disableBlend();
+                    GlStateManager.enableCull();
+                }
+            }
+        }
+    }
 
 	/**+
 	 * Checks if the given position is to be rendered with cloud fog
@@ -1221,251 +1217,146 @@ public class RenderGlobal implements IWorldAccess, IResourceManagerReloadListene
 	}
 
 	private void renderCloudsFancy(float partialTicks, int pass) {
-		GlStateManager.disableCull();
-		float f = (float) (this.mc.getRenderViewEntity().lastTickPosY
-				+ (this.mc.getRenderViewEntity().posY - this.mc.getRenderViewEntity().lastTickPosY)
-						* (double) partialTicks);
-		Tessellator tessellator = Tessellator.getInstance();
-		WorldRenderer worldrenderer = tessellator.getWorldRenderer();
-		float f1 = 12.0F;
-		float f2 = 4.0F;
-		double d0 = (double) ((float) this.cloudTickCounter + partialTicks);
-		double d1 = (this.mc.getRenderViewEntity().prevPosX
-				+ (this.mc.getRenderViewEntity().posX - this.mc.getRenderViewEntity().prevPosX) * (double) partialTicks
-				+ d0 * 0.029999999329447746D) / 12.0D;
-		double d2 = (this.mc.getRenderViewEntity().prevPosZ
-				+ (this.mc.getRenderViewEntity().posZ - this.mc.getRenderViewEntity().prevPosZ) * (double) partialTicks)
-				/ 12.0D + 0.33000001311302185D;
-		float f3 = this.theWorld.provider.getCloudHeight() - f + 0.33F;
-		int i = MathHelper.floor_double(d1 / 2048.0D);
-		int j = MathHelper.floor_double(d2 / 2048.0D);
-		d1 = d1 - (double) (i * 2048);
-		d2 = d2 - (double) (j * 2048);
-		this.renderEngine.bindTexture(locationCloudsPng);
-		GlStateManager.enableBlend();
-		GlStateManager.tryBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, 1, 0);
-		Vec3 vec3 = this.theWorld.getCloudColour(partialTicks);
-		float f4 = (float) vec3.xCoord;
-		float f5 = (float) vec3.yCoord;
-		float f6 = (float) vec3.zCoord;
-		if (pass != 2) {
-			float f7 = (f4 * 30.0F + f5 * 59.0F + f6 * 11.0F) / 100.0F;
-			float f8 = (f4 * 30.0F + f5 * 70.0F) / 100.0F;
-			float f9 = (f4 * 30.0F + f6 * 70.0F) / 100.0F;
-			f4 = f7;
-			f5 = f8;
-			f6 = f9;
-		}
+        this.cloudRenderer.prepareToRender(true, this.cloudTickCounter, partialTicks);
+        partialTicks = 0.0F;
+        GlStateManager.disableCull();
+        float f = (float)(this.mc.getRenderViewEntity().lastTickPosY + (this.mc.getRenderViewEntity().posY - this.mc.getRenderViewEntity().lastTickPosY) * (double)partialTicks);
+        Tessellator tessellator = Tessellator.getInstance();
+        WorldRenderer worldrenderer = tessellator.getWorldRenderer();
+        double d0 = (double)((float)this.cloudTickCounter + partialTicks);
+        double d1 = (this.mc.getRenderViewEntity().prevPosX + (this.mc.getRenderViewEntity().posX - this.mc.getRenderViewEntity().prevPosX) * (double)partialTicks + d0 * 0.029999999329447746D) / 12.0D;
+        double d2 = (this.mc.getRenderViewEntity().prevPosZ + (this.mc.getRenderViewEntity().posZ - this.mc.getRenderViewEntity().prevPosZ) * (double)partialTicks) / 12.0D + 0.33000001311302185D;
+        float f3 = this.theWorld.provider.getCloudHeight() - f + 0.33F;
+        f3 = f3 + GameSettings.ofCloudsHeight * 128.0F;
+        int i = MathHelper.floor_double(d1 / 2048.0D);
+        int j = MathHelper.floor_double(d2 / 2048.0D);
+        d1 = d1 - (double)(i * 2048);
+        d2 = d2 - (double)(j * 2048);
+        this.renderEngine.bindTexture(locationCloudsPng);
+        GlStateManager.enableBlend();
+        GlStateManager.tryBlendFuncSeparate(770, 771, 1, 0);
+        Vec3 vec3 = this.theWorld.getCloudColour(partialTicks);
+        float f4 = (float)vec3.xCoord;
+        float f5 = (float)vec3.yCoord;
+        float f6 = (float)vec3.zCoord;
 
-		float f26 = f4 * 0.9F;
-		float f27 = f5 * 0.9F;
-		float f28 = f6 * 0.9F;
-		float f10 = f4 * 0.7F;
-		float f11 = f5 * 0.7F;
-		float f12 = f6 * 0.7F;
-		float f13 = f4 * 0.8F;
-		float f14 = f5 * 0.8F;
-		float f15 = f6 * 0.8F;
-		float f16 = 0.00390625F;
-		float f17 = (float) MathHelper.floor_double(d1) * 0.00390625F;
-		float f18 = (float) MathHelper.floor_double(d2) * 0.00390625F;
-		float f19 = (float) (d1 - (double) MathHelper.floor_double(d1));
-		float f20 = (float) (d2 - (double) MathHelper.floor_double(d2));
-		boolean flag = true;
-		boolean flag1 = true;
-		float f21 = 9.765625E-4F;
-		GlStateManager.scale(12.0F, 1.0F, 12.0F);
+        if (pass != 2) {
+            float f7 = (f4 * 30.0F + f5 * 59.0F + f6 * 11.0F) / 100.0F;
+            float f8 = (f4 * 30.0F + f5 * 70.0F) / 100.0F;
+            float f9 = (f4 * 30.0F + f6 * 70.0F) / 100.0F;
+            f4 = f7;
+            f5 = f8;
+            f6 = f9;
+        }
 
-		for (int k = 0; k < 2; ++k) {
-			if (k == 0) {
-				GlStateManager.colorMask(false, false, false, false);
-			} else {
-				switch (pass) {
-				case 0:
-					GlStateManager.colorMask(false, true, true, true);
-					break;
-				case 1:
-					GlStateManager.colorMask(true, false, false, true);
-					break;
-				case 2:
-					GlStateManager.colorMask(true, true, true, true);
-				}
-			}
+        float f26 = f4 * 0.9F;
+        float f27 = f5 * 0.9F;
+        float f28 = f6 * 0.9F;
+        float f10 = f4 * 0.7F;
+        float f11 = f5 * 0.7F;
+        float f12 = f6 * 0.7F;
+        float f13 = f4 * 0.8F;
+        float f14 = f5 * 0.8F;
+        float f15 = f6 * 0.8F;
+        float f17 = (float)MathHelper.floor_double(d1) * 0.00390625F;
+        float f18 = (float)MathHelper.floor_double(d2) * 0.00390625F;
+        float f19 = (float)(d1 - (double)MathHelper.floor_double(d1));
+        float f20 = (float)(d2 - (double)MathHelper.floor_double(d2));
+        GlStateManager.scale(12.0F, 1.0F, 12.0F);
 
-			for (int l = -3; l <= 4; ++l) {
-				for (int i1 = -3; i1 <= 4; ++i1) {
-					worldrenderer.begin(7, DefaultVertexFormats.POSITION_TEX_COLOR_NORMAL);
-					float f22 = (float) (l * 8);
-					float f23 = (float) (i1 * 8);
-					float f24 = f22 - f19;
-					float f25 = f23 - f20;
-					if (f3 > -5.0F) {
-						worldrenderer.pos((double) (f24 + 0.0F), (double) (f3 + 0.0F), (double) (f25 + 8.0F))
-								.tex((double) ((f22 + 0.0F) * 0.00390625F + f17),
-										(double) ((f23 + 8.0F) * 0.00390625F + f18))
-								.color(f10, f11, f12, 0.8F).normal(0.0F, -1.0F, 0.0F).endVertex();
-						worldrenderer.pos((double) (f24 + 8.0F), (double) (f3 + 0.0F), (double) (f25 + 8.0F))
-								.tex((double) ((f22 + 8.0F) * 0.00390625F + f17),
-										(double) ((f23 + 8.0F) * 0.00390625F + f18))
-								.color(f10, f11, f12, 0.8F).normal(0.0F, -1.0F, 0.0F).endVertex();
-						worldrenderer.pos((double) (f24 + 8.0F), (double) (f3 + 0.0F), (double) (f25 + 0.0F))
-								.tex((double) ((f22 + 8.0F) * 0.00390625F + f17),
-										(double) ((f23 + 0.0F) * 0.00390625F + f18))
-								.color(f10, f11, f12, 0.8F).normal(0.0F, -1.0F, 0.0F).endVertex();
-						worldrenderer.pos((double) (f24 + 0.0F), (double) (f3 + 0.0F), (double) (f25 + 0.0F))
-								.tex((double) ((f22 + 0.0F) * 0.00390625F + f17),
-										(double) ((f23 + 0.0F) * 0.00390625F + f18))
-								.color(f10, f11, f12, 0.8F).normal(0.0F, -1.0F, 0.0F).endVertex();
-					}
+        for (int k = 0; k < 2; ++k) {
+            if (k == 0) {
+                GlStateManager.colorMask(false, false, false, false);
+            } else {
+                switch (pass) {
+                    case 0:
+                        GlStateManager.colorMask(false, true, true, true);
+                        break;
 
-					if (f3 <= 5.0F) {
-						worldrenderer
-								.pos((double) (f24 + 0.0F), (double) (f3 + 4.0F - 9.765625E-4F), (double) (f25 + 8.0F))
-								.tex((double) ((f22 + 0.0F) * 0.00390625F + f17),
-										(double) ((f23 + 8.0F) * 0.00390625F + f18))
-								.color(f4, f5, f6, 0.8F).normal(0.0F, 1.0F, 0.0F).endVertex();
-						worldrenderer
-								.pos((double) (f24 + 8.0F), (double) (f3 + 4.0F - 9.765625E-4F), (double) (f25 + 8.0F))
-								.tex((double) ((f22 + 8.0F) * 0.00390625F + f17),
-										(double) ((f23 + 8.0F) * 0.00390625F + f18))
-								.color(f4, f5, f6, 0.8F).normal(0.0F, 1.0F, 0.0F).endVertex();
-						worldrenderer
-								.pos((double) (f24 + 8.0F), (double) (f3 + 4.0F - 9.765625E-4F), (double) (f25 + 0.0F))
-								.tex((double) ((f22 + 8.0F) * 0.00390625F + f17),
-										(double) ((f23 + 0.0F) * 0.00390625F + f18))
-								.color(f4, f5, f6, 0.8F).normal(0.0F, 1.0F, 0.0F).endVertex();
-						worldrenderer
-								.pos((double) (f24 + 0.0F), (double) (f3 + 4.0F - 9.765625E-4F), (double) (f25 + 0.0F))
-								.tex((double) ((f22 + 0.0F) * 0.00390625F + f17),
-										(double) ((f23 + 0.0F) * 0.00390625F + f18))
-								.color(f4, f5, f6, 0.8F).normal(0.0F, 1.0F, 0.0F).endVertex();
-					}
+                    case 1:
+                        GlStateManager.colorMask(true, false, false, true);
+                        break;
 
-					if (l > -1) {
-						for (int j1 = 0; j1 < 8; ++j1) {
-							worldrenderer
-									.pos((double) (f24 + (float) j1 + 0.0F), (double) (f3 + 0.0F),
-											(double) (f25 + 8.0F))
-									.tex((double) ((f22 + (float) j1 + 0.5F) * 0.00390625F + f17),
-											(double) ((f23 + 8.0F) * 0.00390625F + f18))
-									.color(f26, f27, f28, 0.8F).normal(-1.0F, 0.0F, 0.0F).endVertex();
-							worldrenderer
-									.pos((double) (f24 + (float) j1 + 0.0F), (double) (f3 + 4.0F),
-											(double) (f25 + 8.0F))
-									.tex((double) ((f22 + (float) j1 + 0.5F) * 0.00390625F + f17),
-											(double) ((f23 + 8.0F) * 0.00390625F + f18))
-									.color(f26, f27, f28, 0.8F).normal(-1.0F, 0.0F, 0.0F).endVertex();
-							worldrenderer
-									.pos((double) (f24 + (float) j1 + 0.0F), (double) (f3 + 4.0F),
-											(double) (f25 + 0.0F))
-									.tex((double) ((f22 + (float) j1 + 0.5F) * 0.00390625F + f17),
-											(double) ((f23 + 0.0F) * 0.00390625F + f18))
-									.color(f26, f27, f28, 0.8F).normal(-1.0F, 0.0F, 0.0F).endVertex();
-							worldrenderer
-									.pos((double) (f24 + (float) j1 + 0.0F), (double) (f3 + 0.0F),
-											(double) (f25 + 0.0F))
-									.tex((double) ((f22 + (float) j1 + 0.5F) * 0.00390625F + f17),
-											(double) ((f23 + 0.0F) * 0.00390625F + f18))
-									.color(f26, f27, f28, 0.8F).normal(-1.0F, 0.0F, 0.0F).endVertex();
-						}
-					}
+                    case 2:
+                        GlStateManager.colorMask(true, true, true, true);
+                }
+            }
 
-					if (l <= 1) {
-						for (int k1 = 0; k1 < 8; ++k1) {
-							worldrenderer
-									.pos((double) (f24 + (float) k1 + 1.0F - 9.765625E-4F), (double) (f3 + 0.0F),
-											(double) (f25 + 8.0F))
-									.tex((double) ((f22 + (float) k1 + 0.5F) * 0.00390625F + f17),
-											(double) ((f23 + 8.0F) * 0.00390625F + f18))
-									.color(f26, f27, f28, 0.8F).normal(1.0F, 0.0F, 0.0F).endVertex();
-							worldrenderer
-									.pos((double) (f24 + (float) k1 + 1.0F - 9.765625E-4F), (double) (f3 + 4.0F),
-											(double) (f25 + 8.0F))
-									.tex((double) ((f22 + (float) k1 + 0.5F) * 0.00390625F + f17),
-											(double) ((f23 + 8.0F) * 0.00390625F + f18))
-									.color(f26, f27, f28, 0.8F).normal(1.0F, 0.0F, 0.0F).endVertex();
-							worldrenderer
-									.pos((double) (f24 + (float) k1 + 1.0F - 9.765625E-4F), (double) (f3 + 4.0F),
-											(double) (f25 + 0.0F))
-									.tex((double) ((f22 + (float) k1 + 0.5F) * 0.00390625F + f17),
-											(double) ((f23 + 0.0F) * 0.00390625F + f18))
-									.color(f26, f27, f28, 0.8F).normal(1.0F, 0.0F, 0.0F).endVertex();
-							worldrenderer
-									.pos((double) (f24 + (float) k1 + 1.0F - 9.765625E-4F), (double) (f3 + 0.0F),
-											(double) (f25 + 0.0F))
-									.tex((double) ((f22 + (float) k1 + 0.5F) * 0.00390625F + f17),
-											(double) ((f23 + 0.0F) * 0.00390625F + f18))
-									.color(f26, f27, f28, 0.8F).normal(1.0F, 0.0F, 0.0F).endVertex();
-						}
-					}
+            this.cloudRenderer.renderGlList();
+        }
 
-					if (i1 > -1) {
-						for (int l1 = 0; l1 < 8; ++l1) {
-							worldrenderer
-									.pos((double) (f24 + 0.0F), (double) (f3 + 4.0F),
-											(double) (f25 + (float) l1 + 0.0F))
-									.tex((double) ((f22 + 0.0F) * 0.00390625F + f17),
-											(double) ((f23 + (float) l1 + 0.5F) * 0.00390625F + f18))
-									.color(f13, f14, f15, 0.8F).normal(0.0F, 0.0F, -1.0F).endVertex();
-							worldrenderer
-									.pos((double) (f24 + 8.0F), (double) (f3 + 4.0F),
-											(double) (f25 + (float) l1 + 0.0F))
-									.tex((double) ((f22 + 8.0F) * 0.00390625F + f17),
-											(double) ((f23 + (float) l1 + 0.5F) * 0.00390625F + f18))
-									.color(f13, f14, f15, 0.8F).normal(0.0F, 0.0F, -1.0F).endVertex();
-							worldrenderer
-									.pos((double) (f24 + 8.0F), (double) (f3 + 0.0F),
-											(double) (f25 + (float) l1 + 0.0F))
-									.tex((double) ((f22 + 8.0F) * 0.00390625F + f17),
-											(double) ((f23 + (float) l1 + 0.5F) * 0.00390625F + f18))
-									.color(f13, f14, f15, 0.8F).normal(0.0F, 0.0F, -1.0F).endVertex();
-							worldrenderer
-									.pos((double) (f24 + 0.0F), (double) (f3 + 0.0F),
-											(double) (f25 + (float) l1 + 0.0F))
-									.tex((double) ((f22 + 0.0F) * 0.00390625F + f17),
-											(double) ((f23 + (float) l1 + 0.5F) * 0.00390625F + f18))
-									.color(f13, f14, f15, 0.8F).normal(0.0F, 0.0F, -1.0F).endVertex();
-						}
-					}
+        if (this.cloudRenderer.shouldUpdateGlList()) {
+            this.cloudRenderer.startUpdateGlList();
 
-					if (i1 <= 1) {
-						for (int i2 = 0; i2 < 8; ++i2) {
-							worldrenderer
-									.pos((double) (f24 + 0.0F), (double) (f3 + 4.0F),
-											(double) (f25 + (float) i2 + 1.0F - 9.765625E-4F))
-									.tex((double) ((f22 + 0.0F) * 0.00390625F + f17),
-											(double) ((f23 + (float) i2 + 0.5F) * 0.00390625F + f18))
-									.color(f13, f14, f15, 0.8F).normal(0.0F, 0.0F, 1.0F).endVertex();
-							worldrenderer
-									.pos((double) (f24 + 8.0F), (double) (f3 + 4.0F),
-											(double) (f25 + (float) i2 + 1.0F - 9.765625E-4F))
-									.tex((double) ((f22 + 8.0F) * 0.00390625F + f17),
-											(double) ((f23 + (float) i2 + 0.5F) * 0.00390625F + f18))
-									.color(f13, f14, f15, 0.8F).normal(0.0F, 0.0F, 1.0F).endVertex();
-							worldrenderer
-									.pos((double) (f24 + 8.0F), (double) (f3 + 0.0F),
-											(double) (f25 + (float) i2 + 1.0F - 9.765625E-4F))
-									.tex((double) ((f22 + 8.0F) * 0.00390625F + f17),
-											(double) ((f23 + (float) i2 + 0.5F) * 0.00390625F + f18))
-									.color(f13, f14, f15, 0.8F).normal(0.0F, 0.0F, 1.0F).endVertex();
-							worldrenderer
-									.pos((double) (f24 + 0.0F), (double) (f3 + 0.0F),
-											(double) (f25 + (float) i2 + 1.0F - 9.765625E-4F))
-									.tex((double) ((f22 + 0.0F) * 0.00390625F + f17),
-											(double) ((f23 + (float) i2 + 0.5F) * 0.00390625F + f18))
-									.color(f13, f14, f15, 0.8F).normal(0.0F, 0.0F, 1.0F).endVertex();
-						}
-					}
+            for (int j1 = -3; j1 <= 4; ++j1) {
+                for (int l = -3; l <= 4; ++l) {
+                    worldrenderer.begin(7, DefaultVertexFormats.POSITION_TEX_COLOR_NORMAL);
+                    float f22 = (float)(j1 * 8);
+                    float f23 = (float)(l * 8);
+                    float f24 = f22 - f19;
+                    float f25 = f23 - f20;
 
-					tessellator.draw();
-				}
-			}
-		}
+                    if (f3 > -5.0F) {
+                        worldrenderer.pos((double)(f24 + 0.0F), (double)(f3 + 0.0F), (double)(f25 + 8.0F)).tex((double)((f22 + 0.0F) * 0.00390625F + f17), (double)((f23 + 8.0F) * 0.00390625F + f18)).color(f10, f11, f12, 0.8F).normal(0.0F, -1.0F, 0.0F).endVertex();
+                        worldrenderer.pos((double)(f24 + 8.0F), (double)(f3 + 0.0F), (double)(f25 + 8.0F)).tex((double)((f22 + 8.0F) * 0.00390625F + f17), (double)((f23 + 8.0F) * 0.00390625F + f18)).color(f10, f11, f12, 0.8F).normal(0.0F, -1.0F, 0.0F).endVertex();
+                        worldrenderer.pos((double)(f24 + 8.0F), (double)(f3 + 0.0F), (double)(f25 + 0.0F)).tex((double)((f22 + 8.0F) * 0.00390625F + f17), (double)((f23 + 0.0F) * 0.00390625F + f18)).color(f10, f11, f12, 0.8F).normal(0.0F, -1.0F, 0.0F).endVertex();
+                        worldrenderer.pos((double)(f24 + 0.0F), (double)(f3 + 0.0F), (double)(f25 + 0.0F)).tex((double)((f22 + 0.0F) * 0.00390625F + f17), (double)((f23 + 0.0F) * 0.00390625F + f18)).color(f10, f11, f12, 0.8F).normal(0.0F, -1.0F, 0.0F).endVertex();
+                    }
 
-		GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
-		GlStateManager.disableBlend();
-		GlStateManager.enableCull();
-	}
+                    if (f3 <= 5.0F) {
+                        worldrenderer.pos((double)(f24 + 0.0F), (double)(f3 + 4.0F - 9.765625E-4F), (double)(f25 + 8.0F)).tex((double)((f22 + 0.0F) * 0.00390625F + f17), (double)((f23 + 8.0F) * 0.00390625F + f18)).color(f4, f5, f6, 0.8F).normal(0.0F, 1.0F, 0.0F).endVertex();
+                        worldrenderer.pos((double)(f24 + 8.0F), (double)(f3 + 4.0F - 9.765625E-4F), (double)(f25 + 8.0F)).tex((double)((f22 + 8.0F) * 0.00390625F + f17), (double)((f23 + 8.0F) * 0.00390625F + f18)).color(f4, f5, f6, 0.8F).normal(0.0F, 1.0F, 0.0F).endVertex();
+                        worldrenderer.pos((double)(f24 + 8.0F), (double)(f3 + 4.0F - 9.765625E-4F), (double)(f25 + 0.0F)).tex((double)((f22 + 8.0F) * 0.00390625F + f17), (double)((f23 + 0.0F) * 0.00390625F + f18)).color(f4, f5, f6, 0.8F).normal(0.0F, 1.0F, 0.0F).endVertex();
+                        worldrenderer.pos((double)(f24 + 0.0F), (double)(f3 + 4.0F - 9.765625E-4F), (double)(f25 + 0.0F)).tex((double)((f22 + 0.0F) * 0.00390625F + f17), (double)((f23 + 0.0F) * 0.00390625F + f18)).color(f4, f5, f6, 0.8F).normal(0.0F, 1.0F, 0.0F).endVertex();
+                    }
+
+                    if (j1 > -1) {
+                        for (int i1 = 0; i1 < 8; ++i1) {
+                            worldrenderer.pos((double)(f24 + (float)i1 + 0.0F), (double)(f3 + 0.0F), (double)(f25 + 8.0F)).tex((double)((f22 + (float)i1 + 0.5F) * 0.00390625F + f17), (double)((f23 + 8.0F) * 0.00390625F + f18)).color(f26, f27, f28, 0.8F).normal(-1.0F, 0.0F, 0.0F).endVertex();
+                            worldrenderer.pos((double)(f24 + (float)i1 + 0.0F), (double)(f3 + 4.0F), (double)(f25 + 8.0F)).tex((double)((f22 + (float)i1 + 0.5F) * 0.00390625F + f17), (double)((f23 + 8.0F) * 0.00390625F + f18)).color(f26, f27, f28, 0.8F).normal(-1.0F, 0.0F, 0.0F).endVertex();
+                            worldrenderer.pos((double)(f24 + (float)i1 + 0.0F), (double)(f3 + 4.0F), (double)(f25 + 0.0F)).tex((double)((f22 + (float)i1 + 0.5F) * 0.00390625F + f17), (double)((f23 + 0.0F) * 0.00390625F + f18)).color(f26, f27, f28, 0.8F).normal(-1.0F, 0.0F, 0.0F).endVertex();
+                            worldrenderer.pos((double)(f24 + (float)i1 + 0.0F), (double)(f3 + 0.0F), (double)(f25 + 0.0F)).tex((double)((f22 + (float)i1 + 0.5F) * 0.00390625F + f17), (double)((f23 + 0.0F) * 0.00390625F + f18)).color(f26, f27, f28, 0.8F).normal(-1.0F, 0.0F, 0.0F).endVertex();
+                        }
+                    }
+
+                    if (j1 <= 1) {
+                        for (int k1 = 0; k1 < 8; ++k1) {
+                            worldrenderer.pos((double)(f24 + (float)k1 + 1.0F - 9.765625E-4F), (double)(f3 + 0.0F), (double)(f25 + 8.0F)).tex((double)((f22 + (float)k1 + 0.5F) * 0.00390625F + f17), (double)((f23 + 8.0F) * 0.00390625F + f18)).color(f26, f27, f28, 0.8F).normal(1.0F, 0.0F, 0.0F).endVertex();
+                            worldrenderer.pos((double)(f24 + (float)k1 + 1.0F - 9.765625E-4F), (double)(f3 + 4.0F), (double)(f25 + 8.0F)).tex((double)((f22 + (float)k1 + 0.5F) * 0.00390625F + f17), (double)((f23 + 8.0F) * 0.00390625F + f18)).color(f26, f27, f28, 0.8F).normal(1.0F, 0.0F, 0.0F).endVertex();
+                            worldrenderer.pos((double)(f24 + (float)k1 + 1.0F - 9.765625E-4F), (double)(f3 + 4.0F), (double)(f25 + 0.0F)).tex((double)((f22 + (float)k1 + 0.5F) * 0.00390625F + f17), (double)((f23 + 0.0F) * 0.00390625F + f18)).color(f26, f27, f28, 0.8F).normal(1.0F, 0.0F, 0.0F).endVertex();
+                            worldrenderer.pos((double)(f24 + (float)k1 + 1.0F - 9.765625E-4F), (double)(f3 + 0.0F), (double)(f25 + 0.0F)).tex((double)((f22 + (float)k1 + 0.5F) * 0.00390625F + f17), (double)((f23 + 0.0F) * 0.00390625F + f18)).color(f26, f27, f28, 0.8F).normal(1.0F, 0.0F, 0.0F).endVertex();
+                        }
+                    }
+
+                    if (l > -1) {
+                        for (int l1 = 0; l1 < 8; ++l1) {
+                            worldrenderer.pos((double)(f24 + 0.0F), (double)(f3 + 4.0F), (double)(f25 + (float)l1 + 0.0F)).tex((double)((f22 + 0.0F) * 0.00390625F + f17), (double)((f23 + (float)l1 + 0.5F) * 0.00390625F + f18)).color(f13, f14, f15, 0.8F).normal(0.0F, 0.0F, -1.0F).endVertex();
+                            worldrenderer.pos((double)(f24 + 8.0F), (double)(f3 + 4.0F), (double)(f25 + (float)l1 + 0.0F)).tex((double)((f22 + 8.0F) * 0.00390625F + f17), (double)((f23 + (float)l1 + 0.5F) * 0.00390625F + f18)).color(f13, f14, f15, 0.8F).normal(0.0F, 0.0F, -1.0F).endVertex();
+                            worldrenderer.pos((double)(f24 + 8.0F), (double)(f3 + 0.0F), (double)(f25 + (float)l1 + 0.0F)).tex((double)((f22 + 8.0F) * 0.00390625F + f17), (double)((f23 + (float)l1 + 0.5F) * 0.00390625F + f18)).color(f13, f14, f15, 0.8F).normal(0.0F, 0.0F, -1.0F).endVertex();
+                            worldrenderer.pos((double)(f24 + 0.0F), (double)(f3 + 0.0F), (double)(f25 + (float)l1 + 0.0F)).tex((double)((f22 + 0.0F) * 0.00390625F + f17), (double)((f23 + (float)l1 + 0.5F) * 0.00390625F + f18)).color(f13, f14, f15, 0.8F).normal(0.0F, 0.0F, -1.0F).endVertex();
+                        }
+                    }
+
+                    if (l <= 1) {
+                        for (int i2 = 0; i2 < 8; ++i2) {
+                            worldrenderer.pos((double)(f24 + 0.0F), (double)(f3 + 4.0F), (double)(f25 + (float)i2 + 1.0F - 9.765625E-4F)).tex((double)((f22 + 0.0F) * 0.00390625F + f17), (double)((f23 + (float)i2 + 0.5F) * 0.00390625F + f18)).color(f13, f14, f15, 0.8F).normal(0.0F, 0.0F, 1.0F).endVertex();
+                            worldrenderer.pos((double)(f24 + 8.0F), (double)(f3 + 4.0F), (double)(f25 + (float)i2 + 1.0F - 9.765625E-4F)).tex((double)((f22 + 8.0F) * 0.00390625F + f17), (double)((f23 + (float)i2 + 0.5F) * 0.00390625F + f18)).color(f13, f14, f15, 0.8F).normal(0.0F, 0.0F, 1.0F).endVertex();
+                            worldrenderer.pos((double)(f24 + 8.0F), (double)(f3 + 0.0F), (double)(f25 + (float)i2 + 1.0F - 9.765625E-4F)).tex((double)((f22 + 8.0F) * 0.00390625F + f17), (double)((f23 + (float)i2 + 0.5F) * 0.00390625F + f18)).color(f13, f14, f15, 0.8F).normal(0.0F, 0.0F, 1.0F).endVertex();
+                            worldrenderer.pos((double)(f24 + 0.0F), (double)(f3 + 0.0F), (double)(f25 + (float)i2 + 1.0F - 9.765625E-4F)).tex((double)((f22 + 0.0F) * 0.00390625F + f17), (double)((f23 + (float)i2 + 0.5F) * 0.00390625F + f18)).color(f13, f14, f15, 0.8F).normal(0.0F, 0.0F, 1.0F).endVertex();
+                        }
+                    }
+
+                    tessellator.draw();
+                }
+            }
+
+            this.cloudRenderer.endUpdateGlList();
+        }
+
+        GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
+        GlStateManager.disableBlend();
+        GlStateManager.enableCull();
+    }
 
 	public void updateChunks(long finishTimeNano) {
         finishTimeNano = (long)((double)finishTimeNano + 1.0E8D);
@@ -2291,4 +2182,8 @@ public class RenderGlobal implements IWorldAccess, IResourceManagerReloadListene
 		return "" + Minecraft.getDebugFPS() + "fps | C: " + j + "/" + i + ", E: " + this.countEntitiesRendered + "+" + k
 				+ ", " + renderDispatcher.getDebugInfo();
 	}
+
+	public void resetClouds() {
+        this.cloudRenderer.reset();
+    }
 }

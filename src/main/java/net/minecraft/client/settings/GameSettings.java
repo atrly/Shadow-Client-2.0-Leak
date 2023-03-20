@@ -89,7 +89,7 @@ public class GameSettings {
 	/**+
 	 * Clouds flag
 	 */
-	public int clouds = 1;
+	public static int clouds = 1;
 	public boolean fancyGraphics = false;
 	/**+
 	 * Smooth Lighting
@@ -225,6 +225,7 @@ public class GameSettings {
 
 	public static float ofAoLevel = 1.0F;
 	public static float ofFogStart = 0.8F;
+	public static float ofCloudsHeight = 0.0F;
 
 	public GameSettings(Minecraft mcIn) {
 		this.keyBindings = (KeyBinding[]) ArrayUtils.addAll(new KeyBinding[] { this.keyBindAttack, this.keyBindUseItem,
@@ -367,6 +368,11 @@ public class GameSettings {
             this.mc.renderGlobal.loadRenderers();
         }
 
+		if (parOptions == GameSettings.Options.CLOUD_HEIGHT) {
+            ofCloudsHeight = parFloat1;
+            this.mc.renderGlobal.resetClouds();
+        }
+
 	}
 
 	/**+
@@ -391,7 +397,7 @@ public class GameSettings {
 		}
 
 		if (parOptions == GameSettings.Options.RENDER_CLOUDS) {
-			this.clouds = (this.clouds + parInt1) % 3;
+			clouds = (clouds + parInt1) % 3;
 		}
 
 		if (parOptions == GameSettings.Options.FORCE_UNICODE_FONT) {
@@ -682,7 +688,8 @@ public class GameSettings {
 				: (parOptions == GameSettings.Options.STREAM_KBPS ? this.streamKbps
 				: (parOptions == GameSettings.Options.STREAM_FPS ? this.streamFps
 				: (parOptions == GameSettings.Options.AO_LEVEL ? GameSettings.ofAoLevel
-				: 0.0F)))))))))))))))));
+				: (parOptions == GameSettings.Options.CLOUD_HEIGHT ? ofCloudsHeight
+				: 0.0F))))))))))))))))));
 	}
 
 	public boolean getOptionOrdinalValue(GameSettings.Options parOptions) {
@@ -797,7 +804,8 @@ public class GameSettings {
 					: (parOptions == GameSettings.Options.RENDER_DISTANCE ? s + (int) f1 + (f1 == 1.0F ? " chunk" : " chunks")
 					: (parOptions == GameSettings.Options.MIPMAP_LEVELS ? (f == 0.0F ? s + I18n.format("options.off", new Object[0]) : s + (int) (f * 100.0F) + "%")
 					: (parOptions == GameSettings.Options.AO_LEVEL ? (f == 0.0F ? s + I18n.format("options.off", new Object[0]) : s + (int) (f * 100.0F) + "%")
-					: "yee")))))))))))));
+					: (parOptions == GameSettings.Options.CLOUD_HEIGHT ? ( f == 0.0F ? s + I18n.format("OFF", new Object[0]) : s + (int) (f * 100.0F) + "%")
+					: "yee"))))))))))))));
 		} else if (parOptions.getEnumBoolean()) {
 			boolean flag = this.getOptionOrdinalValue(parOptions);
 			return flag ? s + I18n.format("options.on", new Object[0]) : s + I18n.format("options.off", new Object[0]);
@@ -818,7 +826,7 @@ public class GameSettings {
 		} else if (parOptions == GameSettings.Options.STREAM_MIC_TOGGLE_BEHAVIOR) {
 			return s + getTranslation(STREAM_MIC_MODES, this.streamMicToggleBehavior);
 		} else if (parOptions == GameSettings.Options.RENDER_CLOUDS) {
-			return s + getTranslation(field_181149_aW, this.clouds);
+			return s + getTranslation(field_181149_aW, clouds);
 		} else if (parOptions == GameSettings.Options.GRAPHICS) {
 			if (this.fancyGraphics) {
 				return s + I18n.format("options.graphics.fancy", new Object[0]);
@@ -1006,11 +1014,11 @@ public class GameSettings {
 
 					if (astring[0].equals("renderClouds")) {
 						if (astring[1].equals("true")) {
-							this.clouds = 2;
+							clouds = 2;
 						} else if (astring[1].equals("false")) {
-							this.clouds = 0;
+							clouds = 0;
 						} else if (astring[1].equals("fast")) {
-							this.clouds = 1;
+							clouds = 1;
 						}
 					}
 
@@ -1340,6 +1348,11 @@ public class GameSettings {
                         }
                     }
 
+					if (astring[0].equals("ofCloudsHeight") && astring.length >= 2) {
+                        ofCloudsHeight = Float.valueOf(astring[1]).floatValue();
+                        ofCloudsHeight = ofCloudsHeight < 0.0F ? 0.0F : (ofCloudsHeight > 1.0F ? 1.0F : ofCloudsHeight);
+                    }
+
 					for (KeyBinding keybinding : this.keyBindings) {
 						if (astring[0].equals("key_" + keybinding.getKeyDescription())) {
 							keybinding.setKeyCode(Integer.parseInt(astring[1]));
@@ -1400,7 +1413,7 @@ public class GameSettings {
 			printwriter.println("difficulty:" + this.difficulty.getDifficultyId());
 			printwriter.println("fancyGraphics:" + this.fancyGraphics);
 			printwriter.println("ao:" + this.ambientOcclusion);
-			switch (this.clouds) {
+			switch (clouds) {
 			case 0:
 				printwriter.println("renderClouds:false");
 				break;
@@ -1482,6 +1495,7 @@ public class GameSettings {
 			printwriter.println("ofDynamicFov:" + GameSettings.ofDynamicFov);
 			printwriter.println("ofFogType:" + GameSettings.ofFogType);
 			printwriter.println("ofFogStart:" + GameSettings.ofFogStart);
+			printwriter.println("ofCloudsHeight:" + ofCloudsHeight);
 
 			for (KeyBinding keybinding : this.keyBindings) {
 				printwriter.println("key_" + keybinding.getKeyDescription() + ":" + keybinding.getKeyCode());
@@ -1563,7 +1577,7 @@ public class GameSettings {
 	}
 
 	public int func_181147_e() {
-		return this.renderDistanceChunks >= 4 ? this.clouds : 0;
+		return this.renderDistanceChunks >= 4 ? clouds : 0;
 	}
 
 	public boolean func_181148_f() {
@@ -1634,7 +1648,8 @@ public class GameSettings {
 		AO_LEVEL("Smooth Lighting Level", true, false),
 		DYNAMIC_FOV("Dynamic FOV", false, false),
 		FOG_FANCY("Fog", false, false),
-		FOG_START("Fog Start", false, false);
+		FOG_START("Fog Start", false, false),
+		CLOUD_HEIGHT("Cloud Height", true, false);
 
 		private final boolean enumFloat;
 		private final boolean enumBoolean;

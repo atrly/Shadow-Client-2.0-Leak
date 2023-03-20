@@ -6,6 +6,8 @@ import net.lax1dude.eaglercraft.v1_8.internal.buffer.FloatBuffer;
 import net.lax1dude.eaglercraft.v1_8.internal.buffer.IntBuffer;
 import net.lax1dude.eaglercraft.v1_8.internal.teavm.WebGL2RenderingContext;
 
+import static org.lwjgl.opengles.GLES30.glFinish;
+
 /**
  * Copyright (c) 2022-2023 LAX1DUDE. All Rights Reserved.
  * 
@@ -469,6 +471,10 @@ public class PlatformOpenGL {
 	
 	public static final int _wglGetError() {
 		return ctx.getError();
+	}
+
+	public static final void _wglFinish() {
+		glFinish();
 	}
 
 }

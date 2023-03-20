@@ -8,6 +8,7 @@ import net.lax1dude.eaglercraft.v1_8.vector.Vector3f;
 import net.lax1dude.eaglercraft.v1_8.vector.Vector4f;
 
 import static net.lax1dude.eaglercraft.v1_8.opengl.RealOpenGLEnums.*;
+import net.lax1dude.eaglercraft.v1_8.internal.PlatformOpenGL;
 import static net.lax1dude.eaglercraft.v1_8.internal.PlatformOpenGL.*;
 
 /**
@@ -977,5 +978,9 @@ public class GlStateManager {
 
 	public static void recompileShaders() {
 		FixedFunctionPipeline.flushCache();
+	}
+
+	public static void glFinish() {
+		PlatformOpenGL._wglFinish();
 	}
 }
