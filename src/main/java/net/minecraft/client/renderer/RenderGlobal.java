@@ -88,6 +88,7 @@ import net.minecraft.world.chunk.Chunk;
 
 import net.PeytonPlayz585.Optifine.Config;
 import net.PeytonPlayz585.Optifine.CloudRenderer;
+import net.PeytonPlayz585.Optifine.Lagometer;
 
 /**+
  * This portion of EaglercraftX contains deobfuscated Minecraft 1.8 source code.
@@ -635,6 +636,7 @@ public class RenderGlobal implements IWorldAccess, IResourceManagerReloadListene
 		this.lastViewEntityPitch = (double) viewEntity.rotationPitch;
 		this.lastViewEntityYaw = (double) viewEntity.rotationYaw;
 		boolean flag = this.debugFixedClippingHelper != null;
+		Lagometer.timerVisibility.start();
 		if (!flag && this.displayListEntitiesDirty) {
 			this.displayListEntitiesDirty = false;
 			this.renderInfos = Lists.newArrayList();
@@ -715,8 +717,11 @@ public class RenderGlobal implements IWorldAccess, IResourceManagerReloadListene
 			this.debugFixTerrainFrustum = false;
 		}
 
+		Lagometer.timerVisibility.end();
+
 		Set set = this.chunksToUpdate;
 		this.chunksToUpdate = Sets.newLinkedHashSet();
+		 Lagometer.timerChunkUpdate.start();
 
 		for (RenderGlobal.ContainerLocalRenderInformation renderglobal$containerlocalrenderinformation2 : this.renderInfos) {
 			RenderChunk renderchunk4 = renderglobal$containerlocalrenderinformation2.renderChunk;
@@ -737,6 +742,7 @@ public class RenderGlobal implements IWorldAccess, IResourceManagerReloadListene
 			}
 		}
 
+		Lagometer.timerChunkUpdate.end();
 		this.chunksToUpdate.addAll(set);
 		this.mc.mcProfiler.endSection();
 	}

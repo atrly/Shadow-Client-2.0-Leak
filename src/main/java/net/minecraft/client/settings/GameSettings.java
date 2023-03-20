@@ -216,6 +216,7 @@ public class GameSettings {
 	public static boolean ofSmoothWorld = false;
 	public static boolean ofDynamicFov = true;
 	public static int ofFogType = 1;
+	public static boolean ofLagometer = false;
 
 	public static int ofAnimatedWater = 0;
 	public static int ofAnimatedLava = 0;
@@ -663,6 +664,10 @@ public class GameSettings {
             this.mc.renderGlobal.loadRenderers();
         }
 
+		if (parOptions == GameSettings.Options.LAGOMETER) {
+            ofLagometer = !ofLagometer;
+        }
+
 		this.saveOptions();
 	}
 
@@ -761,6 +766,8 @@ public class GameSettings {
 			return ofSmoothFps;
 		case SMOOTH_WORLD:
 			return ofSmoothWorld;
+		case LAGOMETER: 
+			return ofLagometer;
 		default:
 			return false;
 		}
@@ -934,6 +941,8 @@ public class GameSettings {
                 case 4:
                     return s + "Smart";
             }
+        } else if (parOptions == GameSettings.Options.LAGOMETER) {
+            return ofLagometer ? s + "ON" : s + "OFF";
         } else {
 			return s;
 		}
@@ -1370,6 +1379,10 @@ public class GameSettings {
                         GameSettings.ofTrees = limit(GameSettings.ofTrees, OF_TREES_VALUES);
                     }
 
+					if (astring[0].equals("ofLagometer") && astring.length >= 2) {
+                        ofLagometer = Boolean.valueOf(astring[1]).booleanValue();
+                    }
+
 					for (KeyBinding keybinding : this.keyBindings) {
 						if (astring[0].equals("key_" + keybinding.getKeyDescription())) {
 							keybinding.setKeyCode(Integer.parseInt(astring[1]));
@@ -1514,6 +1527,7 @@ public class GameSettings {
 			printwriter.println("ofFogStart:" + GameSettings.ofFogStart);
 			printwriter.println("ofCloudsHeight:" + ofCloudsHeight);
 			printwriter.println("ofTrees:" + GameSettings.ofTrees);
+			printwriter.println("ofLagometer:" + this.ofLagometer);
 
 			for (KeyBinding keybinding : this.keyBindings) {
 				printwriter.println("key_" + keybinding.getKeyDescription() + ":" + keybinding.getKeyCode());
@@ -1668,7 +1682,8 @@ public class GameSettings {
 		FOG_FANCY("Fog", false, false),
 		FOG_START("Fog Start", false, false),
 		CLOUD_HEIGHT("Cloud Height", true, false),
-		TREES("Trees", false, false);
+		TREES("Trees", false, false),
+		LAGOMETER("Lagometer", false, false);
 
 		private final boolean enumFloat;
 		private final boolean enumBoolean;

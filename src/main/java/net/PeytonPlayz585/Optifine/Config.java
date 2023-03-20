@@ -238,6 +238,10 @@ public class Config {
         }
     }
 
+    public static boolean isMinecraftThread() {
+        return Thread.currentThread() == minecraftThread;
+    }
+
     public static void fixChunkLoading() {
         if (chunkFix) {
             if (worldClient != null) {
@@ -265,5 +269,21 @@ public class Config {
                 chunkFixEnd = false;
             }
         }
+    }
+
+    public static int limit(int p_limit_0_, int p_limit_1_, int p_limit_2_) {
+        return p_limit_0_ < p_limit_1_ ? p_limit_1_ : (p_limit_0_ > p_limit_2_ ? p_limit_2_ : p_limit_0_);
+    }
+
+    public static float limit(float p_limit_0_, float p_limit_1_, float p_limit_2_) {
+        return p_limit_0_ < p_limit_1_ ? p_limit_1_ : (p_limit_0_ > p_limit_2_ ? p_limit_2_ : p_limit_0_);
+    }
+
+    public static double limit(double p_limit_0_, double p_limit_2_, double p_limit_4_) {
+        return p_limit_0_ < p_limit_2_ ? p_limit_2_ : (p_limit_0_ > p_limit_4_ ? p_limit_4_ : p_limit_0_);
+    }
+
+    public static float limitTo1(float p_limitTo1_0_) {
+        return p_limitTo1_0_ < 0.0F ? 0.0F : (p_limitTo1_0_ > 1.0F ? 1.0F : p_limitTo1_0_);
     }
 }

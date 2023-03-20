@@ -11,6 +11,9 @@ import com.google.common.collect.Maps;
 import net.lax1dude.eaglercraft.v1_8.log4j.LogManager;
 import net.lax1dude.eaglercraft.v1_8.log4j.Logger;
 
+import net.PeytonPlayz585.Optifine.Config;
+import net.PeytonPlayz585.Optifine.Lagometer;
+
 /**+
  * This portion of EaglercraftX contains deobfuscated Minecraft 1.8 source code.
  * 
@@ -46,6 +49,10 @@ public class Profiler {
 	private String profilingSection = "";
 	private final Map<String, Long> profilingMap = Maps.newHashMap();
 
+	private static final int HASH_SCHEDULED_EXECUTABLES = "scheduledExecutables".hashCode();
+    private static final int HASH_TICK = "tick".hashCode();
+	private static final int HASH_PRE_RENDER_ERRORS = "preRenderErrors".hashCode();
+
 	/**+
 	 * Clear profiling.
 	 */
@@ -59,6 +66,20 @@ public class Profiler {
 	 * Start section
 	 */
 	public void startSection(String name) {
+
+		if (Lagometer.isActive()) {
+            int i = name.hashCode();
+
+            if (i == HASH_SCHEDULED_EXECUTABLES && name.equals("scheduledExecutables")) {
+                Lagometer.timerScheduledExecutables.start();
+            } else if (i == HASH_TICK && name.equals("tick") && Config.isMinecraftThread()) {
+                Lagometer.timerScheduledExecutables.end();
+                Lagometer.timerTick.start();
+            } else if (i == HASH_PRE_RENDER_ERRORS && name.equals("preRenderErrors")) {
+                Lagometer.timerTick.end();
+            }
+        }
+
 		if (this.profilingEnabled) {
 			if (this.profilingSection.length() > 0) {
 				this.profilingSection = this.profilingSection + ".";

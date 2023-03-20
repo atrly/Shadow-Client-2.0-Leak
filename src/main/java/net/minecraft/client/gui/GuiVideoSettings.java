@@ -5,6 +5,7 @@ import net.PeytonPlayz585.Optifine.GuiAnimations;
 import net.PeytonPlayz585.Optifine.GuiDetails;
 import net.PeytonPlayz585.Optifine.GuiPerformance;
 //import net.PeytonPlayz585.Optifine.GuiQuality;
+import net.PeytonPlayz585.Optifine.GuiOther;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.client.settings.GameSettings;
@@ -148,6 +149,10 @@ public class GuiVideoSettings extends GuiScreen {
             
             if (button.id == 231) {
             	Config.showGuiMessage("Shaders are not currently supported!", "Now shut up about them!!");
+            }
+
+            if (button.id == 222) {
+                this.mc.displayGuiScreen(new GuiOther(this, guiGameSettings));
             }
             
             //if (button.id == 231)

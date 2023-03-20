@@ -68,6 +68,7 @@ import net.minecraft.world.WorldSettings;
 import net.minecraft.world.biome.BiomeGenBase;
 
 import net.PeytonPlayz585.Optifine.Config;
+import net.PeytonPlayz585.Optifine.Lagometer;
 
 /**+
  * This portion of EaglercraftX contains deobfuscated Minecraft 1.8 source code.
@@ -922,6 +923,11 @@ public class EntityRenderer implements IResourceManagerReloadListener {
 						GlStateManager.clear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 						GlStateManager.enableOverlayFramebufferBlending();
 						this.mc.ingameGUI.renderGameOverlay(parFloat1);
+
+						if (this.mc.gameSettings.showDebugInfo) {
+                        	Lagometer.showLagometer(scaledresolution);
+                        }
+
 						GlStateManager.disableOverlayFramebufferBlending();
 						this.overlayFramebuffer.endRender();
 					}
@@ -1001,6 +1007,7 @@ public class EntityRenderer implements IResourceManagerReloadListener {
 			}
 
 		}
+		Lagometer.updateLagometer();
 	}
 
 	public void renderStreamIndicator(float partialTicks) {
@@ -1143,14 +1150,17 @@ public class EntityRenderer implements IResourceManagerReloadListener {
 		this.mc.getTextureManager().bindTexture(TextureMap.locationBlocksTexture);
 		RenderHelper.disableStandardItemLighting();
 		this.mc.mcProfiler.endStartSection("terrain_setup");
-		renderglobal.setupTerrain(entity, (double) partialTicks, frustum, this.frameCount++,
-				this.mc.thePlayer.isSpectator());
+		renderglobal.setupTerrain(entity, (double) partialTicks, frustum, this.frameCount++, this.mc.thePlayer.isSpectator());
+
 		if (pass == 0 || pass == 2) {
-			this.mc.mcProfiler.endStartSection("updatechunks");
-			this.mc.renderGlobal.updateChunks(finishTimeNano);
-		}
+            this.mc.mcProfiler.endStartSection("updatechunks");
+            Lagometer.timerChunkUpload.start();
+            this.mc.renderGlobal.updateChunks(finishTimeNano);
+            Lagometer.timerChunkUpload.end();
+        }
 
 		this.mc.mcProfiler.endStartSection("terrain");
+		Lagometer.timerTerrain.start();
 		
 		if (GameSettings.ofSmoothFps && pass > 0) {
             this.mc.mcProfiler.endStartSection("finish");
@@ -1168,6 +1178,7 @@ public class EntityRenderer implements IResourceManagerReloadListener {
 		this.mc.getTextureManager().getTexture(TextureMap.locationBlocksTexture).setBlurMipmap(false, false);
 		renderglobal.renderBlockLayer(EnumWorldBlockLayer.CUTOUT, (double) partialTicks, pass, entity);
 		this.mc.getTextureManager().getTexture(TextureMap.locationBlocksTexture).restoreLastBlurMipmap();
+		Lagometer.timerTerrain.end();
 		GlStateManager.alphaFunc(GL_GREATER, 0.1F);
 		GlStateManager.shadeModel(GL_FLAT);
 		if (!this.debugView) {
