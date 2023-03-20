@@ -31,7 +31,7 @@ if this project has to be taken down because of any legal reasons please email m
 
 # TODO list 
 - Fix TeaVM compile warning (Not necessary but its annoying)
-- Fix flickering void
+- Fix Known Bugs
 - Finish porting Optifine features
 - Automatic Login Menu on Multiplayer screen
 - Add capes with MySQL database
