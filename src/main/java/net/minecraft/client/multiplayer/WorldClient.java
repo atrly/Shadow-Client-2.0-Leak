@@ -135,7 +135,7 @@ public class WorldClient extends World {
 		return this.clientChunkProvider;
 	}
 
-	protected void updateBlocks() {
+	public void updateBlocks() {
 		super.updateBlocks();
 		this.previousActiveChunkSet.retainAll(this.activeChunkSet);
 		if (this.previousActiveChunkSet.size() == this.activeChunkSet.size()) {

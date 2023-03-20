@@ -1650,6 +1650,7 @@ public class Minecraft implements IThreadListener {
 		this.mcSoundHandler.stopSounds();
 		this.theWorld = worldClientIn;
 		if (worldClientIn != null) {
+			Config.worldClient = worldClientIn;
 			if (this.renderGlobal != null) {
 				this.renderGlobal.setWorldAndLoadRenderers(worldClientIn);
 			}

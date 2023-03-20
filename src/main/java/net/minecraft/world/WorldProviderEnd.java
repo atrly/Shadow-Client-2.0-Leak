@@ -1,5 +1,6 @@
 package net.minecraft.world;
 
+import net.PeytonPlayz585.Optifine.Config;
 import net.minecraft.util.BlockPos;
 import net.minecraft.util.MathHelper;
 import net.minecraft.util.Vec3;
@@ -28,6 +29,7 @@ public class WorldProviderEnd extends WorldProvider {
 	 */
 	public void registerWorldChunkManager() {
 		this.dimensionId = 1;
+		Config.chunkFixEnd = true;
 		this.hasNoSky = true;
 	}
 

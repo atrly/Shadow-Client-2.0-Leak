@@ -1,5 +1,6 @@
 package net.minecraft.world;
 
+import net.PeytonPlayz585.Optifine.Config;
 import net.minecraft.util.Vec3;
 import net.minecraft.world.border.WorldBorder;
 
@@ -29,6 +30,7 @@ public class WorldProviderHell extends WorldProvider {
 		this.isHellWorld = true;
 		this.hasNoSky = true;
 		this.dimensionId = -1;
+		Config.chunkFixNether = true;
 	}
 
 	/**+

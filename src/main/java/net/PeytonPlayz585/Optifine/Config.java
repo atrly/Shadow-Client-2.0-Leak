@@ -8,6 +8,8 @@ import net.minecraft.client.Minecraft;
 import net.lax1dude.eaglercraft.v1_8.log4j.Logger;
 import net.lax1dude.eaglercraft.v1_8.log4j.LogManager;
 
+import net.minecraft.client.multiplayer.WorldClient;
+
 public class Config {
 
     public static float occlusionLevel = GameSettings.ofAoLevel;
@@ -15,6 +17,12 @@ public class Config {
     private static final Logger LOGGER = LogManager.getLogger();
 
     private static Thread minecraftThread = null;
+
+    public static boolean chunkFix = true;
+    public static boolean chunkFixNether = false;
+    public static boolean chunkFixEnd = false;
+
+    public static WorldClient worldClient = null;
 
     public static void initDisplay() {
         minecraftThread = Thread.currentThread();
@@ -227,6 +235,35 @@ public class Config {
             }
         } catch (Throwable throwable) {
             warn(throwable.getClass().getName() + ": " + throwable.getMessage());
+        }
+    }
+
+    public static void fixChunkLoading() {
+        if (chunkFix) {
+            if (worldClient != null) {
+                Minecraft.getMinecraft().renderGlobal.loadRenderers();
+                Minecraft.getMinecraft().renderGlobal.setWorldAndLoadRenderers(worldClient);
+                worldClient.updateBlocks();
+                chunkFix = false;
+            }
+        }
+
+        if (chunkFixNether) {
+            if (worldClient != null) {
+                Minecraft.getMinecraft().renderGlobal.loadRenderers();
+                Minecraft.getMinecraft().renderGlobal.setWorldAndLoadRenderers(worldClient);
+                worldClient.updateBlocks();
+                chunkFixNether = false;
+            }
+        }
+
+        if (chunkFixEnd) {
+            if (worldClient != null) {
+                Minecraft.getMinecraft().renderGlobal.loadRenderers();
+                Minecraft.getMinecraft().renderGlobal.setWorldAndLoadRenderers(worldClient);
+                worldClient.updateBlocks();
+                chunkFixEnd = false;
+            }
         }
     }
 }

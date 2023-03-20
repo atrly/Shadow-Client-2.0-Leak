@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.google.common.collect.Lists;
 
+import net.PeytonPlayz585.Optifine.Config;
 import net.lax1dude.eaglercraft.v1_8.log4j.LogManager;
 import net.lax1dude.eaglercraft.v1_8.log4j.Logger;
 import net.minecraft.entity.EnumCreatureType;
@@ -16,6 +17,8 @@ import net.minecraft.world.biome.BiomeGenBase;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.EmptyChunk;
 import net.minecraft.world.chunk.IChunkProvider;
+
+import net.PeytonPlayz585.Optifine.Config;
 
 /**+
  * This portion of EaglercraftX contains deobfuscated Minecraft 1.8 source code.
@@ -87,6 +90,7 @@ public class ChunkProviderClient implements IChunkProvider {
 		this.chunkMapping.add(ChunkCoordIntPair.chunkXZ2Int(parInt1, parInt2), chunk);
 		this.chunkListing.add(chunk);
 		chunk.setChunkLoaded(true);
+		Config.fixChunkLoading();
 		return chunk;
 	}
 
