@@ -27,6 +27,7 @@ if this project has to be taken down because of any legal reasons please email m
 - Clouds not rendering. Status: (Patched in next update)
 - Smooth FPS crashing games. Status: (Patched in next update)
 - Smart Leaves break with a texture pack. Status: (Patched in next update)
+- Chunk loading breaks. Status: (Patched in next update)
 
 # TODO list 
 - Fix TeaVM compile warning (Not necessary but its annoying)
