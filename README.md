@@ -24,7 +24,8 @@ if this project has to be taken down because of any legal reasons please email m
 
 # Known Bugs
 - Flickering void
-- Clouds not rendering (Will be fixed in next update)
+- Clouds not rendering (Patched in next update)
+- Smooth FPS crashing games (Patched in next update)
 
 # TODO list 
 - Fix TeaVM compile warning (Not necessary but its annoying)
