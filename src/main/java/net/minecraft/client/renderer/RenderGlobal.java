@@ -619,9 +619,9 @@ public class RenderGlobal implements IWorldAccess, IResourceManagerReloadListene
 			this.viewFrustum.updateChunkPositions(viewEntity.posX, viewEntity.posZ);
 		}
 
-		//if (Config.isDynamicLights()) {
-            //DynamicLights.update(this);
-        //}
+		if (Config.isDynamicLights()) {
+            DynamicLights.update();
+        }
 
 		this.theWorld.theProfiler.endStartSection("renderlistcamera");
 		double d3 = viewEntity.lastTickPosX + (viewEntity.posX - viewEntity.lastTickPosX) * partialTicks;
