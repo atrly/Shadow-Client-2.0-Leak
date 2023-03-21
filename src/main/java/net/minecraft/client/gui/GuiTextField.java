@@ -462,7 +462,6 @@ public class GuiTextField extends Gui {
 			}
 
 			if (s.length() > 0) {
-            	
             	String s1 = flag ? s.substring(0, j) : s;
                 String s2 = s1;
                 
@@ -488,20 +487,15 @@ public class GuiTextField extends Gui {
                 		
             		if (password.length() > 0) {
             			isTypingPassword = true;
+						
             			for (int n = 0; n < password.length(); n++) {
                     		s2 += "*";
                     	}
             		}
-                	
-                	
-                	
-                }
-                else {
+                } else {
                 	isTypingPassword = false;
                 }
                 
-                
-
                 j1 = this.fontRendererInstance.drawStringWithShadow(s2, (float) l, (float) i1, i);
             }
 
