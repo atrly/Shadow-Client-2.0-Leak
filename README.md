@@ -14,7 +14,7 @@ if this project has to be taken down because of any legal reasons please email m
 
 - PeytonPlayz585: Developer of Shadow Client
 - Kone: Loading Screen and Password Hiding
-- HotDogKingYT: nothing really, he just owns the server. --> https://dsc.gg/shadow-network-discord <--
+- WinixQT: nothing really, he just owns the server. --> https://dsc.gg/shadow-network-discord <--
 
 # Forums and FAQ
 - coming soon...
