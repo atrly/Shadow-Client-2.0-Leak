@@ -286,4 +286,16 @@ public class Config {
     public static float limitTo1(float p_limitTo1_0_) {
         return p_limitTo1_0_ < 0.0F ? 0.0F : (p_limitTo1_0_ > 1.0F ? 1.0F : p_limitTo1_0_);
     }
+
+    public static boolean isDynamicLights() {
+        return GameSettings.ofDynamicLights != 3;
+    }
+
+    public static boolean isDynamicLightsFast() {
+        return GameSettings.ofDynamicLights == 1;
+    }
+
+    public static boolean isDynamicHandLight() {
+        return !isDynamicLights() ? false : true;
+    }
 }

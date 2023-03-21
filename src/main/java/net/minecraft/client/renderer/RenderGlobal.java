@@ -89,6 +89,7 @@ import net.minecraft.world.chunk.Chunk;
 import net.PeytonPlayz585.Optifine.Config;
 import net.PeytonPlayz585.Optifine.CloudRenderer;
 import net.PeytonPlayz585.Optifine.Lagometer;
+import net.PeytonPlayz585.Optifine.DynamicLights;
 
 /**+
  * This portion of EaglercraftX contains deobfuscated Minecraft 1.8 source code.
@@ -371,6 +372,11 @@ public class RenderGlobal implements IWorldAccess, IResourceManagerReloadListene
 		this.frustumUpdatePosChunkZ = Integer.MIN_VALUE;
 		this.renderManager.set(worldClientIn);
 		this.theWorld = worldClientIn;
+
+		if (Config.isDynamicLights()) {
+			DynamicLights.clear();
+		}
+
 		if (worldClientIn != null) {
 			worldClientIn.addWorldAccess(this);
 			this.loadRenderers();
@@ -386,6 +392,12 @@ public class RenderGlobal implements IWorldAccess, IResourceManagerReloadListene
 			this.displayListEntitiesDirty = true;
 			Blocks.leaves.setGraphicsLevel(Config.isTreesFancy());
             Blocks.leaves2.setGraphicsLevel(Config.isTreesFancy());
+			BlockModelRenderer.updateAoLightValue();
+
+			if (Config.isDynamicLights()) {
+                DynamicLights.clear();
+            }
+
 			this.renderDistanceChunks = this.mc.gameSettings.renderDistanceChunks;
 
 			if (this.viewFrustum != null) {
@@ -606,6 +618,10 @@ public class RenderGlobal implements IWorldAccess, IResourceManagerReloadListene
 			this.frustumUpdatePosChunkZ = viewEntity.chunkCoordZ;
 			this.viewFrustum.updateChunkPositions(viewEntity.posX, viewEntity.posZ);
 		}
+
+		//if (Config.isDynamicLights()) {
+            //DynamicLights.update(this);
+        //}
 
 		this.theWorld.theProfiler.endStartSection("renderlistcamera");
 		double d3 = viewEntity.lastTickPosX + (viewEntity.posX - viewEntity.lastTickPosX) * partialTicks;
@@ -1895,6 +1911,9 @@ public class RenderGlobal implements IWorldAccess, IResourceManagerReloadListene
 	 * tracker.
 	 */
 	public void onEntityAdded(Entity var1) {
+		if (Config.isDynamicLights()) {
+            DynamicLights.entityAdded(var1, this);
+        }
 	}
 
 	/**+
@@ -1904,6 +1923,9 @@ public class RenderGlobal implements IWorldAccess, IResourceManagerReloadListene
 	 * entity tracker.
 	 */
 	public void onEntityRemoved(Entity var1) {
+		if (Config.isDynamicLights()) {
+            DynamicLights.entityRemoved(var1, this);
+        }
 	}
 
 	/**+
@@ -2191,5 +2213,22 @@ public class RenderGlobal implements IWorldAccess, IResourceManagerReloadListene
 
 	public void resetClouds() {
         this.cloudRenderer.reset();
+    }
+
+	public RenderChunk getRenderChunk(BlockPos p_getRenderChunk_1_) {
+        return this.viewFrustum.getRenderChunk(p_getRenderChunk_1_);
+    }
+
+    public RenderChunk getRenderChunk(RenderChunk p_getRenderChunk_1_, EnumFacing p_getRenderChunk_2_) {
+        if (p_getRenderChunk_1_ == null) {
+            return null;
+        } else {
+            BlockPos blockpos = p_getRenderChunk_1_.func_181701_a(p_getRenderChunk_2_);
+            return this.viewFrustum.getRenderChunk(blockpos);
+        }
+    }
+
+	public WorldClient getWorld() {
+        return this.theWorld;
     }
 }

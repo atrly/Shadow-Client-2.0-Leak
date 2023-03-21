@@ -38,6 +38,7 @@ import net.minecraft.util.MathHelper;
 import net.minecraft.world.EnumDifficulty;
 
 import net.PeytonPlayz585.Optifine.Config;
+import net.PeytonPlayz585.Optifine.DynamicLights;
 
 /**+
  * This portion of EaglercraftX contains deobfuscated Minecraft 1.8 source code.
@@ -226,6 +227,9 @@ public class GameSettings {
 	public static int ofChunkUpdates = 1;
 	public static int ofTrees = 0;
 	private static final int[] OF_TREES_VALUES = new int[] {0, 1, 4, 2};
+	private static final int[] OF_DYNAMIC_LIGHTS = new int[] {3, 1, 2};
+    private static final String[] KEYS_DYNAMIC_LIGHTS = new String[] {"options.off", "options.graphics.fast", "options.graphics.fancy"};
+	public static int ofDynamicLights = 3;
 
 	public static float ofAoLevel = 1.0F;
 	public static float ofFogStart = 0.8F;
@@ -677,6 +681,11 @@ public class GameSettings {
 			ofSmoothFps =! ofSmoothFps;
 		}
 
+		if (parOptions == GameSettings.Options.DYNAMIC_LIGHTS) {
+            ofDynamicLights = nextValue(ofDynamicLights, OF_DYNAMIC_LIGHTS);
+            DynamicLights.removeLights(this.mc.renderGlobal);
+        }
+
 		this.saveOptions();
 	}
 
@@ -956,6 +965,9 @@ public class GameSettings {
             return ofLagometer ? s + "ON" : s + "OFF";
         } else if (parOptions == GameSettings.Options.PROFILER) {
             return ofProfiler ? s + "ON" : s + "OFF";
+        } else if (parOptions == GameSettings.Options.DYNAMIC_LIGHTS) {
+            int k = indexOf(ofDynamicLights, OF_DYNAMIC_LIGHTS);
+            return s + getTranslation(KEYS_DYNAMIC_LIGHTS, k);
         } else {
 			return s;
 		}
@@ -1400,6 +1412,11 @@ public class GameSettings {
                         ofProfiler = Boolean.valueOf(astring[1]).booleanValue();
                     }
 
+					if (astring[0].equals("ofDynamicLights") && astring.length >= 2) {
+                        ofDynamicLights = Integer.valueOf(astring[1]).intValue();
+                        ofDynamicLights = limit(this.ofDynamicLights, OF_DYNAMIC_LIGHTS);
+                    }
+
 					for (KeyBinding keybinding : this.keyBindings) {
 						if (astring[0].equals("key_" + keybinding.getKeyDescription())) {
 							keybinding.setKeyCode(Integer.parseInt(astring[1]));
@@ -1546,6 +1563,7 @@ public class GameSettings {
 			printwriter.println("ofTrees:" + GameSettings.ofTrees);
 			printwriter.println("ofLagometer:" + ofLagometer);
 			printwriter.println("ofProfiler:" + ofProfiler);
+			printwriter.println("ofDynamicLights:" + ofDynamicLights);
 
 			for (KeyBinding keybinding : this.keyBindings) {
 				printwriter.println("key_" + keybinding.getKeyDescription() + ":" + keybinding.getKeyCode());
@@ -1702,7 +1720,8 @@ public class GameSettings {
 		CLOUD_HEIGHT("Cloud Height", true, false),
 		TREES("Trees", false, false),
 		LAGOMETER("Lagometer", false, false),
-		PROFILER("Debug Profiler", false, false);
+		PROFILER("Debug Profiler", false, false),
+		DYNAMIC_LIGHTS("Dynamic Lights", false, false);
 
 		private final boolean enumFloat;
 		private final boolean enumBoolean;

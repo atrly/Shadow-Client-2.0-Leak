@@ -37,6 +37,8 @@ import net.minecraft.world.storage.SaveDataMemoryStorage;
 import net.minecraft.world.storage.SaveHandlerMP;
 import net.minecraft.world.storage.WorldInfo;
 
+import net.PeytonPlayz585.Optifine.Config;
+import net.PeytonPlayz585.Optifine.DynamicLights;
 import net.PeytonPlayz585.Optifine.PlayerControllerOF;
 
 /**+
@@ -431,6 +433,16 @@ public class WorldClient extends World {
 
 		super.setWorldTime(i);
 	}
+
+	public int getCombinedLight(BlockPos pos, int lightValue) {
+        int i = super.getCombinedLight(pos, lightValue);
+
+        if (Config.isDynamicLights()) {
+            i = DynamicLights.getCombinedLight(pos, i);
+        }
+
+        return i;
+    }
 
 	/**
      * Sets the block state at a given location. Flag 1 will cause a block update. Flag 2 will send the change to

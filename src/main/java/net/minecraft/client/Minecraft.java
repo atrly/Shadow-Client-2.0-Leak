@@ -153,6 +153,7 @@ import net.minecraft.world.WorldProviderHell;
 import net.minecraft.world.WorldSettings;
 
 import net.PeytonPlayz585.Optifine.Config;
+import net.PeytonPlayz585.Optifine.WorldOF;
 
 /**+
  * This portion of EaglercraftX contains deobfuscated Minecraft 1.8 source code.
@@ -225,7 +226,7 @@ public class Minecraft implements IThreadListener {
 	long field_181543_z = System.nanoTime();
 	private final boolean jvm64bit;
 	private final boolean isDemo;
-	private EaglercraftNetworkManager myNetworkManager;
+	public EaglercraftNetworkManager myNetworkManager;
 	private boolean integratedServerIsRunning;
 	/**+
 	 * The profiler instance
@@ -1565,7 +1566,7 @@ public class Minecraft implements IThreadListener {
 				this.theWorld.setAllowedSpawnTypes(this.theWorld.getDifficulty() != EnumDifficulty.PEACEFUL, true);
 
 				try {
-					this.theWorld.tick();
+					WorldOF.tick();
 				} catch (Throwable throwable2) {
 					CrashReport crashreport2 = CrashReport.makeCrashReport(throwable2, "Exception in world tick");
 					if (this.theWorld == null) {

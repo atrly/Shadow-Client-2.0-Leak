@@ -31,6 +31,9 @@ import net.minecraft.util.MathHelper;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.storage.MapData;
 
+import net.PeytonPlayz585.Optifine.Config;
+import net.PeytonPlayz585.Optifine.DynamicLights;
+
 /**+
  * This portion of EaglercraftX contains deobfuscated Minecraft 1.8 source code.
  * 
@@ -108,8 +111,12 @@ public class ItemRenderer {
 	}
 
 	private void func_178109_a(AbstractClientPlayer clientPlayer) {
-		int i = this.mc.theWorld.getCombinedLight(new BlockPos(clientPlayer.posX,
-				clientPlayer.posY + (double) clientPlayer.getEyeHeight(), clientPlayer.posZ), 0);
+		int i = this.mc.theWorld.getCombinedLight(new BlockPos(clientPlayer.posX, clientPlayer.posY + (double) clientPlayer.getEyeHeight(), clientPlayer.posZ), 0);
+
+		if (Config.isDynamicLights()) {
+            i = DynamicLights.getCombinedLight(this.mc.getRenderViewEntity(), i);
+        }
+
 		float f = (float) (i & '\uffff');
 		float f1 = (float) (i >> 16);
 		OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, f, f1);
