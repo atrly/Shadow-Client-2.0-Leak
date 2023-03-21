@@ -452,5 +452,9 @@ public class PlatformOpenGL {
 	public static final int _wglGetError() {
 		return glGetError();
 	}
+	
+	public static final void _wglFinish() {
+		glFinish();
+	}
 
 }
