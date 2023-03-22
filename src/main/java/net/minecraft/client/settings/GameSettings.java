@@ -232,6 +232,7 @@ public class GameSettings {
     private static final String[] KEYS_DYNAMIC_LIGHTS = new String[] {"options.off", "options.graphics.fast", "options.graphics.fancy"};
 	public static int ofDynamicLights = 3;
 	public static int ofBetterGrass = 3;
+	public static int ofRain = 0;
 
 	public static float ofAoLevel = 1.0F;
 	public static float ofFogStart = 0.8F;
@@ -700,6 +701,14 @@ public class GameSettings {
 			Minecraft.getMinecraft().renderGlobal.loadRenderers();
         }
 
+		if (parOptions == GameSettings.Options.RAIN) {
+            ++GameSettings.ofRain;
+
+            if (GameSettings.ofRain > 3) {
+                GameSettings.ofRain = 0;
+            }
+        }
+
 		this.saveOptions();
 	}
 
@@ -992,6 +1001,20 @@ public class GameSettings {
 
                 default:
                     return s + "OFF";
+            }
+        } else if (parOptions == GameSettings.Options.RAIN) {
+            switch (GameSettings.ofRain) {
+                case 1:
+                    return s + "Fast";
+
+                case 2:
+                    return s + "Fancy";
+
+                case 3:
+                    return s + "OFF";
+
+                default:
+                    return s + "Default";
             }
         } else {
 			return s;
@@ -1446,6 +1469,11 @@ public class GameSettings {
                         ofBetterGrass = Integer.valueOf(astring[1]).intValue();
                         ofBetterGrass = ofBetterGrass < 1 ? 1 : (ofBetterGrass > 3 ? 3 : ofBetterGrass);
                     }
+
+					if (astring[0].equals("ofRain") && astring.length >= 2) {
+                        GameSettings.ofRain = Integer.valueOf(astring[1]).intValue();
+                        GameSettings.ofRain = GameSettings.ofRain < 0 ? 0 : (GameSettings.ofRain > 3 ? 3 : GameSettings.ofRain);
+                    }
 				
 					for (KeyBinding keybinding : this.keyBindings) {
 						if (astring[0].equals("key_" + keybinding.getKeyDescription())) {
@@ -1595,6 +1623,7 @@ public class GameSettings {
 			printwriter.println("ofProfiler:" + ofProfiler);
 			printwriter.println("ofDynamicLights:" + ofDynamicLights);
 			printwriter.println("ofBetterGrass:" + ofBetterGrass);
+			printwriter.println("ofRain:" + GameSettings.ofRain);
 
 			for (KeyBinding keybinding : this.keyBindings) {
 				printwriter.println("key_" + keybinding.getKeyDescription() + ":" + keybinding.getKeyCode());
@@ -1753,7 +1782,8 @@ public class GameSettings {
 		LAGOMETER("Lagometer", false, false),
 		PROFILER("Debug Profiler", false, false),
 		DYNAMIC_LIGHTS("Dynamic Lights", false, false),
-		BETTER_GRASS("Better Grass", false, false);
+		BETTER_GRASS("Better Grass", false, false),
+		RAIN("Rain & Snow", false, false);
 
 		private final boolean enumFloat;
 		private final boolean enumBoolean;

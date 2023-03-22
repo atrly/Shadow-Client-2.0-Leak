@@ -1292,225 +1292,223 @@ public class EntityRenderer implements IResourceManagerReloadListener {
 
 	}
 
-	private void addRainParticles() {
-		float f = this.mc.theWorld.getRainStrength(1.0F);
-		if (!this.mc.gameSettings.fancyGraphics) {
-			f /= 2.0F;
-		}
+	private void addRainParticles()
+    {
+        float f = this.mc.theWorld.getRainStrength(1.0F);
 
-		if (f != 0.0F) {
-			this.random.setSeed((long) this.rendererUpdateCount * 312987231L);
-			Entity entity = this.mc.getRenderViewEntity();
-			WorldClient worldclient = this.mc.theWorld;
-			BlockPos blockpos = new BlockPos(entity);
-			byte b0 = 10;
-			double d0 = 0.0D;
-			double d1 = 0.0D;
-			double d2 = 0.0D;
-			int i = 0;
-			int j = (int) (100.0F * f * f);
-			if (this.mc.gameSettings.particleSetting == 1) {
-				j >>= 1;
-			} else if (this.mc.gameSettings.particleSetting == 2) {
-				j = 0;
-			}
+        if (!Config.isRainFancy()) {
+            f /= 2.0F;
+        }
 
-			for (int k = 0; k < j; ++k) {
-				BlockPos blockpos1 = worldclient
-						.getPrecipitationHeight(blockpos.add(this.random.nextInt(b0) - this.random.nextInt(b0), 0,
-								this.random.nextInt(b0) - this.random.nextInt(b0)));
-				BiomeGenBase biomegenbase = worldclient.getBiomeGenForCoords(blockpos1);
-				BlockPos blockpos2 = blockpos1.down();
-				Block block = worldclient.getBlockState(blockpos2).getBlock();
-				if (blockpos1.getY() <= blockpos.getY() + b0 && blockpos1.getY() >= blockpos.getY() - b0
-						&& biomegenbase.canSpawnLightningBolt()
-						&& biomegenbase.getFloatTemperature(blockpos1) >= 0.15F) {
-					double d3 = this.random.nextDouble();
-					double d4 = this.random.nextDouble();
-					if (block.getMaterial() == Material.lava) {
-						this.mc.theWorld.spawnParticle(EnumParticleTypes.SMOKE_NORMAL, (double) blockpos1.getX() + d3,
-								(double) ((float) blockpos1.getY() + 0.1F) - block.getBlockBoundsMinY(),
-								(double) blockpos1.getZ() + d4, 0.0D, 0.0D, 0.0D, new int[0]);
-					} else if (block.getMaterial() != Material.air) {
-						block.setBlockBoundsBasedOnState(worldclient, blockpos2);
-						++i;
-						if (this.random.nextInt(i) == 0) {
-							d0 = (double) blockpos2.getX() + d3;
-							d1 = (double) ((float) blockpos2.getY() + 0.1F) + block.getBlockBoundsMaxY() - 1.0D;
-							d2 = (double) blockpos2.getZ() + d4;
-						}
-
-						this.mc.theWorld.spawnParticle(EnumParticleTypes.WATER_DROP, (double) blockpos2.getX() + d3,
-								(double) ((float) blockpos2.getY() + 0.1F) + block.getBlockBoundsMaxY(),
-								(double) blockpos2.getZ() + d4, 0.0D, 0.0D, 0.0D, new int[0]);
-					}
-				}
-			}
-
-			if (i > 0 && this.random.nextInt(3) < this.rainSoundCounter++) {
-				this.rainSoundCounter = 0;
-				if (d1 > (double) (blockpos.getY() + 1) && worldclient.getPrecipitationHeight(blockpos)
-						.getY() > MathHelper.floor_float((float) blockpos.getY())) {
-					this.mc.theWorld.playSound(d0, d1, d2, "ambient.weather.rain", 0.1F, 0.5F, false);
-				} else {
-					this.mc.theWorld.playSound(d0, d1, d2, "ambient.weather.rain", 0.2F, 1.0F, false);
-				}
-			}
-
-		}
-	}
+        /*
+        if (f != 0.0F && Config.isRainSplash())
+        {
+            this.random.setSeed((long)this.rendererUpdateCount * 312987231L);
+            Entity entity = this.mc.getRenderViewEntity();
+            WorldClient worldclient = this.mc.theWorld;
+            BlockPos blockpos = new BlockPos(entity);
+            byte b0 = 10;
+            double d0 = 0.0D;
+            double d1 = 0.0D;
+            double d2 = 0.0D;
+            int i = 0;
+            int j = (int)(100.0F * f * f);
+            if (this.mc.gameSettings.particleSetting == 1)
+            {
+                j >>= 1;
+            }
+            else if (this.mc.gameSettings.particleSetting == 2)
+            {
+                j = 0;
+            }
+            for (int k = 0; k < j; ++k)
+            {
+                BlockPos blockpos1 = worldclient.getPrecipitationHeight(blockpos.add(this.random.nextInt(b0) - this.random.nextInt(b0), 0, this.random.nextInt(b0) - this.random.nextInt(b0)));
+                BiomeGenBase biomegenbase = worldclient.getBiomeGenForCoords(blockpos1);
+                BlockPos blockpos2 = blockpos1.down();
+                Block block = worldclient.getBlockState(blockpos2).getBlock();
+                if (blockpos1.getY() <= blockpos.getY() + b0 && blockpos1.getY() >= blockpos.getY() - b0 && biomegenbase.canSpawnLightningBolt() && biomegenbase.getFloatTemperature(blockpos1) >= 0.15F)
+                {
+                    double d3 = this.random.nextDouble();
+                    double d4 = this.random.nextDouble();
+                    if (block.getMaterial() == Material.lava)
+                    {
+                        this.mc.theWorld.spawnParticle(EnumParticleTypes.SMOKE_NORMAL, (double)blockpos1.getX() + d3, (double)((float)blockpos1.getY() + 0.1F) - block.getBlockBoundsMinY(), (double)blockpos1.getZ() + d4, 0.0D, 0.0D, 0.0D, new int[0]);
+                    }
+                    else if (block.getMaterial() != Material.air)
+                    {
+                        block.setBlockBoundsBasedOnState(worldclient, blockpos2);
+                        ++i;
+                        if (this.random.nextInt(i) == 0)
+                        {
+                            d0 = (double)blockpos2.getX() + d3;
+                            d1 = (double)((float)blockpos2.getY() + 0.1F) + block.getBlockBoundsMaxY() - 1.0D;
+                            d2 = (double)blockpos2.getZ() + d4;
+                        }
+                        this.mc.theWorld.spawnParticle(EnumParticleTypes.WATER_DROP, (double)blockpos2.getX() + d3, (double)((float)blockpos2.getY() + 0.1F) + block.getBlockBoundsMaxY(), (double)blockpos2.getZ() + d4, 0.0D, 0.0D, 0.0D, new int[0]);
+                    }
+                }
+            }
+            if (i > 0 && this.random.nextInt(3) < this.rainSoundCounter++)
+            {
+                this.rainSoundCounter = 0;
+                if (d1 > (double)(blockpos.getY() + 1) && worldclient.getPrecipitationHeight(blockpos).getY() > MathHelper.floor_float((float)blockpos.getY()))
+                {
+                    this.mc.theWorld.playSound(d0, d1, d2, "ambient.weather.rain", 0.1F, 0.5F, false);
+                }
+                else
+                {
+                    this.mc.theWorld.playSound(d0, d1, d2, "ambient.weather.rain", 0.2F, 1.0F, false);
+                }
+            }
+        }
+        */
+    }
 
 	/**+
 	 * Render rain and snow
 	 */
 	protected void renderRainSnow(float partialTicks) {
-		float f = this.mc.theWorld.getRainStrength(partialTicks);
-		if (f > 0.0F) {
-			this.enableLightmap();
-			Entity entity = this.mc.getRenderViewEntity();
-			WorldClient worldclient = this.mc.theWorld;
-			int i = MathHelper.floor_double(entity.posX);
-			int j = MathHelper.floor_double(entity.posY);
-			int k = MathHelper.floor_double(entity.posZ);
-			Tessellator tessellator = Tessellator.getInstance();
-			WorldRenderer worldrenderer = tessellator.getWorldRenderer();
-			GlStateManager.disableCull();
-			EaglercraftGPU.glNormal3f(0.0F, 1.0F, 0.0F);
-			GlStateManager.enableBlend();
-			GlStateManager.tryBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, 1, 0);
-			GlStateManager.alphaFunc(GL_GREATER, 0.1F);
-			double d0 = entity.lastTickPosX + (entity.posX - entity.lastTickPosX) * (double) partialTicks;
-			double d1 = entity.lastTickPosY + (entity.posY - entity.lastTickPosY) * (double) partialTicks;
-			double d2 = entity.lastTickPosZ + (entity.posZ - entity.lastTickPosZ) * (double) partialTicks;
-			int l = MathHelper.floor_double(d1);
-			byte b0 = 5;
-			if (this.mc.gameSettings.fancyGraphics) {
-				b0 = 10;
-			}
+        float f5 = this.mc.theWorld.getRainStrength(partialTicks);
 
-			byte b1 = -1;
-			float f1 = (float) this.rendererUpdateCount + partialTicks;
-			worldrenderer.setTranslation(-d0, -d1, -d2);
-			GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
-			BlockPos.MutableBlockPos blockpos$mutableblockpos = new BlockPos.MutableBlockPos();
+        if (f5 > 0.0F) {
+            if (Config.isRainOff()) {
+                return;
+            }
 
-			for (int i1 = k - b0; i1 <= k + b0; ++i1) {
-				for (int j1 = i - b0; j1 <= i + b0; ++j1) {
-					int k1 = (i1 - k + 16) * 32 + j1 - i + 16;
-					double d3 = (double) this.rainXCoords[k1] * 0.5D;
-					double d4 = (double) this.rainYCoords[k1] * 0.5D;
-					blockpos$mutableblockpos.func_181079_c(j1, 0, i1);
-					BiomeGenBase biomegenbase = worldclient.getBiomeGenForCoords(blockpos$mutableblockpos);
-					if (biomegenbase.canSpawnLightningBolt() || biomegenbase.getEnableSnow()) {
-						int l1 = worldclient.getPrecipitationHeight(blockpos$mutableblockpos).getY();
-						int i2 = j - b0;
-						int j2 = j + b0;
-						if (i2 < l1) {
-							i2 = l1;
-						}
+            this.enableLightmap();
+            Entity entity = this.mc.getRenderViewEntity();
+            WorldClient worldclient = this.mc.theWorld;
+            int i = MathHelper.floor_double(entity.posX);
+            int j = MathHelper.floor_double(entity.posY);
+            int k = MathHelper.floor_double(entity.posZ);
+            Tessellator tessellator = Tessellator.getInstance();
+            WorldRenderer worldrenderer = tessellator.getWorldRenderer();
+            GlStateManager.disableCull();
+            EaglercraftGPU.glNormal3f(0.0F, 1.0F, 0.0F);
+            GlStateManager.enableBlend();
+            GlStateManager.tryBlendFuncSeparate(770, 771, 1, 0);
+            GlStateManager.alphaFunc(516, 0.1F);
+            double d0 = entity.lastTickPosX + (entity.posX - entity.lastTickPosX) * (double)partialTicks;
+            double d1 = entity.lastTickPosY + (entity.posY - entity.lastTickPosY) * (double)partialTicks;
+            double d2 = entity.lastTickPosZ + (entity.posZ - entity.lastTickPosZ) * (double)partialTicks;
+            int l = MathHelper.floor_double(d1);
+            byte b0 = 5;
 
-						if (j2 < l1) {
-							j2 = l1;
-						}
+            if (Config.isRainFancy()) {
+                b0 = 10;
+            }
 
-						int k2 = l1;
-						if (l1 < l) {
-							k2 = l;
-						}
+            byte b1 = -1;
+            float f = (float)this.rendererUpdateCount + partialTicks;
+            worldrenderer.setTranslation(-d0, -d1, -d2);
 
-						if (i2 != j2) {
-							this.random
-									.setSeed((long) (j1 * j1 * 3121 + j1 * 45238971 ^ i1 * i1 * 418711 + i1 * 13761));
-							blockpos$mutableblockpos.func_181079_c(j1, i2, i1);
-							float f2 = biomegenbase.getFloatTemperature(blockpos$mutableblockpos);
-							if (f2 >= 0.15F) {
-								if (b1 != 0) {
-									if (b1 >= 0) {
-										tessellator.draw();
-									}
+            if (Config.isRainFancy()) {
+                b0 = 10;
+            }
 
-									b1 = 0;
-									this.mc.getTextureManager().bindTexture(locationRainPng);
-									worldrenderer.begin(7, DefaultVertexFormats.PARTICLE_POSITION_TEX_COLOR_LMAP);
-								}
+            GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
+            BlockPos.MutableBlockPos blockpos$mutableblockpos = new BlockPos.MutableBlockPos();
 
-								double d5 = ((double) (this.rendererUpdateCount + j1 * j1 * 3121 + j1 * 45238971
-										+ i1 * i1 * 418711 + i1 * 13761 & 31) + (double) partialTicks) / 32.0D
-										* (3.0D + this.random.nextDouble());
-								double d6 = (double) ((float) j1 + 0.5F) - entity.posX;
-								double d7 = (double) ((float) i1 + 0.5F) - entity.posZ;
-								float f3 = MathHelper.sqrt_double(d6 * d6 + d7 * d7) / (float) b0;
-								float f4 = ((1.0F - f3 * f3) * 0.5F + 0.5F) * f;
-								blockpos$mutableblockpos.func_181079_c(j1, k2, i1);
-								int l2 = worldclient.getCombinedLight(blockpos$mutableblockpos, 0);
-								int i3 = l2 >> 16 & '\uffff';
-								int j3 = l2 & '\uffff';
-								worldrenderer.pos((double) j1 - d3 + 0.5D, (double) i2, (double) i1 - d4 + 0.5D)
-										.tex(0.0D, (double) i2 * 0.25D + d5).color(1.0F, 1.0F, 1.0F, f4)
-										.lightmap(i3, j3).endVertex();
-								worldrenderer.pos((double) j1 + d3 + 0.5D, (double) i2, (double) i1 + d4 + 0.5D)
-										.tex(1.0D, (double) i2 * 0.25D + d5).color(1.0F, 1.0F, 1.0F, f4)
-										.lightmap(i3, j3).endVertex();
-								worldrenderer.pos((double) j1 + d3 + 0.5D, (double) j2, (double) i1 + d4 + 0.5D)
-										.tex(1.0D, (double) j2 * 0.25D + d5).color(1.0F, 1.0F, 1.0F, f4)
-										.lightmap(i3, j3).endVertex();
-								worldrenderer.pos((double) j1 - d3 + 0.5D, (double) j2, (double) i1 - d4 + 0.5D)
-										.tex(0.0D, (double) j2 * 0.25D + d5).color(1.0F, 1.0F, 1.0F, f4)
-										.lightmap(i3, j3).endVertex();
-							} else {
-								if (b1 != 1) {
-									if (b1 >= 0) {
-										tessellator.draw();
-									}
+            for (int i1 = k - b0; i1 <= k + b0; ++i1) {
+                for (int j1 = i - b0; j1 <= i + b0; ++j1) {
+                    int k1 = (i1 - k + 16) * 32 + j1 - i + 16;
+                    double d3 = (double)this.rainXCoords[k1] * 0.5D;
+                    double d4 = (double)this.rainYCoords[k1] * 0.5D;
+                    blockpos$mutableblockpos.func_181079_c(j1, 0, i1);
+                    BiomeGenBase biomegenbase = worldclient.getBiomeGenForCoords(blockpos$mutableblockpos);
 
-									b1 = 1;
-									this.mc.getTextureManager().bindTexture(locationSnowPng);
-									worldrenderer.begin(7, DefaultVertexFormats.PARTICLE_POSITION_TEX_COLOR_LMAP);
-								}
+                    if (biomegenbase.canSpawnLightningBolt() || biomegenbase.getEnableSnow()) {
+                        int l1 = worldclient.getPrecipitationHeight(blockpos$mutableblockpos).getY();
+                        int i2 = j - b0;
+                        int j2 = j + b0;
 
-								double d8 = (double) (((float) (this.rendererUpdateCount & 511) + partialTicks)
-										/ 512.0F);
-								double d9 = this.random.nextDouble()
-										+ (double) f1 * 0.01D * (double) ((float) this.random.nextGaussian());
-								double d10 = this.random.nextDouble()
-										+ (double) (f1 * (float) this.random.nextGaussian()) * 0.001D;
-								double d11 = (double) ((float) j1 + 0.5F) - entity.posX;
-								double d12 = (double) ((float) i1 + 0.5F) - entity.posZ;
-								float f6 = MathHelper.sqrt_double(d11 * d11 + d12 * d12) / (float) b0;
-								float f5 = ((1.0F - f6 * f6) * 0.3F + 0.5F) * f;
-								blockpos$mutableblockpos.func_181079_c(j1, k2, i1);
-								int k3 = (worldclient.getCombinedLight(blockpos$mutableblockpos, 0) * 3 + 15728880) / 4;
-								int l3 = k3 >> 16 & '\uffff';
-								int i4 = k3 & '\uffff';
-								worldrenderer.pos((double) j1 - d3 + 0.5D, (double) i2, (double) i1 - d4 + 0.5D)
-										.tex(0.0D + d9, (double) i2 * 0.25D + d8 + d10).color(1.0F, 1.0F, 1.0F, f5)
-										.lightmap(l3, i4).endVertex();
-								worldrenderer.pos((double) j1 + d3 + 0.5D, (double) i2, (double) i1 + d4 + 0.5D)
-										.tex(1.0D + d9, (double) i2 * 0.25D + d8 + d10).color(1.0F, 1.0F, 1.0F, f5)
-										.lightmap(l3, i4).endVertex();
-								worldrenderer.pos((double) j1 + d3 + 0.5D, (double) j2, (double) i1 + d4 + 0.5D)
-										.tex(1.0D + d9, (double) j2 * 0.25D + d8 + d10).color(1.0F, 1.0F, 1.0F, f5)
-										.lightmap(l3, i4).endVertex();
-								worldrenderer.pos((double) j1 - d3 + 0.5D, (double) j2, (double) i1 - d4 + 0.5D)
-										.tex(0.0D + d9, (double) j2 * 0.25D + d8 + d10).color(1.0F, 1.0F, 1.0F, f5)
-										.lightmap(l3, i4).endVertex();
-							}
-						}
-					}
-				}
-			}
+                        if (i2 < l1) {
+                            i2 = l1;
+                        }
 
-			if (b1 >= 0) {
-				tessellator.draw();
-			}
+                        if (j2 < l1) {
+                            j2 = l1;
+                        }
 
-			worldrenderer.setTranslation(0.0D, 0.0D, 0.0D);
-			GlStateManager.enableCull();
-			GlStateManager.disableBlend();
-			GlStateManager.alphaFunc(GL_GREATER, 0.1F);
-			this.disableLightmap();
-		}
-	}
+                        int k2 = l1;
+
+                        if (l1 < l) {
+                            k2 = l;
+                        }
+
+                        if (i2 != j2) {
+                            this.random.setSeed((long)(j1 * j1 * 3121 + j1 * 45238971 ^ i1 * i1 * 418711 + i1 * 13761));
+                            blockpos$mutableblockpos.func_181079_c(j1, i2, i1);
+                            //float f1 = biomegenbase.getFloatTemperature(blockpos$mutableblockpos);
+                            float parFloat1 = biomegenbase.getFloatTemperature(blockpos$mutableblockpos);
+                            if (parFloat1 >= 0.15F) {
+                                if (b1 != 0) {
+                                    if (b1 >= 0) {
+                                        tessellator.draw();
+                                    }
+
+                                    b1 = 0;
+                                    this.mc.getTextureManager().bindTexture(locationRainPng);
+                                    worldrenderer.begin(7, DefaultVertexFormats.PARTICLE_POSITION_TEX_COLOR_LMAP);
+                                }
+
+                                double d5 = ((double)(this.rendererUpdateCount + j1 * j1 * 3121 + j1 * 45238971 + i1 * i1 * 418711 + i1 * 13761 & 31) + (double)partialTicks) / 32.0D * (3.0D + this.random.nextDouble());
+                                double d6 = (double)((float)j1 + 0.5F) - entity.posX;
+                                double d7 = (double)((float)i1 + 0.5F) - entity.posZ;
+                                float f2 = MathHelper.sqrt_double(d6 * d6 + d7 * d7) / (float)b0;
+                                float f3 = ((1.0F - f2 * f2) * 0.5F + 0.5F) * f5;
+                                blockpos$mutableblockpos.func_181079_c(j1, k2, i1);
+                                int l2 = worldclient.getCombinedLight(blockpos$mutableblockpos, 0);
+                                int i3 = l2 >> 16 & 65535;
+                                int j3 = l2 & 65535;
+                                worldrenderer.pos((double)j1 - d3 + 0.5D, (double)i2, (double)i1 - d4 + 0.5D).tex(0.0D, (double)i2 * 0.25D + d5).color(1.0F, 1.0F, 1.0F, f3).lightmap(i3, j3).endVertex();
+                                worldrenderer.pos((double)j1 + d3 + 0.5D, (double)i2, (double)i1 + d4 + 0.5D).tex(1.0D, (double)i2 * 0.25D + d5).color(1.0F, 1.0F, 1.0F, f3).lightmap(i3, j3).endVertex();
+                                worldrenderer.pos((double)j1 + d3 + 0.5D, (double)j2, (double)i1 + d4 + 0.5D).tex(1.0D, (double)j2 * 0.25D + d5).color(1.0F, 1.0F, 1.0F, f3).lightmap(i3, j3).endVertex();
+                                worldrenderer.pos((double)j1 - d3 + 0.5D, (double)j2, (double)i1 - d4 + 0.5D).tex(0.0D, (double)j2 * 0.25D + d5).color(1.0F, 1.0F, 1.0F, f3).lightmap(i3, j3).endVertex();
+                            } else {
+                                if (b1 != 1) {
+                                    if (b1 >= 0) {
+                                        tessellator.draw();
+                                    }
+
+                                    b1 = 1;
+                                    this.mc.getTextureManager().bindTexture(locationSnowPng);
+                                    worldrenderer.begin(7, DefaultVertexFormats.PARTICLE_POSITION_TEX_COLOR_LMAP);
+                                }
+
+                                double d8 = (double)(((float)(this.rendererUpdateCount & 511) + partialTicks) / 512.0F);
+                                double d9 = this.random.nextDouble() + (double)f * 0.01D * (double)((float)this.random.nextGaussian());
+                                double d10 = this.random.nextDouble() + (double)(f * (float)this.random.nextGaussian()) * 0.001D;
+                                double d11 = (double)((float)j1 + 0.5F) - entity.posX;
+                                double d12 = (double)((float)i1 + 0.5F) - entity.posZ;
+                                float f6 = MathHelper.sqrt_double(d11 * d11 + d12 * d12) / (float)b0;
+                                float f4 = ((1.0F - f6 * f6) * 0.3F + 0.5F) * f5;
+                                blockpos$mutableblockpos.func_181079_c(j1, k2, i1);
+                                int k3 = (worldclient.getCombinedLight(blockpos$mutableblockpos, 0) * 3 + 15728880) / 4;
+                                int l3 = k3 >> 16 & 65535;
+                                int i4 = k3 & 65535;
+                                worldrenderer.pos((double)j1 - d3 + 0.5D, (double)i2, (double)i1 - d4 + 0.5D).tex(0.0D + d9, (double)i2 * 0.25D + d8 + d10).color(1.0F, 1.0F, 1.0F, f4).lightmap(l3, i4).endVertex();
+                                worldrenderer.pos((double)j1 + d3 + 0.5D, (double)i2, (double)i1 + d4 + 0.5D).tex(1.0D + d9, (double)i2 * 0.25D + d8 + d10).color(1.0F, 1.0F, 1.0F, f4).lightmap(l3, i4).endVertex();
+                                worldrenderer.pos((double)j1 + d3 + 0.5D, (double)j2, (double)i1 + d4 + 0.5D).tex(1.0D + d9, (double)j2 * 0.25D + d8 + d10).color(1.0F, 1.0F, 1.0F, f4).lightmap(l3, i4).endVertex();
+                                worldrenderer.pos((double)j1 - d3 + 0.5D, (double)j2, (double)i1 - d4 + 0.5D).tex(0.0D + d9, (double)j2 * 0.25D + d8 + d10).color(1.0F, 1.0F, 1.0F, f4).lightmap(l3, i4).endVertex();
+                            }
+                        }
+                    }
+                }
+            }
+
+            if (b1 >= 0) {
+                tessellator.draw();
+            }
+
+            worldrenderer.setTranslation(0.0D, 0.0D, 0.0D);
+            GlStateManager.enableCull();
+            GlStateManager.disableBlend();
+            GlStateManager.alphaFunc(516, 0.1F);
+            disableLightmap();
+        }
+    }
 
 	/**+
 	 * Setup orthogonal projection for rendering GUI screen overlays

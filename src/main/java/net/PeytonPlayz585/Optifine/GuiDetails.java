@@ -37,8 +37,8 @@ public class GuiDetails extends GuiScreen {
 	private static final GameSettings.Options[] videoOptions = new GameSettings.Options[] {
 			GameSettings.Options.RENDER_CLOUDS,
 			GameSettings.Options.CLOUD_HEIGHT,
-			GameSettings.Options.TREES
-			//GameSettings.Options.RAIN,
+			GameSettings.Options.TREES,
+			GameSettings.Options.RAIN
 			//GameSettings.Options.SKY,
 			//GameSettings.Options.STARS,
 			//GameSettings.Options.SUN_MOON,

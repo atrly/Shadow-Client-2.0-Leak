@@ -306,4 +306,12 @@ public class Config {
     public static boolean isBetterGrassFancy() {
         return GameSettings.ofBetterGrass == 2;
     }
+
+    public static boolean isRainFancy() {
+        return GameSettings.ofRain == 0 ? GameSettings.fancyGraphics : GameSettings.ofRain == 2;
+    }
+
+    public static boolean isRainOff() {
+        return GameSettings.ofRain == 3;
+    }
 }
