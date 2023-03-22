@@ -39,6 +39,7 @@ import net.minecraft.world.EnumDifficulty;
 
 import net.PeytonPlayz585.Optifine.Config;
 import net.PeytonPlayz585.Optifine.DynamicLights;
+import net.PeytonPlayz585.Optifine.BetterGrass;
 
 /**+
  * This portion of EaglercraftX contains deobfuscated Minecraft 1.8 source code.
@@ -230,6 +231,7 @@ public class GameSettings {
 	private static final int[] OF_DYNAMIC_LIGHTS = new int[] {3, 1, 2};
     private static final String[] KEYS_DYNAMIC_LIGHTS = new String[] {"options.off", "options.graphics.fast", "options.graphics.fancy"};
 	public static int ofDynamicLights = 3;
+	public static int ofBetterGrass = 3;
 
 	public static float ofAoLevel = 1.0F;
 	public static float ofFogStart = 0.8F;
@@ -686,6 +688,18 @@ public class GameSettings {
             DynamicLights.removeLights(this.mc.renderGlobal);
         }
 
+		if (parOptions == GameSettings.Options.BETTER_GRASS) {
+            ++ofBetterGrass;
+
+            if (ofBetterGrass > 3) {
+                ofBetterGrass = 1;
+            }
+            
+            BetterGrass.update();
+
+			Minecraft.getMinecraft().renderGlobal.loadRenderers();
+        }
+
 		this.saveOptions();
 	}
 
@@ -968,6 +982,17 @@ public class GameSettings {
         } else if (parOptions == GameSettings.Options.DYNAMIC_LIGHTS) {
             int k = indexOf(ofDynamicLights, OF_DYNAMIC_LIGHTS);
             return s + getTranslation(KEYS_DYNAMIC_LIGHTS, k);
+        } else if (parOptions == GameSettings.Options.BETTER_GRASS) {
+            switch (ofBetterGrass) {
+                case 1:
+                    return s + "Fast";
+
+                case 2:
+                    return s + "Fancy";
+
+                default:
+                    return s + "OFF";
+            }
         } else {
 			return s;
 		}
@@ -1417,6 +1442,11 @@ public class GameSettings {
                         ofDynamicLights = limit(this.ofDynamicLights, OF_DYNAMIC_LIGHTS);
                     }
 
+					if (astring[0].equals("ofBetterGrass") && astring.length >= 2) {
+                        ofBetterGrass = Integer.valueOf(astring[1]).intValue();
+                        ofBetterGrass = ofBetterGrass < 1 ? 1 : (ofBetterGrass > 3 ? 3 : ofBetterGrass);
+                    }
+				
 					for (KeyBinding keybinding : this.keyBindings) {
 						if (astring[0].equals("key_" + keybinding.getKeyDescription())) {
 							keybinding.setKeyCode(Integer.parseInt(astring[1]));
@@ -1564,6 +1594,7 @@ public class GameSettings {
 			printwriter.println("ofLagometer:" + ofLagometer);
 			printwriter.println("ofProfiler:" + ofProfiler);
 			printwriter.println("ofDynamicLights:" + ofDynamicLights);
+			printwriter.println("ofBetterGrass:" + ofBetterGrass);
 
 			for (KeyBinding keybinding : this.keyBindings) {
 				printwriter.println("key_" + keybinding.getKeyDescription() + ":" + keybinding.getKeyCode());
@@ -1721,7 +1752,8 @@ public class GameSettings {
 		TREES("Trees", false, false),
 		LAGOMETER("Lagometer", false, false),
 		PROFILER("Debug Profiler", false, false),
-		DYNAMIC_LIGHTS("Dynamic Lights", false, false);
+		DYNAMIC_LIGHTS("Dynamic Lights", false, false),
+		BETTER_GRASS("Better Grass", false, false);
 
 		private final boolean enumFloat;
 		private final boolean enumBoolean;

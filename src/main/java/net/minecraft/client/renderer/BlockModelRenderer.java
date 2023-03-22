@@ -24,6 +24,8 @@ import net.minecraft.world.IBlockAccess;
 
 import net.PeytonPlayz585.Optifine.Config;
 import net.PeytonPlayz585.Optifine.SmartLeaves;
+import net.PeytonPlayz585.Optifine.BetterGrass;
+import net.PeytonPlayz585.Optifine.RenderEnv;
 
 /**+
  * This portion of EaglercraftX contains deobfuscated Minecraft 1.8 source code.
@@ -65,11 +67,6 @@ public class BlockModelRenderer {
 
 		try {
 			Block block = blockStateIn.getBlock();
-
-			if (Config.isTreesSmart() && blockStateIn.getBlock() instanceof BlockLeavesBase) {
-                modelIn = SmartLeaves.getLeavesModel(modelIn);
-            }
-
 			return flag ? this.renderModelAmbientOcclusion(blockAccessIn, modelIn, block, blockPosIn, worldRendererIn, checkSides) : this.renderModelStandard(blockAccessIn, modelIn, block, blockPosIn, worldRendererIn, checkSides);
 		} catch (Throwable throwable) {
 			CrashReport crashreport = CrashReport.makeCrashReport(throwable, "Tesselating block model");
@@ -92,6 +89,11 @@ public class BlockModelRenderer {
 			if (!list.isEmpty()) {
 				BlockPos blockpos = blockPosIn.offset(enumfacing);
 				if (!checkSides || blockIn.shouldSideBeRendered(blockAccessIn, blockpos, enumfacing)) {
+
+					if (!RenderEnv.isBreakingAnimation(list) && Config.isBetterGrass()) {
+                        list = (List<BakedQuad>) BetterGrass.getFaceQuads(blockAccessIn, blockIn, blockPosIn, enumfacing, list);
+                    }
+
 					this.renderModelAmbientOcclusionQuads(blockAccessIn, blockIn, blockPosIn, worldRendererIn, list,
 							afloat, bitset, blockmodelrenderer$ambientocclusionface);
 					flag = true;
@@ -120,6 +122,11 @@ public class BlockModelRenderer {
 			if (!list.isEmpty()) {
 				BlockPos blockpos = blockPosIn.offsetEvenFaster(enumfacing, pointer);
 				if (!checkSides || blockIn.shouldSideBeRendered(blockAccessIn, blockpos, enumfacing)) {
+
+					if (!RenderEnv.isBreakingAnimation(list) && Config.isBetterGrass()) {
+                        list = BetterGrass.getFaceQuads(blockAccessIn, blockIn, blockPosIn, enumfacing, list);
+                    }
+
 					int i = blockIn.getMixedBrightnessForBlock(blockAccessIn, blockpos);
 					this.renderModelStandardQuads(blockAccessIn, blockIn, blockPosIn, enumfacing, i, false,
 							worldRendererIn, list, bitset);
@@ -365,7 +372,7 @@ public class BlockModelRenderer {
 
 	}
 
-	class AmbientOcclusionFace {
+	public static class AmbientOcclusionFace {
 		private final float[] vertexColorMultiplier = new float[4];
 		private final int[] vertexBrightness = new int[4];
 

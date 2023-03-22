@@ -298,4 +298,12 @@ public class Config {
     public static boolean isDynamicHandLight() {
         return !isDynamicLights() ? false : true;
     }
+
+    public static boolean isBetterGrass() {
+        return GameSettings.ofBetterGrass != 3;
+    }
+
+    public static boolean isBetterGrassFancy() {
+        return GameSettings.ofBetterGrass == 2;
+    }
 }
