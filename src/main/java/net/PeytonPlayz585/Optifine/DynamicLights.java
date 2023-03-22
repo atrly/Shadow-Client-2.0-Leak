@@ -51,21 +51,26 @@ public class DynamicLights {
     }
 
     public static void update() {
-        long i = System.currentTimeMillis();
+        new Thread() {
+            @Override
+            public void run() {
+                long i = System.currentTimeMillis();
 
-        if (i >= timeUpdateMs + 50L) {
-            timeUpdateMs = i;
+                if (i >= timeUpdateMs + 50L) {
+                    timeUpdateMs = i;
 
-            synchronized (mapDynamicLights) {
-                updateMapDynamicLights(Minecraft.getMinecraft().renderGlobal);
+                    synchronized (mapDynamicLights) {
+                        updateMapDynamicLights(Minecraft.getMinecraft().renderGlobal);
 
-                if (mapDynamicLights.size() > 0) {
-                    for (DynamicLight dynamiclight : mapDynamicLights.values()) {
-                        dynamiclight.update(Minecraft.getMinecraft().renderGlobal);
+                        if (mapDynamicLights.size() > 0) {
+                            for (DynamicLight dynamiclight : mapDynamicLights.values()) {
+                                dynamiclight.update(Minecraft.getMinecraft().renderGlobal);
+                            }
+                        }
                     }
                 }
             }
-        }
+        }.start();
     }
 
     private static void updateMapDynamicLights(RenderGlobal p_updateMapDynamicLights_0_) {

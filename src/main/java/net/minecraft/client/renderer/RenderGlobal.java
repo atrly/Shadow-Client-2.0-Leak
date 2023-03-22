@@ -91,6 +91,8 @@ import net.PeytonPlayz585.Optifine.CloudRenderer;
 import net.PeytonPlayz585.Optifine.Lagometer;
 import net.PeytonPlayz585.Optifine.DynamicLights;
 
+import net.lax1dude.eaglercraft.v1_8.internal.PlatformOpenGL;
+
 /**+
  * This portion of EaglercraftX contains deobfuscated Minecraft 1.8 source code.
  * 
@@ -620,7 +622,7 @@ public class RenderGlobal implements IWorldAccess, IResourceManagerReloadListene
 		}
 
 		if (Config.isDynamicLights()) {
-            DynamicLights.update();
+        	DynamicLights.update();
         }
 
 		this.theWorld.theProfiler.endStartSection("renderlistcamera");

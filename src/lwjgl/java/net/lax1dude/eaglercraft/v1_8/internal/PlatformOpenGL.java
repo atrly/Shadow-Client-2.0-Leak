@@ -457,4 +457,8 @@ public class PlatformOpenGL {
 		glFinish();
 	}
 
+	public static boolean isWebGL() {
+		return false;
+	}
+
 }
