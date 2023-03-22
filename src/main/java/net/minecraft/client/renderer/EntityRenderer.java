@@ -1124,28 +1124,28 @@ public class EntityRenderer implements IResourceManagerReloadListener {
 		double d1 = entity.lastTickPosY + (entity.posY - entity.lastTickPosY) * (double) partialTicks;
 		double d2 = entity.lastTickPosZ + (entity.posZ - entity.lastTickPosZ) * (double) partialTicks;
 		frustum.setPosition(d0, d1, d2);
-		//if ((Config.isSkyEnabled() || Config.isSunMoonEnabled() || Config.isStarsEnabled())) {
-				this.setupFog(-1, partialTicks);
-				this.mc.mcProfiler.endStartSection("sky");
-				GlStateManager.matrixMode(5889);
-				GlStateManager.loadIdentity();
-				GlStateManager.gluPerspective(this.getFOVModifier(partialTicks, true), (float)this.mc.displayWidth / (float)this.mc.displayHeight, 0.05F, this.clipDistance);
-            	GlStateManager.matrixMode(5888);
 
-            	renderglobal.renderSky(partialTicks, pass);
+		if (this.mc.gameSettings.renderDistanceChunks >= 4) {
+			this.setupFog(-1, partialTicks);
+			this.mc.mcProfiler.endStartSection("sky");
+			GlStateManager.matrixMode(GL_PROJECTION);
+			GlStateManager.loadIdentity();
+			GlStateManager.gluPerspective(this.getFOVModifier(partialTicks, true),
+					(float) this.mc.displayWidth / (float) this.mc.displayHeight, 0.05F, this.farPlaneDistance * 4.0F);
+			GlStateManager.matrixMode(GL_MODELVIEW);
+			renderglobal.renderSky(partialTicks, pass);
+			GlStateManager.matrixMode(GL_PROJECTION);
+			GlStateManager.loadIdentity();
+			GlStateManager.gluPerspective(this.getFOVModifier(partialTicks, true),
+					(float) this.mc.displayWidth / (float) this.mc.displayHeight, 0.05F,
+					this.farPlaneDistance * MathHelper.SQRT_2);
+			GlStateManager.matrixMode(GL_MODELVIEW);
+		}
 
-            	GlStateManager.matrixMode(5889);
-            	GlStateManager.loadIdentity();
-            	GlStateManager.gluPerspective(this.getFOVModifier(partialTicks, true), (float)this.mc.displayWidth / (float)this.mc.displayHeight, 0.05F, this.clipDistance);
-            	GlStateManager.matrixMode(5888);
-        //} else {
-            //GlStateManager.disableBlend();
-        //}
 		
 		this.setupFog(0, partialTicks);
-        GlStateManager.shadeModel(7425);
-
-        if (entity.posY + (double)entity.getEyeHeight() < 128.0D + (double)(GameSettings.ofCloudsHeight * 128.0F)) {
+        GlStateManager.shadeModel(GL_SMOOTH);
+		if (entity.posY + (double)entity.getEyeHeight() < 128.0D + (double)(GameSettings.ofCloudsHeight * 128.0F)) {
             this.renderCloudsCheck(renderglobal, partialTicks, pass);
         }
 

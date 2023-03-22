@@ -382,7 +382,7 @@ public class GameSettings {
             ofCloudsHeight = parFloat1;
             this.mc.renderGlobal.resetClouds();
         }
-
+		
 	}
 
 	/**+
