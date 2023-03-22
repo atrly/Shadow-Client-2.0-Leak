@@ -794,7 +794,7 @@ public class RenderGlobal implements IWorldAccess, IResourceManagerReloadListene
 			}
 		}
 
-		return visgraph.func_178609_b(pos);
+		return visgraph.getVisibleFacingsFrom(pos);
 	}
 
 	private RenderChunk func_181562_a(BlockPos parBlockPos, RenderChunk parRenderChunk, EnumFacing parEnumFacing) {
