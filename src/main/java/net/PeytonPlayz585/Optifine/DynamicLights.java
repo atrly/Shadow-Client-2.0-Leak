@@ -63,7 +63,8 @@ public class DynamicLights {
                         updateMapDynamicLights(Minecraft.getMinecraft().renderGlobal);
 
                         if (mapDynamicLights.size() > 0) {
-                            for (int i1 = mapDynamicLights.values().size(); --i1 >= 0;) {
+                            int size = mapDynamicLights.values().size();
+                            for (int i1 = size; --i1 >= 0;) {
                                 DynamicLight.update(Minecraft.getMinecraft().renderGlobal);
                             }
                         }
@@ -77,7 +78,8 @@ public class DynamicLights {
         World world = p_updateMapDynamicLights_0_.getWorld();
 
         if (world != null) {
-            for (int i1 = world.getLoadedEntityList().size(); --i1 >= 0;) {
+            int size = world.getLoadedEntityList().size();
+            for (int i1 = size; --i1 >= 0;) {
                 int i = getLightLevel(Minecraft.getMinecraft().renderViewEntity.getEntity());
 
                 if (i > 0) {
@@ -130,7 +132,8 @@ public class DynamicLights {
         double d0 = 0.0D;
 
         synchronized (mapDynamicLights) {
-            for (int i1 = mapDynamicLights.values().size(); --i1 >= 0;) {
+            int size = mapDynamicLights.values().size();
+            for (int i1 = size; --i1 >= 0;) {
                 int i = DynamicLight.getLastLightLevel();
 
                 if (i > 0) {

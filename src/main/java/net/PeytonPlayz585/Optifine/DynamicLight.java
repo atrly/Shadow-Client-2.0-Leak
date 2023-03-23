@@ -119,13 +119,14 @@ public class DynamicLight {
 
     public static void updateLitChunks(RenderGlobal p_updateLitChunks_1_) {
         if(Minecraft.getMinecraft().blockPOS != null) {
-            for (int i = setLitChunkPos.size(); --i >= 0;) {
-             RenderChunk renderchunk = p_updateLitChunks_1_.getRenderChunk(Minecraft.getMinecraft().blockPOS);
+            int size = setLitChunkPos.size();
+            for (int i = size; --i >= 0;) {
+                RenderChunk renderchunk = p_updateLitChunks_1_.getRenderChunk(Minecraft.getMinecraft().blockPOS);
                 updateChunkLight(renderchunk, (Set<BlockPos>)null, (Set<BlockPos>)null);
             }
         } else {
             if(Minecraft.getMinecraft().theWorld != null) {
-                Minecraft.getMinecraft().objectMouseOver.getBlockPos();
+                Minecraft.getMinecraft().blockPOS = Minecraft.getMinecraft().objectMouseOver.getBlockPos();
             }
         }
     }
