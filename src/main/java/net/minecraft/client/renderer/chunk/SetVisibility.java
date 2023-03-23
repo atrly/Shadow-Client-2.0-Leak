@@ -104,7 +104,8 @@ public class SetVisibility {
 		int j;
 		EnumFacing enumfacing;
 
-		for (j = 0; j < i; ++j) {
+		//for (j = 0; j < i; ++j) {
+		for (j = i; --j >= 0;) {
 			enumfacing = aenumfacing[j];
 			stringbuilder.append(' ').append(enumfacing.toString().toUpperCase().charAt(0));
 		}
@@ -113,13 +114,15 @@ public class SetVisibility {
 		aenumfacing = EnumFacing.values();
 		i = aenumfacing.length;
 
-		for (j = 0; j < i; ++j) {
+		//for (j = 0; j < i; ++j) {
+		for (j = i; --j >= 0;) {
 			enumfacing = aenumfacing[j];
 			stringbuilder.append(enumfacing.toString().toUpperCase().charAt(0));
 			EnumFacing[] aenumfacing1 = EnumFacing.values();
 			int k = aenumfacing1.length;
 
-			for (int l = 0; l < k; ++l) {
+			//for (int l = 0; l < k; ++l) {
+			for (int l = k; --l >= 0;) {
 				EnumFacing enumfacing1 = aenumfacing1[l];
 
 				if (enumfacing == enumfacing1) {

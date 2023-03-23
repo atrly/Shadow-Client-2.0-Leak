@@ -39,9 +39,12 @@ public class VisGraph {
 		ALL_VIS.setAllVisible(true);
 		int var2 = 0;
 
-		for (int var3 = 0; var3 < 16; ++var3) {
-			for (int var4 = 0; var4 < 16; ++var4) {
-				for (int var5 = 0; var5 < 16; ++var5) {
+		//for (int var3 = 0; var3 < 16; ++var3) {
+		for (int var3 = 15; --var3 >= 0;) {
+			//for (int var4 = 0; var4 < 16; ++var4) {
+			for (int var4 = 16; --var4 >= 0;) {	
+				//for (int var5 = 0; var5 < 16; ++var5) {
+				for (int var5 = 16; --var5 >= 0;) {
 					if (var3 == 0 || var3 == 15 || var4 == 0 || var4 == 15 || var5 == 0 || var5 == 15) {
 						EDGES[var2++] = getIndex(var3, var4, var5);
 					}
@@ -122,7 +125,8 @@ public class VisGraph {
 			visibleBlocks.andNot(visibleBlocks);
 			visibleBlocks.or(opaqueBlocks);
 			IntStack linkedlist = new IntStack(1024, 512);
-			for (int j = 0; j < i; ++j) {
+			//for (int j = 0; j < i; ++j) {
+			for (int j = i; --j >= 0;) {
 				int k = edges[j];
 
 				if (!opaqueBlocks.get(k)) {
@@ -164,7 +168,8 @@ public class VisGraph {
 			int j = linkedlist.poll();
 			addSides(j, enumset);
 
-			for (int l = 0; l < k; ++l) {
+			//for (int l = 0; l < k; ++l) {
+			for (int l = k; --l >= 0;) {
 				EnumFacing face = facings[l];
 				int i1 = stepTo(j, face);
 
