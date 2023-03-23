@@ -118,6 +118,8 @@ public abstract class Entity {
 	private boolean invulnerable;
 	protected EaglercraftUUID entityUniqueID;
 
+	private Entity entity;
+
 	public int getEntityId() {
 		return this.entityId;
 	}
@@ -157,6 +159,8 @@ public abstract class Entity {
 		this.dataWatcher.addObject(2, "");
 		this.dataWatcher.addObject(4, Byte.valueOf((byte) 0));
 		this.entityInit();
+
+		entity = this;
 	}
 
 	protected abstract void entityInit();
@@ -2207,5 +2211,9 @@ public abstract class Entity {
 		}
 
 		EnchantmentHelper.applyArthropodEnchantments(entityLivingBaseIn, entityIn);
+	}
+
+	public Entity getEntity() {
+		return entity;
 	}
 }

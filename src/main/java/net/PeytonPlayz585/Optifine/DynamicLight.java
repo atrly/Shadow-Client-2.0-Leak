@@ -16,55 +16,55 @@ import net.minecraft.world.World;
 import net.minecraft.client.Minecraft;
 
 public class DynamicLight {
-    private Entity entity = null;
-    private double offsetY = 0.0D;
-    private double lastPosX = -2.147483648E9D;
-    private double lastPosY = -2.147483648E9D;
-    private double lastPosZ = -2.147483648E9D;
-    private int lastLightLevel = 0;
-    private boolean underwater = false;
-    private long timeCheckMs = 0L;
-    private Set<BlockPos> setLitChunkPos = new HashSet();
-    private BlockPos.MutableBlockPos blockPosMutable = new BlockPos.MutableBlockPos();
+    private static Entity entity = null;
+    private static double offsetY = 0.0D;
+    private static double lastPosX = -2.147483648E9D;
+    private static double lastPosY = -2.147483648E9D;
+    private static double lastPosZ = -2.147483648E9D;
+    private static int lastLightLevel = 0;
+    private static boolean underwater = false;
+    private static long timeCheckMs = 0L;
+    private static Set<BlockPos> setLitChunkPos = new HashSet();
+    private static BlockPos.MutableBlockPos blockPosMutable = new BlockPos.MutableBlockPos();
 
     public DynamicLight(Entity p_i36_1_) {
-        this.entity = p_i36_1_;
-        this.offsetY = (double)p_i36_1_.getEyeHeight();
+        entity = p_i36_1_;
+        offsetY = (double)p_i36_1_.getEyeHeight();
     }
 
-    public void update(RenderGlobal p_update_1_) {
+    public static void update(RenderGlobal p_update_1_) {
         if (Config.isDynamicLightsFast()) {
             long i = System.currentTimeMillis();
 
-            if (i < this.timeCheckMs + 500L) {
+            if (i < timeCheckMs + 500L) {
                 return;
             }
 
-            this.timeCheckMs = i;
+            timeCheckMs = i;
         }
 
-        double d6 = this.entity.posX - 0.5D;
-        double d0 = this.entity.posY - 0.5D + this.offsetY;
-        double d1 = this.entity.posZ - 0.5D;
-        int j = DynamicLights.getLightLevel(this.entity);
-        double d2 = d6 - this.lastPosX;
-        double d3 = d0 - this.lastPosY;
-        double d4 = d1 - this.lastPosZ;
+        double d6 = entity.posX - 0.5D;
+        double d0 = entity.posY - 0.5D + offsetY;
+        double d1 = entity.posZ - 0.5D;
+        int j = DynamicLights.getLightLevel(entity);
+        double d2 = d6 - lastPosX;
+        double d3 = d0 - lastPosY;
+        double d4 = d1 - lastPosZ;
         double d5 = 0.1D;
 
-        if (Math.abs(d2) > d5 || Math.abs(d3) > d5 || Math.abs(d4) > d5 || this.lastLightLevel != j) {
-            this.lastPosX = d6;
-            this.lastPosY = d0;
-            this.lastPosZ = d1;
-            this.lastLightLevel = j;
-            this.underwater = false;
+        if (Math.abs(d2) > d5 || Math.abs(d3) > d5 || Math.abs(d4) > d5 || lastLightLevel != j) {
+            lastPosX = d6;
+            lastPosY = d0;
+            lastPosZ = d1;
+            lastLightLevel = j;
+            underwater = false;
             World world = p_update_1_.getWorld();
 
             if (world != null) {
-                this.blockPosMutable.func_181079_c(MathHelper.floor_double(d6), MathHelper.floor_double(d0), MathHelper.floor_double(d1));
-                IBlockState iblockstate = world.getBlockState(this.blockPosMutable);
+                blockPosMutable.func_181079_c(MathHelper.floor_double(d6), MathHelper.floor_double(d0), MathHelper.floor_double(d1));
+                IBlockState iblockstate = world.getBlockState(blockPosMutable);
                 Block block = iblockstate.getBlock();
-                this.underwater = block == Blocks.water;
+                underwater = block == Blocks.water;
             }
 
             Set<BlockPos> set = new HashSet();
@@ -82,22 +82,22 @@ public class DynamicLight {
                 RenderChunk renderchunk5 = Minecraft.getMinecraft().renderGlobal.getRenderChunk(renderchunk4, enumfacing2);
                 RenderChunk renderchunk6 = Minecraft.getMinecraft().renderGlobal.getRenderChunk(renderchunk4, enumfacing1);
                 RenderChunk renderchunk7 = Minecraft.getMinecraft().renderGlobal.getRenderChunk(renderchunk5, enumfacing1);
-                this.updateChunkLight(renderchunk, this.setLitChunkPos, set);
-                this.updateChunkLight(renderchunk1, this.setLitChunkPos, set);
-                this.updateChunkLight(renderchunk2, this.setLitChunkPos, set);
-                this.updateChunkLight(renderchunk3, this.setLitChunkPos, set);
-                this.updateChunkLight(renderchunk4, this.setLitChunkPos, set);
-                this.updateChunkLight(renderchunk5, this.setLitChunkPos, set);
-                this.updateChunkLight(renderchunk6, this.setLitChunkPos, set);
-                this.updateChunkLight(renderchunk7, this.setLitChunkPos, set);
+                updateChunkLight(renderchunk, setLitChunkPos, set);
+                updateChunkLight(renderchunk1, setLitChunkPos, set);
+                updateChunkLight(renderchunk2, setLitChunkPos, set);
+                updateChunkLight(renderchunk3, setLitChunkPos, set);
+                updateChunkLight(renderchunk4, setLitChunkPos, set);
+                updateChunkLight(renderchunk5, setLitChunkPos, set);
+                updateChunkLight(renderchunk6, setLitChunkPos, set);
+                updateChunkLight(renderchunk7, setLitChunkPos, set);
             }
 
-            this.updateLitChunks(Minecraft.getMinecraft().renderGlobal);
-            this.setLitChunkPos = set;
+            updateLitChunks(Minecraft.getMinecraft().renderGlobal);
+            setLitChunkPos = set;
         }
     }
 
-    private void updateChunkLight(RenderChunk p_updateChunkLight_1_, Set<BlockPos> p_updateChunkLight_2_, Set<BlockPos> p_updateChunkLight_3_) {
+    private static void updateChunkLight(RenderChunk p_updateChunkLight_1_, Set<BlockPos> p_updateChunkLight_2_, Set<BlockPos> p_updateChunkLight_3_) {
         if (p_updateChunkLight_1_ != null) {
             CompiledChunk compiledchunk = p_updateChunkLight_1_.getCompiledChunk();
 
@@ -117,42 +117,48 @@ public class DynamicLight {
         }
     }
 
-    public void updateLitChunks(RenderGlobal p_updateLitChunks_1_) {
-        for (BlockPos blockpos : this.setLitChunkPos) {
-            RenderChunk renderchunk = p_updateLitChunks_1_.getRenderChunk(blockpos);
-            this.updateChunkLight(renderchunk, (Set<BlockPos>)null, (Set<BlockPos>)null);
+    public static void updateLitChunks(RenderGlobal p_updateLitChunks_1_) {
+        if(Minecraft.getMinecraft().blockPOS != null) {
+            for (int i = setLitChunkPos.size(); --i >= 0;) {
+             RenderChunk renderchunk = p_updateLitChunks_1_.getRenderChunk(Minecraft.getMinecraft().blockPOS);
+                updateChunkLight(renderchunk, (Set<BlockPos>)null, (Set<BlockPos>)null);
+            }
+        } else {
+            if(Minecraft.getMinecraft().theWorld != null) {
+                Minecraft.getMinecraft().objectMouseOver.getBlockPos();
+            }
         }
     }
 
-    public Entity getEntity() {
-        return this.entity;
+    public static Entity getEntity() {
+        return entity;
     }
 
-    public double getLastPosX() {
-        return this.lastPosX;
+    public static double getLastPosX() {
+        return lastPosX;
     }
 
-    public double getLastPosY() {
-        return this.lastPosY;
+    public static double getLastPosY() {
+        return lastPosY;
     }
 
-    public double getLastPosZ() {
-        return this.lastPosZ;
+    public static double getLastPosZ() {
+        return lastPosZ;
     }
 
-    public int getLastLightLevel() {
-        return this.lastLightLevel;
+    public static int getLastLightLevel() {
+        return lastLightLevel;
     }
 
-    public boolean isUnderwater() {
-        return this.underwater;
+    public static boolean isUnderwater() {
+        return underwater;
     }
 
-    public double getOffsetY() {
-        return this.offsetY;
+    public static double getOffsetY() {
+        return offsetY;
     }
 
     public String toString() {
-        return "Entity: " + this.entity + ", offsetY: " + this.offsetY;
+        return "Entity: " + entity + ", offsetY: " + offsetY;
     }
 }

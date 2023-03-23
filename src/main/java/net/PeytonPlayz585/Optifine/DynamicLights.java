@@ -45,7 +45,7 @@ public class DynamicLights {
             DynamicLight dynamiclight = (DynamicLight)mapDynamicLights.remove(IntegerCache.valueOf(p_entityRemoved_0_.getEntityId()));
 
             if (dynamiclight != null) {
-                dynamiclight.updateLitChunks(p_entityRemoved_1_);
+                DynamicLight.updateLitChunks(p_entityRemoved_1_);
             }
         }
     }
@@ -63,8 +63,8 @@ public class DynamicLights {
                         updateMapDynamicLights(Minecraft.getMinecraft().renderGlobal);
 
                         if (mapDynamicLights.size() > 0) {
-                            for (DynamicLight dynamiclight : mapDynamicLights.values()) {
-                                dynamiclight.update(Minecraft.getMinecraft().renderGlobal);
+                            for (int i1 = mapDynamicLights.values().size(); --i1 >= 0;) {
+                                DynamicLight.update(Minecraft.getMinecraft().renderGlobal);
                             }
                         }
                     }
@@ -77,23 +77,23 @@ public class DynamicLights {
         World world = p_updateMapDynamicLights_0_.getWorld();
 
         if (world != null) {
-            for (Entity entity : world.getLoadedEntityList()) {
-                int i = getLightLevel(entity);
+            for (int i1 = world.getLoadedEntityList().size(); --i1 >= 0;) {
+                int i = getLightLevel(Minecraft.getMinecraft().renderViewEntity.getEntity());
 
                 if (i > 0) {
-                    Integer integer = IntegerCache.valueOf(entity.getEntityId());
+                    Integer integer = IntegerCache.valueOf(Minecraft.getMinecraft().renderViewEntity.getEntity().getEntityId());
                     DynamicLight dynamiclight = (DynamicLight)mapDynamicLights.get(integer);
 
                     if (dynamiclight == null) {
-                        dynamiclight = new DynamicLight(entity);
+                        dynamiclight = new DynamicLight(Minecraft.getMinecraft().renderViewEntity.getEntity());
                         mapDynamicLights.put(integer, dynamiclight);
                     }
                 } else {
-                    Integer integer1 = IntegerCache.valueOf(entity.getEntityId());
+                    Integer integer1 = IntegerCache.valueOf(Minecraft.getMinecraft().renderViewEntity.getEntity().getEntityId());
                     DynamicLight dynamiclight1 = (DynamicLight)mapDynamicLights.remove(integer1);
 
                     if (dynamiclight1 != null) {
-                        dynamiclight1.updateLitChunks(p_updateMapDynamicLights_0_);
+                        DynamicLight.updateLitChunks(p_updateMapDynamicLights_0_);
                     }
                 }
             }
@@ -130,19 +130,19 @@ public class DynamicLights {
         double d0 = 0.0D;
 
         synchronized (mapDynamicLights) {
-            for (DynamicLight dynamiclight : mapDynamicLights.values()) {
-                int i = dynamiclight.getLastLightLevel();
+            for (int i1 = mapDynamicLights.values().size(); --i1 >= 0;) {
+                int i = DynamicLight.getLastLightLevel();
 
                 if (i > 0) {
-                    double d1 = dynamiclight.getLastPosX();
-                    double d2 = dynamiclight.getLastPosY();
-                    double d3 = dynamiclight.getLastPosZ();
+                    double d1 = DynamicLight.getLastPosX();
+                    double d2 = DynamicLight.getLastPosY();
+                    double d3 = DynamicLight.getLastPosZ();
                     double d4 = (double)p_getLightLevel_0_.getX() - d1;
                     double d5 = (double)p_getLightLevel_0_.getY() - d2;
                     double d6 = (double)p_getLightLevel_0_.getZ() - d3;
                     double d7 = d4 * d4 + d5 * d5 + d6 * d6;
 
-                    if (dynamiclight.isUnderwater()) {
+                    if (DynamicLight.isUnderwater()) {
                         i = Config.limit(i - 2, 0, 15);
                         d7 *= 2.0D;
                     }

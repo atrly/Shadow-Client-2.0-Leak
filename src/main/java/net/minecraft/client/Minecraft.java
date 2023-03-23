@@ -195,7 +195,7 @@ public class Minecraft implements IThreadListener {
 	private RenderItem renderItem;
 	private ItemRenderer itemRenderer;
 	public EntityPlayerSP thePlayer;
-	private Entity renderViewEntity;
+	public Entity renderViewEntity;
 	public Entity pointedEntity;
 	public EffectRenderer effectRenderer;
 	private final Session session;
@@ -274,6 +274,8 @@ public class Minecraft implements IThreadListener {
 	private String debugProfilerName = "root";
 	public int joinWorldTickCounter = 0;
 	private int dontPauseTimer = 0;
+
+	public BlockPos blockPOS = null;
 
 	public Minecraft(GameConfiguration gameConfig) {
 		theMinecraft = this;
@@ -1060,6 +1062,7 @@ public class Minecraft implements IThreadListener {
 			if (leftClick && this.objectMouseOver != null
 					&& this.objectMouseOver.typeOfHit == MovingObjectPosition.MovingObjectType.BLOCK) {
 				BlockPos blockpos = this.objectMouseOver.getBlockPos();
+				blockPOS = blockpos;
 				if (this.theWorld.getBlockState(blockpos).getBlock().getMaterial() != Material.air
 						&& this.playerController.onPlayerDamageBlock(blockpos, this.objectMouseOver.sideHit)) {
 					this.effectRenderer.addBlockHitEffects(blockpos, this.objectMouseOver.sideHit);
