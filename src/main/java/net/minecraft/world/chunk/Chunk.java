@@ -2,6 +2,7 @@ package net.minecraft.world.chunk;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import net.lax1dude.eaglercraft.v1_8.EaglercraftRandom;
@@ -90,7 +91,7 @@ public class Chunk {
 		this.zPosition = z;
 		this.heightMap = new int[256];
 
-		for (int i = 0; i < this.entityLists.length; ++i) {
+		for (int i = this.entityLists.length; --i >= 0;) {
 			this.entityLists[i] = new ClassInheritanceMultiMap(Entity.class);
 		}
 
@@ -103,9 +104,9 @@ public class Chunk {
 		short short1 = 256;
 		boolean flag = !worldIn.provider.getHasNoSky();
 
-		for (int i = 0; i < 16; ++i) {
-			for (int j = 0; j < 16; ++j) {
-				for (int k = 0; k < short1; ++k) {
+		for (int i = 16; --i >= 0;) {
+			for (int j = 16; --j >= 0;) {
+				for (int k = short1; --k >= 0;) {
 					int l = i * short1 * 16 | j * short1 | k;
 					IBlockState iblockstate = primer.getBlockState(l);
 					if (iblockstate.getBlock().getMaterial() != Material.air) {

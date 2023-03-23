@@ -27,15 +27,6 @@ import net.minecraft.client.Minecraft;
 public class DynamicLights {
     private static Map<Integer, DynamicLight> mapDynamicLights = new HashMap();
     private static long timeUpdateMs = 0L;
-    private static final double MAX_DIST = 7.5D;
-    private static final double MAX_DIST_SQ = 56.25D;
-    private static final int LIGHT_LEVEL_MAX = 15;
-    private static final int LIGHT_LEVEL_FIRE = 15;
-    private static final int LIGHT_LEVEL_BLAZE = 10;
-    private static final int LIGHT_LEVEL_MAGMA_CUBE = 8;
-    private static final int LIGHT_LEVEL_MAGMA_CUBE_CORE = 13;
-    private static final int LIGHT_LEVEL_GLOWSTONE_DUST = 8;
-    private static final int LIGHT_LEVEL_PRISMARINE_CRYSTALS = 8;
 
     public static void entityAdded(Entity p_entityAdded_0_, RenderGlobal p_entityAdded_1_) {
     }
@@ -51,27 +42,23 @@ public class DynamicLights {
     }
 
     public static void update() {
-        new Thread() {
-            @Override
-            public void run() {
-                long i = System.currentTimeMillis();
+        long i = System.currentTimeMillis();
 
-                if (i >= timeUpdateMs + 50L) {
-                    timeUpdateMs = i;
+        if (i >= timeUpdateMs + 50L) {
+            timeUpdateMs = i;
 
-                    synchronized (mapDynamicLights) {
-                        updateMapDynamicLights(Minecraft.getMinecraft().renderGlobal);
+            synchronized (mapDynamicLights) {
+                updateMapDynamicLights(Minecraft.getMinecraft().renderGlobal);
 
-                        if (mapDynamicLights.size() > 0) {
-                            int size = mapDynamicLights.values().size();
-                            for (int i1 = size; --i1 >= 0;) {
-                                DynamicLight.update(Minecraft.getMinecraft().renderGlobal);
-                            }
-                        }
+                if (mapDynamicLights.size() > 0) {
+                    int size = mapDynamicLights.values().size();
+
+                    for (int i1 = size; --i1 >= 0;) {
+                        DynamicLight.update(Minecraft.getMinecraft().renderGlobal);
                     }
                 }
             }
-        }.start();
+        }
     }
 
     private static void updateMapDynamicLights(RenderGlobal p_updateMapDynamicLights_0_) {
@@ -243,9 +230,8 @@ public class DynamicLights {
             Iterator iterator = collection.iterator();
 
             while (iterator.hasNext()) {
-                DynamicLight dynamiclight = (DynamicLight)iterator.next();
                 iterator.remove();
-                dynamiclight.updateLitChunks(p_removeLights_0_);
+                DynamicLight.updateLitChunks(p_removeLights_0_);
             }
         }
     }

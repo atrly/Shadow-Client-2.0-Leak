@@ -35,18 +35,12 @@ public class SetVisibility {
 	}
 
 	public void setManyVisible(Set<EnumFacing> faces) {
-
-		Iterator<EnumFacing> iterator = faces.iterator();
-
-		while (iterator.hasNext()) {
-			EnumFacing enumfacing = iterator.next();
-			Iterator<EnumFacing> iterator1 = faces.iterator();
-
-			while (iterator1.hasNext()) {
-				EnumFacing enumfacing1 = iterator1.next();
-				setVisible(enumfacing, enumfacing1, true);
+		for (EnumFacing enumfacing : faces) {
+			for (EnumFacing enumfacing1 : faces) {
+				this.setVisible(enumfacing, enumfacing1, true);
 			}
 		}
+
 	}
 
 	public void setVisible(EnumFacing from, EnumFacing to, boolean visible) {
@@ -104,7 +98,6 @@ public class SetVisibility {
 		int j;
 		EnumFacing enumfacing;
 
-		//for (j = 0; j < i; ++j) {
 		for (j = i; --j >= 0;) {
 			enumfacing = aenumfacing[j];
 			stringbuilder.append(' ').append(enumfacing.toString().toUpperCase().charAt(0));
@@ -114,14 +107,12 @@ public class SetVisibility {
 		aenumfacing = EnumFacing.values();
 		i = aenumfacing.length;
 
-		//for (j = 0; j < i; ++j) {
 		for (j = i; --j >= 0;) {
 			enumfacing = aenumfacing[j];
 			stringbuilder.append(enumfacing.toString().toUpperCase().charAt(0));
 			EnumFacing[] aenumfacing1 = EnumFacing.values();
 			int k = aenumfacing1.length;
 
-			//for (int l = 0; l < k; ++l) {
 			for (int l = k; --l >= 0;) {
 				EnumFacing enumfacing1 = aenumfacing1[l];
 
