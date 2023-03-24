@@ -314,4 +314,8 @@ public class Config {
     public static boolean isRainOff() {
         return GameSettings.ofRain == 3;
     }
+
+    public static boolean isPasswordHidden() {
+        return GameSettings.hidePassword;
+    }
 }

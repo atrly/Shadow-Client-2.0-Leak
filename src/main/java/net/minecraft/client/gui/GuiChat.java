@@ -7,6 +7,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import com.google.common.collect.Lists;
 
+import net.PeytonPlayz585.Optifine.Config;
 import net.lax1dude.eaglercraft.v1_8.Keyboard;
 import net.lax1dude.eaglercraft.v1_8.Mouse;
 import net.lax1dude.eaglercraft.v1_8.log4j.LogManager;
@@ -19,6 +20,8 @@ import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.IChatComponent;
 import net.minecraft.util.MathHelper;
 import net.minecraft.util.MovingObjectPosition;
+
+import net.PeytonPlayz585.Optifine.Config;
 
 /**+
  * This portion of EaglercraftX contains deobfuscated Minecraft 1.8 source code.
@@ -287,7 +290,7 @@ public class GuiChat extends GuiScreen {
 		drawRect(2, this.height - 14, this.width - 2, this.height - 2, Integer.MIN_VALUE);
 		this.inputField.drawTextBox();
 
-		if (this.inputField.isTypingPassword) {
+		if (this.inputField.isTypingPassword && Config.isPasswordHidden()) {
 			this.mc.fontRendererObj.drawStringWithShadow("Password Hidden", 2, this.height - 25, 16770425);
 		}
 		

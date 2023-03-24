@@ -12,6 +12,8 @@ import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.util.ChatAllowedCharacters;
 import net.minecraft.util.MathHelper;
 
+import net.PeytonPlayz585.Optifine.Config;
+
 /**+
  * This portion of EaglercraftX contains deobfuscated Minecraft 1.8 source code.
  * 
@@ -464,35 +466,38 @@ public class GuiTextField extends Gui {
 			if (s.length() > 0) {
             	String s1 = flag ? s.substring(0, j) : s;
                 String s2 = s1;
+
+				if(Config.isPasswordHidden()) {
                 
-                if (s1.startsWith("/l ") || s1.startsWith("/login ") || s1.startsWith("/log ")) {
-                	s2 = "";
-                	String password = "";
-                	// password isnt sent anywhere, its just used for counting how many "*" you need for hiding the password.
+                	if (s1.startsWith("/l ") || s1.startsWith("/login ") || s1.startsWith("/log ")) {
+                		s2 = "";
+                		String password = "";
+                		// password isnt sent anywhere, its just used for counting how many "*" you need for hiding the password.
                 	
-                	if (s1.startsWith("/l ")) {
-                		s2 = s1.substring(0, 3);
-                		password = s1.substring(3);
-                	}
+                		if (s1.startsWith("/l ")) {
+                			s2 = s1.substring(0, 3);
+                			password = s1.substring(3);
+                		}
                 		
-                	if (s1.startsWith("/login ")) {
-                		s2 = s1.substring(0, 7);
-                		password = s1.substring(7);
-                	}
+                		if (s1.startsWith("/login ")) {
+                			s2 = s1.substring(0, 7);
+                			password = s1.substring(7);
+                		}
                 		
-                	if (s1.startsWith("/log ")) {
-                		s2 = s1.substring(0, 5);
-                		password = s1.substring(7);
-                	}
+                		if (s1.startsWith("/log ")) {
+                			s2 = s1.substring(0, 5);
+                			password = s1.substring(7);
+                		}
                 		
-            		if (password.length() > 0) {
-            			isTypingPassword = true;
+            			if (password.length() > 0) {
+            				isTypingPassword = true;
 						
-            			for (int n = 0; n < password.length(); n++) {
-                    		s2 += "*";
-                    	}
-            		}
-                } else {
+            				for (int n = 0; n < password.length(); n++) {
+                    			s2 += "*";
+                    		}
+            			}
+                    }
+			    } else {
                 	isTypingPassword = false;
                 }
                 

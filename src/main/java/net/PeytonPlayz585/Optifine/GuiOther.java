@@ -37,7 +37,8 @@ public class GuiOther extends GuiScreen {
 	private static final GameSettings.Options[] videoOptions = new GameSettings.Options[] {
 			GameSettings.Options.LAGOMETER,
 			GameSettings.Options.PROFILER,
-			GameSettings.Options.HUD_FPS
+			GameSettings.Options.HUD_FPS,
+			GameSettings.Options.HIDE_PASSWORD
 	};
 
 	public GuiOther(GuiScreen parentScreenIn, GameSettings gameSettingsIn) {

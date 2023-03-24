@@ -220,6 +220,7 @@ public class GameSettings {
 	public static int ofFogType = 1;
 	public static boolean ofLagometer = false;
 	public static boolean ofProfiler = false;
+	public static boolean hidePassword = true;
 
 	public static int ofAnimatedWater = 0;
 	public static int ofAnimatedLava = 0;
@@ -709,6 +710,10 @@ public class GameSettings {
             }
         }
 
+		if (parOptions == GameSettings.Options.HIDE_PASSWORD) {
+			hidePassword =! hidePassword;
+		}
+
 		this.saveOptions();
 	}
 
@@ -811,6 +816,8 @@ public class GameSettings {
 			return ofLagometer;
 		case PROFILER:
 			return ofProfiler;
+		case HIDE_PASSWORD:
+			return hidePassword;
 		default:
 			return false;
 		}
@@ -1016,7 +1023,9 @@ public class GameSettings {
                 default:
                     return s + "Default";
             }
-        } else {
+        } else if (parOptions == GameSettings.Options.HIDE_PASSWORD) {
+			return hidePassword ? s + "ON" : s + "OFF";	
+		} else {
 			return s;
 		}
 	}
@@ -1462,7 +1471,7 @@ public class GameSettings {
 
 					if (astring[0].equals("ofDynamicLights") && astring.length >= 2) {
                         ofDynamicLights = Integer.valueOf(astring[1]).intValue();
-                        ofDynamicLights = limit(this.ofDynamicLights, OF_DYNAMIC_LIGHTS);
+                        ofDynamicLights = limit(ofDynamicLights, OF_DYNAMIC_LIGHTS);
                     }
 
 					if (astring[0].equals("ofBetterGrass") && astring.length >= 2) {
@@ -1474,6 +1483,10 @@ public class GameSettings {
                         GameSettings.ofRain = Integer.valueOf(astring[1]).intValue();
                         GameSettings.ofRain = GameSettings.ofRain < 0 ? 0 : (GameSettings.ofRain > 3 ? 3 : GameSettings.ofRain);
                     }
+
+					if (astring[0].equals("hidePassword") && astring.length >= 2) {
+						hidePassword = Boolean.valueOf(astring[1]).booleanValue();
+					}
 				
 					for (KeyBinding keybinding : this.keyBindings) {
 						if (astring[0].equals("key_" + keybinding.getKeyDescription())) {
@@ -1595,7 +1608,7 @@ public class GameSettings {
 			printwriter.println("chunkFix:" + this.chunkFix);
 			printwriter.println("fog:" + this.fog);
 			printwriter.println("fxaa:" + this.fxaa);
-			printwriter.println("ofAnimatedPortal:" + GameSettings.ofAnimatedPortal);
+			printwriter.println("ofAnimatedPortal:" + ofAnimatedPortal);
 			printwriter.println("ofAnimatedExplosion:" + ofAnimatedExplosion);
 			printwriter.println("ofWaterParticles:" + ofWaterParticles);
 			printwriter.println("ofVoidParticles:" + ofVoidParticles);
@@ -1605,25 +1618,26 @@ public class GameSettings {
 			printwriter.println("ofAnimatedRedstone:" + ofAnimatedRedstone);
 			printwriter.println("ofDrippingWaterLava:" + ofDrippingWaterLava);
 			printwriter.println("ofFireworkParticles:" + ofFireworkParticles);
-			printwriter.println("ofAnimatedWater:" + GameSettings.ofAnimatedWater);
-			printwriter.println("ofAnimatedLava:" + GameSettings.ofAnimatedLava);
-			printwriter.println("ofAnimatedFire:" + GameSettings.ofAnimatedFire);
-			printwriter.println("ofAnimatedTerrain:" + GameSettings.ofAnimatedTerrain);
+			printwriter.println("ofAnimatedWater:" + ofAnimatedWater);
+			printwriter.println("ofAnimatedLava:" + ofAnimatedLava);
+			printwriter.println("ofAnimatedFire:" + ofAnimatedFire);
+			printwriter.println("ofAnimatedTerrain:" + ofAnimatedTerrain);
 			printwriter.println("ofFastMath:" + ofFastMath);
 			printwriter.println("ofSmoothFps:" + ofSmoothFps);
 			printwriter.println("ofChunkUpdates:" + ofChunkUpdates);
 			printwriter.println("ofSmoothWorld:" + ofSmoothWorld);
-			printwriter.println("ofAoLevel:" + GameSettings.ofAoLevel);
-			printwriter.println("ofDynamicFov:" + GameSettings.ofDynamicFov);
-			printwriter.println("ofFogType:" + GameSettings.ofFogType);
-			printwriter.println("ofFogStart:" + GameSettings.ofFogStart);
+			printwriter.println("ofAoLevel:" + ofAoLevel);
+			printwriter.println("ofDynamicFov:" + ofDynamicFov);
+			printwriter.println("ofFogType:" + ofFogType);
+			printwriter.println("ofFogStart:" + ofFogStart);
 			printwriter.println("ofCloudsHeight:" + ofCloudsHeight);
-			printwriter.println("ofTrees:" + GameSettings.ofTrees);
+			printwriter.println("ofTrees:" + ofTrees);
 			printwriter.println("ofLagometer:" + ofLagometer);
 			printwriter.println("ofProfiler:" + ofProfiler);
 			printwriter.println("ofDynamicLights:" + ofDynamicLights);
 			printwriter.println("ofBetterGrass:" + ofBetterGrass);
-			printwriter.println("ofRain:" + GameSettings.ofRain);
+			printwriter.println("ofRain:" + ofRain);
+			printwriter.println("hidePassword:" + hidePassword);
 
 			for (KeyBinding keybinding : this.keyBindings) {
 				printwriter.println("key_" + keybinding.getKeyDescription() + ":" + keybinding.getKeyCode());
@@ -1783,7 +1797,8 @@ public class GameSettings {
 		PROFILER("Debug Profiler", false, false),
 		DYNAMIC_LIGHTS("Dynamic Lights", false, false),
 		BETTER_GRASS("Better Grass", false, false),
-		RAIN("Rain & Snow", false, false);
+		RAIN("Rain & Snow", false, false),
+		HIDE_PASSWORD("Hide Password", false, false);
 
 		private final boolean enumFloat;
 		private final boolean enumBoolean;
