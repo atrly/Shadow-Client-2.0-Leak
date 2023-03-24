@@ -340,4 +340,31 @@ public class Config {
         //return !isSunMoonEnabled() ? false : !isShaders() || Shaders.isMoon();
     	return isSunMoonEnabled() ? true : false;
     }
+
+    public static int getMipmapType() {
+        switch (GameSettings.ofMipmapType) {
+            case 0:
+                return 9986;
+
+            case 1:
+                return 9986;
+
+            case 2:
+                //if (isMultiTexture()) {
+                    //return 9985;
+                //}
+
+                return 9986;
+
+            case 3:
+                //if (isMultiTexture()) {
+                    //return 9987;
+                //}
+
+                return 9986;
+
+            default:
+                return 9986;
+        }
+    }
 }

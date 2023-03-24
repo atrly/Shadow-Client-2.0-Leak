@@ -237,6 +237,7 @@ public class GameSettings {
 	public static boolean ofSky = true;
 	public static boolean ofStars = true;
 	public static boolean ofSunMoon = true;
+	public static int ofMipmapType = 0;
 
 	public static float ofAoLevel = 1.0F;
 	public static float ofFogStart = 0.8F;
@@ -386,6 +387,16 @@ public class GameSettings {
 		if (parOptions == GameSettings.Options.CLOUD_HEIGHT) {
             ofCloudsHeight = parFloat1;
             this.mc.renderGlobal.resetClouds();
+        }
+
+		if (parOptions == GameSettings.Options.MIPMAP_TYPE) {
+            int l = (int)parFloat1;
+            int l1 = ofMipmapType;
+            GameSettings.ofMipmapType = l < 0 ? 0 : (l > 3 ? 3 : l);
+            
+            if(l1 != l) {
+            	this.mc.scheduleResourcesRefresh();
+            }
         }
 		
 	}
@@ -752,7 +763,8 @@ public class GameSettings {
 				: (parOptions == GameSettings.Options.STREAM_FPS ? this.streamFps
 				: (parOptions == GameSettings.Options.AO_LEVEL ? GameSettings.ofAoLevel
 				: (parOptions == GameSettings.Options.CLOUD_HEIGHT ? ofCloudsHeight
-				: 0.0F))))))))))))))))));
+				: (parOptions == GameSettings.Options.MIPMAP_TYPE ? (float)GameSettings.ofMipmapType
+				: 0.0F)))))))))))))))))));
 	}
 
 	public boolean getOptionOrdinalValue(GameSettings.Options parOptions) {
@@ -880,7 +892,8 @@ public class GameSettings {
 					: (parOptions == GameSettings.Options.MIPMAP_LEVELS ? (f == 0.0F ? s + I18n.format("options.off", new Object[0]) : s + (int) (f * 100.0F) + "%")
 					: (parOptions == GameSettings.Options.AO_LEVEL ? (f == 0.0F ? s + I18n.format("options.off", new Object[0]) : s + (int) (f * 100.0F) + "%")
 					: (parOptions == GameSettings.Options.CLOUD_HEIGHT ? ( f == 0.0F ? s + I18n.format("OFF", new Object[0]) : s + (int) (f * 100.0F) + "%")
-					: "yee"))))))))))))));
+					: (parOptions == GameSettings.Options.MIPMAP_TYPE ? (ofMipmapType == 0 ? s + "Nearest" : ofMipmapType == 1 ? s + "Linear" : ofMipmapType == 2 ? s + "Bilinear" : ofMipmapType == 3 ? s + "Trilinear": s)
+					: "yee")))))))))))))));
 		} else if (parOptions.getEnumBoolean()) {
 			boolean flag = this.getOptionOrdinalValue(parOptions);
 			return flag ? s + I18n.format("options.on", new Object[0]) : s + I18n.format("options.off", new Object[0]);
@@ -1052,6 +1065,23 @@ public class GameSettings {
             return ofStars ? s + "ON" : s + "OFF";
         } else if (parOptions == GameSettings.Options.SUN_MOON) {
             return ofSunMoon ? s + "ON" : s + "OFF";
+        } else if (parOptions == GameSettings.Options.MIPMAP_TYPE) {
+            switch (GameSettings.ofMipmapType) {
+                case 0:
+                    return s + "Nearest";
+
+                case 1:
+                    return s + "Linear";
+
+                case 2:
+                    return s + "Bilinear";
+
+                case 3:
+                    return s + "Trilinear";
+
+                default:
+                    return s + "Nearest";
+            }
         } else {
 			return s;
 		}
@@ -1526,6 +1556,11 @@ public class GameSettings {
                     if (astring[0].equals("ofSunMoon") && astring.length >= 2) {
                         ofSunMoon = Boolean.valueOf(astring[1]).booleanValue();
                     }
+
+					if (astring[0].equals("ofMipmapType") && astring.length >= 2) {
+                        GameSettings.ofMipmapType = Integer.valueOf(astring[1]).intValue();
+                        GameSettings.ofMipmapType = GameSettings.ofMipmapType < 0 ? 0 : (GameSettings.ofMipmapType > 3 ? 3 : GameSettings.ofMipmapType);
+                    }
 				
 					for (KeyBinding keybinding : this.keyBindings) {
 						if (astring[0].equals("key_" + keybinding.getKeyDescription())) {
@@ -1680,6 +1715,7 @@ public class GameSettings {
 			printwriter.println("ofSky:" + ofSky);
 			printwriter.println("ofStars:" + ofStars);
             printwriter.println("ofSunMoon:" + ofSunMoon);
+			printwriter.println("ofMipmapType:" + ofMipmapType);
 
 			for (KeyBinding keybinding : this.keyBindings) {
 				printwriter.println("key_" + keybinding.getKeyDescription() + ":" + keybinding.getKeyCode());
@@ -1844,7 +1880,8 @@ public class GameSettings {
 		SKY("Sky", false, false),
 		STARS("Stars", false, false),
         SUN_MOON("Sun & Moon", false, false),
-        CLEAR_WATER("Clear Water", false, false);
+        CLEAR_WATER("Clear Water", false, false),
+		MIPMAP_TYPE("Mipmap Type", true, false, 0.0F, 3.0F, 1.0F);
 
 		private final boolean enumFloat;
 		private final boolean enumBoolean;

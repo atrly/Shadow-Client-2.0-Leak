@@ -16,8 +16,8 @@ public class GuiQuality extends GuiScreen {
     public static GuiVideoSettings video;
 
 	private static final GameSettings.Options[] videoOptions = new GameSettings.Options[] {
-			//GameSettings.Options.MIPMAP_LEVELS,
-			//GameSettings.Options.MIPMAP_TYPE,
+			GameSettings.Options.MIPMAP_LEVELS,
+			GameSettings.Options.MIPMAP_TYPE,
 			//GameSettings.Options.AF_LEVEL,
 			//GameSettings.Options.AA_LEVEL,
 			//GameSettings.Options.CLEAR_WATER,

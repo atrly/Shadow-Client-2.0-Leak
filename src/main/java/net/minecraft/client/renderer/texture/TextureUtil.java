@@ -17,6 +17,8 @@ import net.minecraft.client.renderer.GLAllocation;
 import net.minecraft.client.resources.IResourceManager;
 import net.minecraft.util.ResourceLocation;
 
+import net.PeytonPlayz585.Optifine.Config;
+
 /**+
  * This portion of EaglercraftX contains deobfuscated Minecraft 1.8 source code.
  * 
@@ -247,16 +249,17 @@ public class TextureUtil {
 		setTextureBlurMipmap(parFlag, false);
 	}
 
-	private static void setTextureBlurMipmap(boolean parFlag, boolean parFlag2) {
-		if (parFlag) {
-			EaglercraftGPU.glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, parFlag2 ? 9987 : 9729);
-			EaglercraftGPU.glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-		} else {
-			EaglercraftGPU.glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, parFlag2 ? 9986 : 9728);
-			EaglercraftGPU.glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-		}
+	public static void setTextureBlurMipmap(boolean p_147954_0_, boolean p_147954_1_) {
+        if (p_147954_0_) {
+        	EaglercraftGPU.glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, p_147954_1_ ? GL_LINEAR_MIPMAP_LINEAR : GL_LINEAR);
+            EaglercraftGPU.glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        } else {
+            int i = Config.getMipmapType();
+            EaglercraftGPU.glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, p_147954_1_ ? i : GL_NEAREST);
+            EaglercraftGPU.glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+        }
+    }
 
-	}
 
 	private static void copyToBuffer(int[] parArrayOfInt, int parInt1) {
 		copyToBufferPos(parArrayOfInt, 0, parInt1);
