@@ -38,10 +38,10 @@ public class GuiDetails extends GuiScreen {
 			GameSettings.Options.RENDER_CLOUDS,
 			GameSettings.Options.CLOUD_HEIGHT,
 			GameSettings.Options.TREES,
-			GameSettings.Options.RAIN
-			//GameSettings.Options.SKY,
-			//GameSettings.Options.STARS,
-			//GameSettings.Options.SUN_MOON,
+			GameSettings.Options.RAIN,
+			GameSettings.Options.SKY,
+			GameSettings.Options.STARS,
+			GameSettings.Options.SUN_MOON
 	};
 
 	public GuiDetails(GuiScreen parentScreenIn, GameSettings gameSettingsIn) {

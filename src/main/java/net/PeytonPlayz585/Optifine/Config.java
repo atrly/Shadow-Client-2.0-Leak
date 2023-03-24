@@ -318,4 +318,26 @@ public class Config {
     public static boolean isPasswordHidden() {
         return GameSettings.hidePassword;
     }
+
+    public static boolean isSkyEnabled() {
+        return GameSettings.ofSky;
+    }
+    
+    public static boolean isStarsEnabled() {
+        return GameSettings.ofStars;
+    }
+    
+    public static boolean isSunMoonEnabled() {
+        return GameSettings.ofSunMoon;
+    }
+
+    public static boolean isSunTexture() {
+        //return !isSunMoonEnabled() ? false : !isShaders() || Shaders.isSun();
+    	return isSunMoonEnabled() ? true : false;
+    }
+
+    public static boolean isMoonTexture() {
+        //return !isSunMoonEnabled() ? false : !isShaders() || Shaders.isMoon();
+    	return isSunMoonEnabled() ? true : false;
+    }
 }

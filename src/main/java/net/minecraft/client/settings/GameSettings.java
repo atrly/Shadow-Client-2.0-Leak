@@ -234,6 +234,9 @@ public class GameSettings {
 	public static int ofDynamicLights = 3;
 	public static int ofBetterGrass = 3;
 	public static int ofRain = 0;
+	public static boolean ofSky = true;
+	public static boolean ofStars = true;
+	public static boolean ofSunMoon = true;
 
 	public static float ofAoLevel = 1.0F;
 	public static float ofFogStart = 0.8F;
@@ -714,6 +717,18 @@ public class GameSettings {
 			hidePassword =! hidePassword;
 		}
 
+		if (parOptions == GameSettings.Options.SKY) {
+            ofSky = !ofSky;
+        }
+		
+		if (parOptions == GameSettings.Options.STARS) {
+            ofStars = !ofStars;
+        }
+
+        if (parOptions == GameSettings.Options.SUN_MOON) {
+            ofSunMoon = !ofSunMoon;
+        }
+
 		this.saveOptions();
 	}
 
@@ -818,6 +833,12 @@ public class GameSettings {
 			return ofProfiler;
 		case HIDE_PASSWORD:
 			return hidePassword;
+		case SKY:
+			return ofSky;
+		case STARS:
+			return ofStars;
+		case SUN_MOON:
+			return ofSunMoon;
 		default:
 			return false;
 		}
@@ -1025,7 +1046,13 @@ public class GameSettings {
             }
         } else if (parOptions == GameSettings.Options.HIDE_PASSWORD) {
 			return hidePassword ? s + "ON" : s + "OFF";	
-		} else {
+		} else if (parOptions == GameSettings.Options.SKY) {
+            return ofSky ? s + "ON" : s + "OFF";
+        } else if (parOptions == GameSettings.Options.STARS) {
+            return ofStars ? s + "ON" : s + "OFF";
+        } else if (parOptions == GameSettings.Options.SUN_MOON) {
+            return ofSunMoon ? s + "ON" : s + "OFF";
+        } else {
 			return s;
 		}
 	}
@@ -1487,6 +1514,18 @@ public class GameSettings {
 					if (astring[0].equals("hidePassword") && astring.length >= 2) {
 						hidePassword = Boolean.valueOf(astring[1]).booleanValue();
 					}
+
+					if (astring[0].equals("ofSky") && astring.length >= 2) {
+                        ofSky = Boolean.valueOf(astring[1]).booleanValue();
+                    }
+					
+					if (astring[0].equals("ofStars") && astring.length >= 2) {
+                        ofStars = Boolean.valueOf(astring[1]).booleanValue();
+                    }
+
+                    if (astring[0].equals("ofSunMoon") && astring.length >= 2) {
+                        ofSunMoon = Boolean.valueOf(astring[1]).booleanValue();
+                    }
 				
 					for (KeyBinding keybinding : this.keyBindings) {
 						if (astring[0].equals("key_" + keybinding.getKeyDescription())) {
@@ -1638,6 +1677,9 @@ public class GameSettings {
 			printwriter.println("ofBetterGrass:" + ofBetterGrass);
 			printwriter.println("ofRain:" + ofRain);
 			printwriter.println("hidePassword:" + hidePassword);
+			printwriter.println("ofSky:" + ofSky);
+			printwriter.println("ofStars:" + ofStars);
+            printwriter.println("ofSunMoon:" + ofSunMoon);
 
 			for (KeyBinding keybinding : this.keyBindings) {
 				printwriter.println("key_" + keybinding.getKeyDescription() + ":" + keybinding.getKeyCode());
@@ -1798,7 +1840,11 @@ public class GameSettings {
 		DYNAMIC_LIGHTS("Dynamic Lights", false, false),
 		BETTER_GRASS("Better Grass", false, false),
 		RAIN("Rain & Snow", false, false),
-		HIDE_PASSWORD("Hide Password", false, false);
+		HIDE_PASSWORD("Hide Password", false, false),
+		SKY("Sky", false, false),
+		STARS("Stars", false, false),
+        SUN_MOON("Sun & Moon", false, false),
+        CLEAR_WATER("Clear Water", false, false);
 
 		private final boolean enumFloat;
 		private final boolean enumBoolean;

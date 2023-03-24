@@ -955,216 +955,241 @@ public class RenderGlobal implements IWorldAccess, IResourceManagerReloadListene
 	}
 
 	private void renderSkyEnd() {
-		GlStateManager.disableFog();
-		GlStateManager.disableAlpha();
-		GlStateManager.enableBlend();
-		GlStateManager.tryBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, 1, 0);
-		RenderHelper.disableStandardItemLighting();
-		GlStateManager.depthMask(false);
-		this.renderEngine.bindTexture(locationEndSkyPng);
-		Tessellator tessellator = Tessellator.getInstance();
-		WorldRenderer worldrenderer = tessellator.getWorldRenderer();
+        if (Config.isSkyEnabled()) {
+            GlStateManager.disableFog();
+            GlStateManager.disableAlpha();
+            GlStateManager.enableBlend();
+            GlStateManager.tryBlendFuncSeparate(770, 771, 1, 0);
+            RenderHelper.disableStandardItemLighting();
+            GlStateManager.depthMask(false);
+            this.renderEngine.bindTexture(locationEndSkyPng);
+            Tessellator tessellator = Tessellator.getInstance();
+            WorldRenderer worldrenderer = tessellator.getWorldRenderer();
 
-		for (int i = 0; i < 6; ++i) {
-			GlStateManager.pushMatrix();
-			if (i == 1) {
-				GlStateManager.rotate(90.0F, 1.0F, 0.0F, 0.0F);
-			}
+            for (int i = 0; i < 6; ++i) {
+                GlStateManager.pushMatrix();
 
-			if (i == 2) {
-				GlStateManager.rotate(-90.0F, 1.0F, 0.0F, 0.0F);
-			}
+                if (i == 1) {
+                    GlStateManager.rotate(90.0F, 1.0F, 0.0F, 0.0F);
+                }
 
-			if (i == 3) {
-				GlStateManager.rotate(180.0F, 1.0F, 0.0F, 0.0F);
-			}
+                if (i == 2) {
+                    GlStateManager.rotate(-90.0F, 1.0F, 0.0F, 0.0F);
+                }
 
-			if (i == 4) {
-				GlStateManager.rotate(90.0F, 0.0F, 0.0F, 1.0F);
-			}
+                if (i == 3) {
+                    GlStateManager.rotate(180.0F, 1.0F, 0.0F, 0.0F);
+                }
 
-			if (i == 5) {
-				GlStateManager.rotate(-90.0F, 0.0F, 0.0F, 1.0F);
-			}
+                if (i == 4) {
+                    GlStateManager.rotate(90.0F, 0.0F, 0.0F, 1.0F);
+                }
 
-			worldrenderer.begin(7, DefaultVertexFormats.POSITION_TEX_COLOR);
-			worldrenderer.pos(-100.0D, -100.0D, -100.0D).tex(0.0D, 0.0D).color(40, 40, 40, 255).endVertex();
-			worldrenderer.pos(-100.0D, -100.0D, 100.0D).tex(0.0D, 16.0D).color(40, 40, 40, 255).endVertex();
-			worldrenderer.pos(100.0D, -100.0D, 100.0D).tex(16.0D, 16.0D).color(40, 40, 40, 255).endVertex();
-			worldrenderer.pos(100.0D, -100.0D, -100.0D).tex(16.0D, 0.0D).color(40, 40, 40, 255).endVertex();
-			tessellator.draw();
-			GlStateManager.popMatrix();
-		}
+                if (i == 5) {
+                    GlStateManager.rotate(-90.0F, 0.0F, 0.0F, 1.0F);
+                }
 
-		GlStateManager.depthMask(true);
-		GlStateManager.enableTexture2D();
-		GlStateManager.enableAlpha();
-	}
+                worldrenderer.begin(7, DefaultVertexFormats.POSITION_TEX_COLOR);
+                worldrenderer.pos(-100.0D, -100.0D, -100.0D).tex(0.0D, 0.0D).color(40, 40, 40, 255).endVertex();
+                worldrenderer.pos(-100.0D, -100.0D, 100.0D).tex(0.0D, 16.0D).color(40, 40, 40, 255).endVertex();
+                worldrenderer.pos(100.0D, -100.0D, 100.0D).tex(16.0D, 16.0D).color(40, 40, 40, 255).endVertex();
+                worldrenderer.pos(100.0D, -100.0D, -100.0D).tex(16.0D, 0.0D).color(40, 40, 40, 255).endVertex();
+                tessellator.draw();
+                GlStateManager.popMatrix();
+            }
+
+            GlStateManager.depthMask(true);
+            GlStateManager.enableTexture2D();
+            GlStateManager.enableAlpha();
+        }
+    }
 
 	public void renderSky(float partialTicks, int pass) {
-		if (this.mc.theWorld.provider.getDimensionId() == 1) {
-			this.renderSkyEnd();
-		} else if (this.mc.theWorld.provider.isSurfaceWorld()) {
-			GlStateManager.disableTexture2D();
-			Vec3 vec3 = this.theWorld.getSkyColor(this.mc.getRenderViewEntity(), partialTicks);
-			float f = (float) vec3.xCoord;
-			float f1 = (float) vec3.yCoord;
-			float f2 = (float) vec3.zCoord;
-			if (pass != 2) {
-				float f3 = (f * 30.0F + f1 * 59.0F + f2 * 11.0F) / 100.0F;
-				float f4 = (f * 30.0F + f1 * 70.0F) / 100.0F;
-				float f5 = (f * 30.0F + f2 * 70.0F) / 100.0F;
-				f = f3;
-				f1 = f4;
-				f2 = f5;
-			}
+        if (this.mc.theWorld.provider.getDimensionId() == 1) {
+            this.renderSkyEnd();
+        } else if (this.mc.theWorld.provider.isSurfaceWorld()) {
+            GlStateManager.disableTexture2D();
 
-			GlStateManager.color(f, f1, f2);
-			Tessellator tessellator = Tessellator.getInstance();
-			WorldRenderer worldrenderer = tessellator.getWorldRenderer();
-			GlStateManager.depthMask(false);
-			GlStateManager.enableFog();
-			GlStateManager.color(f, f1, f2);
-			GlStateManager.callList(this.glSkyList);
+            Vec3 vec3 = this.theWorld.getSkyColor(this.mc.getRenderViewEntity(), partialTicks);
 
-			GlStateManager.disableFog();
-			GlStateManager.disableAlpha();
-			GlStateManager.enableBlend();
-			GlStateManager.tryBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, 1, 0);
-			RenderHelper.disableStandardItemLighting();
-			float[] afloat = this.theWorld.provider
-					.calcSunriseSunsetColors(this.theWorld.getCelestialAngle(partialTicks), partialTicks);
-			if (afloat != null) {
-				GlStateManager.disableTexture2D();
-				GlStateManager.shadeModel(GL_SMOOTH);
-				GlStateManager.pushMatrix();
-				GlStateManager.rotate(90.0F, 1.0F, 0.0F, 0.0F);
-				GlStateManager.rotate(
-						MathHelper.sin(this.theWorld.getCelestialAngleRadians(partialTicks)) < 0.0F ? 180.0F : 0.0F,
-						0.0F, 0.0F, 1.0F);
-				GlStateManager.rotate(90.0F, 0.0F, 0.0F, 1.0F);
-				float f6 = afloat[0];
-				float f7 = afloat[1];
-				float f8 = afloat[2];
-				if (pass != 2) {
-					float f9 = (f6 * 30.0F + f7 * 59.0F + f8 * 11.0F) / 100.0F;
-					float f10 = (f6 * 30.0F + f7 * 70.0F) / 100.0F;
-					float f11 = (f6 * 30.0F + f8 * 70.0F) / 100.0F;
-					f6 = f9;
-					f7 = f10;
-					f8 = f11;
-				}
+            float f = (float)vec3.xCoord;
+            float f1 = (float)vec3.yCoord;
+            float f2 = (float)vec3.zCoord;
 
-				worldrenderer.begin(6, DefaultVertexFormats.POSITION_COLOR);
-				worldrenderer.pos(0.0D, 100.0D, 0.0D).color(f6, f7, f8, afloat[3]).endVertex();
-				boolean flag = true;
+            if (pass != 2) {
+                float f3 = (f * 30.0F + f1 * 59.0F + f2 * 11.0F) / 100.0F;
+                float f4 = (f * 30.0F + f1 * 70.0F) / 100.0F;
+                float f5 = (f * 30.0F + f2 * 70.0F) / 100.0F;
+                f = f3;
+                f1 = f4;
+                f2 = f5;
+            }
 
-				for (int k = 0; k <= 16; ++k) {
-					float f21 = (float) k * 3.1415927F * 2.0F / 16.0F;
-					float f12 = MathHelper.sin(f21);
-					float f13 = MathHelper.cos(f21);
-					worldrenderer
-							.pos((double) (f12 * 120.0F), (double) (f13 * 120.0F), (double) (f13 * 40.0F * afloat[3]))
-							.color(afloat[0], afloat[1], afloat[2], 0.0F).endVertex();
-				}
+            GlStateManager.color(f, f1, f2);
+            Tessellator tessellator = Tessellator.getInstance();
+            WorldRenderer worldrenderer = tessellator.getWorldRenderer();
+            GlStateManager.depthMask(false);
+            GlStateManager.enableFog();
+            GlStateManager.color(f, f1, f2);
 
-				tessellator.draw();
-				GlStateManager.popMatrix();
-				GlStateManager.shadeModel(GL_FLAT);
-			}
+            if (Config.isSkyEnabled()) {
+                GlStateManager.callList(this.glSkyList);
+            }
 
-			GlStateManager.enableTexture2D();
-			GlStateManager.tryBlendFuncSeparate(GL_SRC_ALPHA, 1, 1, 0);
-			GlStateManager.pushMatrix();
-			float f16 = 1.0F - this.theWorld.getRainStrength(partialTicks);
-			GlStateManager.color(1.0F, 1.0F, 1.0F, f16);
-			GlStateManager.rotate(-90.0F, 0.0F, 1.0F, 0.0F);
-			GlStateManager.rotate(this.theWorld.getCelestialAngle(partialTicks) * 360.0F, 1.0F, 0.0F, 0.0F);
-			float f17 = 30.0F;
-			this.renderEngine.bindTexture(locationSunPng);
-			worldrenderer.begin(7, DefaultVertexFormats.POSITION_TEX);
-			worldrenderer.pos((double) (-f17), 100.0D, (double) (-f17)).tex(0.0D, 0.0D).endVertex();
-			worldrenderer.pos((double) f17, 100.0D, (double) (-f17)).tex(1.0D, 0.0D).endVertex();
-			worldrenderer.pos((double) f17, 100.0D, (double) f17).tex(1.0D, 1.0D).endVertex();
-			worldrenderer.pos((double) (-f17), 100.0D, (double) f17).tex(0.0D, 1.0D).endVertex();
-			tessellator.draw();
-			f17 = 20.0F;
-			this.renderEngine.bindTexture(locationMoonPhasesPng);
-			int i = this.theWorld.getMoonPhase();
-			int j = i % 4;
-			int l = i / 4 % 2;
-			float f22 = (float) (j + 0) / 4.0F;
-			float f23 = (float) (l + 0) / 2.0F;
-			float f24 = (float) (j + 1) / 4.0F;
-			float f14 = (float) (l + 1) / 2.0F;
-			worldrenderer.begin(7, DefaultVertexFormats.POSITION_TEX);
-			worldrenderer.pos((double) (-f17), -100.0D, (double) f17).tex((double) f24, (double) f14).endVertex();
-			worldrenderer.pos((double) f17, -100.0D, (double) f17).tex((double) f22, (double) f14).endVertex();
-			worldrenderer.pos((double) f17, -100.0D, (double) (-f17)).tex((double) f22, (double) f23).endVertex();
-			worldrenderer.pos((double) (-f17), -100.0D, (double) (-f17)).tex((double) f24, (double) f23).endVertex();
-			tessellator.draw();
-			GlStateManager.disableTexture2D();
-			float f15 = this.theWorld.getStarBrightness(partialTicks) * f16;
-			if (f15 > 0.0F) {
-				GlStateManager.color(f15, f15, f15, f15);
-				GlStateManager.callList(this.starGLCallList);
-			}
+            GlStateManager.disableFog();
+            GlStateManager.disableAlpha();
+            GlStateManager.enableBlend();
+            GlStateManager.tryBlendFuncSeparate(770, 771, 1, 0);
+            RenderHelper.disableStandardItemLighting();
+            float[] afloat = this.theWorld.provider.calcSunriseSunsetColors(this.theWorld.getCelestialAngle(partialTicks), partialTicks);
 
-			GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
-			GlStateManager.disableBlend();
-			GlStateManager.enableAlpha();
-			GlStateManager.enableFog();
-			GlStateManager.popMatrix();
-			GlStateManager.disableTexture2D();
-			GlStateManager.color(0.0F, 0.0F, 0.0F);
-			double d0 = this.mc.thePlayer.getPositionEyes(partialTicks).yCoord - this.theWorld.getHorizon();
-			if (d0 < 0.0D) {
-				GlStateManager.pushMatrix();
-				GlStateManager.translate(0.0F, 12.0F, 0.0F);
-				GlStateManager.callList(this.glSkyList2);
+            if (afloat != null && Config.isSunMoonEnabled()) {
+                GlStateManager.disableTexture2D();
+                GlStateManager.shadeModel(7425);
+                GlStateManager.pushMatrix();
+                GlStateManager.rotate(90.0F, 1.0F, 0.0F, 0.0F);
+                GlStateManager.rotate(MathHelper.sin(this.theWorld.getCelestialAngleRadians(partialTicks)) < 0.0F ? 180.0F : 0.0F, 0.0F, 0.0F, 1.0F);
+                GlStateManager.rotate(90.0F, 0.0F, 0.0F, 1.0F);
+                float f6 = afloat[0];
+                float f7 = afloat[1];
+                float f8 = afloat[2];
 
-				GlStateManager.popMatrix();
-				float f18 = 1.0F;
-				float f19 = -((float) (d0 + 65.0D));
-				float f20 = -1.0F;
-				worldrenderer.begin(7, DefaultVertexFormats.POSITION_COLOR);
-				worldrenderer.pos(-1.0D, (double) f19, 1.0D).color(0, 0, 0, 255).endVertex();
-				worldrenderer.pos(1.0D, (double) f19, 1.0D).color(0, 0, 0, 255).endVertex();
-				worldrenderer.pos(1.0D, -1.0D, 1.0D).color(0, 0, 0, 255).endVertex();
-				worldrenderer.pos(-1.0D, -1.0D, 1.0D).color(0, 0, 0, 255).endVertex();
-				worldrenderer.pos(-1.0D, -1.0D, -1.0D).color(0, 0, 0, 255).endVertex();
-				worldrenderer.pos(1.0D, -1.0D, -1.0D).color(0, 0, 0, 255).endVertex();
-				worldrenderer.pos(1.0D, (double) f19, -1.0D).color(0, 0, 0, 255).endVertex();
-				worldrenderer.pos(-1.0D, (double) f19, -1.0D).color(0, 0, 0, 255).endVertex();
-				worldrenderer.pos(1.0D, -1.0D, -1.0D).color(0, 0, 0, 255).endVertex();
-				worldrenderer.pos(1.0D, -1.0D, 1.0D).color(0, 0, 0, 255).endVertex();
-				worldrenderer.pos(1.0D, (double) f19, 1.0D).color(0, 0, 0, 255).endVertex();
-				worldrenderer.pos(1.0D, (double) f19, -1.0D).color(0, 0, 0, 255).endVertex();
-				worldrenderer.pos(-1.0D, (double) f19, -1.0D).color(0, 0, 0, 255).endVertex();
-				worldrenderer.pos(-1.0D, (double) f19, 1.0D).color(0, 0, 0, 255).endVertex();
-				worldrenderer.pos(-1.0D, -1.0D, 1.0D).color(0, 0, 0, 255).endVertex();
-				worldrenderer.pos(-1.0D, -1.0D, -1.0D).color(0, 0, 0, 255).endVertex();
-				worldrenderer.pos(-1.0D, -1.0D, -1.0D).color(0, 0, 0, 255).endVertex();
-				worldrenderer.pos(-1.0D, -1.0D, 1.0D).color(0, 0, 0, 255).endVertex();
-				worldrenderer.pos(1.0D, -1.0D, 1.0D).color(0, 0, 0, 255).endVertex();
-				worldrenderer.pos(1.0D, -1.0D, -1.0D).color(0, 0, 0, 255).endVertex();
-				tessellator.draw();
-			}
+                if (pass != 2) {
+                    float f9 = (f6 * 30.0F + f7 * 59.0F + f8 * 11.0F) / 100.0F;
+                    float f10 = (f6 * 30.0F + f7 * 70.0F) / 100.0F;
+                    float f11 = (f6 * 30.0F + f8 * 70.0F) / 100.0F;
+                    f6 = f9;
+                    f7 = f10;
+                    f8 = f11;
+                }
 
-			if (this.theWorld.provider.isSkyColored()) {
-				GlStateManager.color(f * 0.2F + 0.04F, f1 * 0.2F + 0.04F, f2 * 0.6F + 0.1F);
-			} else {
-				GlStateManager.color(f, f1, f2);
-			}
+                worldrenderer.begin(6, DefaultVertexFormats.POSITION_COLOR);
+                worldrenderer.pos(0.0D, 100.0D, 0.0D).color(f6, f7, f8, afloat[3]).endVertex();
 
-			GlStateManager.pushMatrix();
-			GlStateManager.translate(0.0F, -((float) (d0 - 16.0D)), 0.0F);
-			GlStateManager.callList(this.glSkyList2);
-			GlStateManager.popMatrix();
-			GlStateManager.enableTexture2D();
-			GlStateManager.depthMask(true);
-		}
-	}
+                for (int i = 0; i <= 16; ++i) {
+                    float f20 = (float)i * (float)Math.PI * 2.0F / 16.0F;
+                    float f12 = MathHelper.sin(f20);
+                    float f13 = MathHelper.cos(f20);
+                    worldrenderer.pos((double)(f12 * 120.0F), (double)(f13 * 120.0F), (double)(-f13 * 40.0F * afloat[3])).color(afloat[0], afloat[1], afloat[2], 0.0F).endVertex();
+                }
+
+                tessellator.draw();
+                GlStateManager.popMatrix();
+                GlStateManager.shadeModel(7424);
+            }
+
+            GlStateManager.enableTexture2D();
+            GlStateManager.tryBlendFuncSeparate(770, 1, 1, 0);
+            GlStateManager.pushMatrix();
+            float f15 = 1.0F - this.theWorld.getRainStrength(partialTicks);
+            GlStateManager.color(1.0F, 1.0F, 1.0F, f15);
+            GlStateManager.rotate(-90.0F, 0.0F, 1.0F, 0.0F);
+
+            GlStateManager.rotate(this.theWorld.getCelestialAngle(partialTicks) * 360.0F, 1.0F, 0.0F, 0.0F);
+
+            float f16 = 30.0F;
+
+            if (Config.isSunTexture()) {
+                this.renderEngine.bindTexture(locationSunPng);
+                worldrenderer.begin(7, DefaultVertexFormats.POSITION_TEX);
+                worldrenderer.pos((double)(-f16), 100.0D, (double)(-f16)).tex(0.0D, 0.0D).endVertex();
+                worldrenderer.pos((double)f16, 100.0D, (double)(-f16)).tex(1.0D, 0.0D).endVertex();
+                worldrenderer.pos((double)f16, 100.0D, (double)f16).tex(1.0D, 1.0D).endVertex();
+                worldrenderer.pos((double)(-f16), 100.0D, (double)f16).tex(0.0D, 1.0D).endVertex();
+                tessellator.draw();
+            }
+
+            f16 = 20.0F;
+
+            if (Config.isMoonTexture()) {
+                this.renderEngine.bindTexture(locationMoonPhasesPng);
+                int l = this.theWorld.getMoonPhase();
+                int j = l % 4;
+                int k = l / 4 % 2;
+                float f21 = (float)(j + 0) / 4.0F;
+                float f22 = (float)(k + 0) / 2.0F;
+                float f23 = (float)(j + 1) / 4.0F;
+                float f14 = (float)(k + 1) / 2.0F;
+                worldrenderer.begin(7, DefaultVertexFormats.POSITION_TEX);
+                worldrenderer.pos((double)(-f16), -100.0D, (double)f16).tex((double)f23, (double)f14).endVertex();
+                worldrenderer.pos((double)f16, -100.0D, (double)f16).tex((double)f21, (double)f14).endVertex();
+                worldrenderer.pos((double)f16, -100.0D, (double)(-f16)).tex((double)f21, (double)f22).endVertex();
+                worldrenderer.pos((double)(-f16), -100.0D, (double)(-f16)).tex((double)f23, (double)f22).endVertex();
+                tessellator.draw();
+            }
+
+            GlStateManager.disableTexture2D();
+
+            float f24 = this.theWorld.getStarBrightness(partialTicks) * f15;
+
+            //if (f24 > 0.0F && Config.isStarsEnabled() && !CustomSky.hasSkyLayers(this.theWorld))
+            if(f24 > 0.0F && Config.isStarsEnabled()) {
+                GlStateManager.color(f24, f24, f24, f24);
+                GlStateManager.callList(this.starGLCallList);
+            }
+
+            GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
+            GlStateManager.disableBlend();
+            GlStateManager.enableAlpha();
+            GlStateManager.enableFog();
+            GlStateManager.popMatrix();
+            GlStateManager.disableTexture2D();
+            GlStateManager.color(0.0F, 0.0F, 0.0F);
+            double d0 = this.mc.thePlayer.getPositionEyes(partialTicks).yCoord - this.theWorld.getHorizon();
+
+            if (d0 < 0.0D) {
+                GlStateManager.pushMatrix();
+                GlStateManager.translate(0.0F, 12.0F, 0.0F);
+                GlStateManager.callList(this.glSkyList2);
+                GlStateManager.popMatrix();
+
+                float f18 = -((float)(d0 + 65.0D));
+                worldrenderer.begin(7, DefaultVertexFormats.POSITION_COLOR);
+                worldrenderer.pos(-1.0D, (double)f18, 1.0D).color(0, 0, 0, 255).endVertex();
+                worldrenderer.pos(1.0D, (double)f18, 1.0D).color(0, 0, 0, 255).endVertex();
+                worldrenderer.pos(1.0D, -1.0D, 1.0D).color(0, 0, 0, 255).endVertex();
+                worldrenderer.pos(-1.0D, -1.0D, 1.0D).color(0, 0, 0, 255).endVertex();
+                worldrenderer.pos(-1.0D, -1.0D, -1.0D).color(0, 0, 0, 255).endVertex();
+                worldrenderer.pos(1.0D, -1.0D, -1.0D).color(0, 0, 0, 255).endVertex();
+                worldrenderer.pos(1.0D, (double)f18, -1.0D).color(0, 0, 0, 255).endVertex();
+                worldrenderer.pos(-1.0D, (double)f18, -1.0D).color(0, 0, 0, 255).endVertex();
+                worldrenderer.pos(1.0D, -1.0D, -1.0D).color(0, 0, 0, 255).endVertex();
+                worldrenderer.pos(1.0D, -1.0D, 1.0D).color(0, 0, 0, 255).endVertex();
+                worldrenderer.pos(1.0D, (double)f18, 1.0D).color(0, 0, 0, 255).endVertex();
+                worldrenderer.pos(1.0D, (double)f18, -1.0D).color(0, 0, 0, 255).endVertex();
+                worldrenderer.pos(-1.0D, (double)f18, -1.0D).color(0, 0, 0, 255).endVertex();
+                worldrenderer.pos(-1.0D, (double)f18, 1.0D).color(0, 0, 0, 255).endVertex();
+                worldrenderer.pos(-1.0D, -1.0D, 1.0D).color(0, 0, 0, 255).endVertex();
+                worldrenderer.pos(-1.0D, -1.0D, -1.0D).color(0, 0, 0, 255).endVertex();
+                worldrenderer.pos(-1.0D, -1.0D, -1.0D).color(0, 0, 0, 255).endVertex();
+                worldrenderer.pos(-1.0D, -1.0D, 1.0D).color(0, 0, 0, 255).endVertex();
+                worldrenderer.pos(1.0D, -1.0D, 1.0D).color(0, 0, 0, 255).endVertex();
+                worldrenderer.pos(1.0D, -1.0D, -1.0D).color(0, 0, 0, 255).endVertex();
+                tessellator.draw();
+            }
+
+            if (this.theWorld.provider.isSkyColored()) {
+                GlStateManager.color(f * 0.2F + 0.04F, f1 * 0.2F + 0.04F, f2 * 0.6F + 0.1F);
+            } else {
+                GlStateManager.color(f, f1, f2);
+            }
+
+            if (this.mc.gameSettings.renderDistanceChunks <= 4) {
+                GlStateManager.color(this.mc.entityRenderer.fogColorRed, this.mc.entityRenderer.fogColorGreen, this.mc.entityRenderer.fogColorBlue);
+            }
+
+            GlStateManager.pushMatrix();
+            GlStateManager.translate(0.0F, -((float)(d0 - 16.0D)), 0.0F);
+
+            if (Config.isSkyEnabled()) {
+                GlStateManager.callList(this.glSkyList2);
+            }
+
+            GlStateManager.popMatrix();
+            GlStateManager.enableTexture2D();
+            GlStateManager.depthMask(true);
+        }
+    }
 
 	public void renderClouds(float partialTicks, int pass) {
         if (!Config.isCloudsOff()) {
