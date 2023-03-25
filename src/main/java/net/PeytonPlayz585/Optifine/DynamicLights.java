@@ -132,7 +132,7 @@ public class DynamicLights {
                     double d6 = (double)p_getLightLevel_0_.getZ() - d3;
                     double d7 = d4 * d4 + d5 * d5 + d6 * d6;
 
-                    if (DynamicLight.isUnderwater()) {
+                    if (DynamicLight.isUnderwater() && !Config.isDynamicLights()) {
                         i = Config.limit(i - 2, 0, 15);
                         d7 *= 2.0D;
                     }

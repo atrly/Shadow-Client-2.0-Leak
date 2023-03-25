@@ -40,6 +40,7 @@ import net.minecraft.world.EnumDifficulty;
 import net.PeytonPlayz585.Optifine.Config;
 import net.PeytonPlayz585.Optifine.DynamicLights;
 import net.PeytonPlayz585.Optifine.BetterGrass;
+import net.PeytonPlayz585.Optifine.ClearWater;
 
 /**+
  * This portion of EaglercraftX contains deobfuscated Minecraft 1.8 source code.
@@ -221,6 +222,7 @@ public class GameSettings {
 	public static boolean ofLagometer = false;
 	public static boolean ofProfiler = false;
 	public static boolean hidePassword = true;
+	public static boolean ofClearWater = false;
 
 	public static int ofAnimatedWater = 0;
 	public static int ofAnimatedLava = 0;
@@ -740,6 +742,11 @@ public class GameSettings {
             ofSunMoon = !ofSunMoon;
         }
 
+		if (parOptions == GameSettings.Options.CLEAR_WATER) {
+            ofClearWater = !ofClearWater;
+            updateWaterOpacity();
+        }
+
 		this.saveOptions();
 	}
 
@@ -851,6 +858,8 @@ public class GameSettings {
 			return ofStars;
 		case SUN_MOON:
 			return ofSunMoon;
+		case CLEAR_WATER:
+			return ofClearWater;
 		default:
 			return false;
 		}
@@ -1082,6 +1091,8 @@ public class GameSettings {
                 default:
                     return s + "Nearest";
             }
+        } else if (parOptions == GameSettings.Options.CLEAR_WATER) {
+            return ofClearWater ? s + "ON" : s + "OFF";
         } else {
 			return s;
 		}
@@ -1561,6 +1572,11 @@ public class GameSettings {
                         GameSettings.ofMipmapType = Integer.valueOf(astring[1]).intValue();
                         GameSettings.ofMipmapType = GameSettings.ofMipmapType < 0 ? 0 : (GameSettings.ofMipmapType > 3 ? 3 : GameSettings.ofMipmapType);
                     }
+
+					if (astring[0].equals("ofClearWater") && astring.length >= 2) {
+                        ofClearWater = Boolean.valueOf(astring[1]).booleanValue();
+                        updateWaterOpacity();
+                    }
 				
 					for (KeyBinding keybinding : this.keyBindings) {
 						if (astring[0].equals("key_" + keybinding.getKeyDescription())) {
@@ -1716,6 +1732,7 @@ public class GameSettings {
 			printwriter.println("ofStars:" + ofStars);
             printwriter.println("ofSunMoon:" + ofSunMoon);
 			printwriter.println("ofMipmapType:" + ofMipmapType);
+			printwriter.println("ofClearWater:" + ofClearWater);
 
 			for (KeyBinding keybinding : this.keyBindings) {
 				printwriter.println("key_" + keybinding.getKeyDescription() + ":" + keybinding.getKeyCode());
@@ -1991,5 +2008,11 @@ public class GameSettings {
 
             return p_nextValue_1_[i];
         }
+    }
+
+	private void updateWaterOpacity() {
+        Config.waterOpacityChanged = true;
+
+        ClearWater.updateWaterOpacity();
     }
 }

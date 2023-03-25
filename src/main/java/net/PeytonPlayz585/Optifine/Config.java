@@ -24,6 +24,8 @@ public class Config {
 
     public static WorldClient worldClient = null;
 
+    public static boolean waterOpacityChanged = false;
+
     public static void initDisplay() {
         minecraftThread = Thread.currentThread();
         updateThreadPriorities();
@@ -366,5 +368,9 @@ public class Config {
             default:
                 return 9986;
         }
+    }
+
+    public static boolean isClearWater() {
+        return GameSettings.ofClearWater;
     }
 }

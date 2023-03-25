@@ -20,8 +20,7 @@ public class GuiQuality extends GuiScreen {
 			GameSettings.Options.MIPMAP_TYPE,
 			//GameSettings.Options.AF_LEVEL,
 			//GameSettings.Options.AA_LEVEL,
-			//GameSettings.Options.CLEAR_WATER,
-			//GameSettings.Options.RANDOM_MOBS,
+			GameSettings.Options.CLEAR_WATER,
 			GameSettings.Options.BETTER_GRASS,
 			//GameSettings.Options.BETTER_SNOW
 			GameSettings.Options.DYNAMIC_LIGHTS

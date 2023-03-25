@@ -1722,6 +1722,10 @@ public class EntityRenderer implements IResourceManagerReloadListener {
             } else {
                 GlStateManager.setFogDensity(0.1F - (float)EnchantmentHelper.getRespiration(entity) * 0.03F);
             }
+
+			if (Config.isClearWater()) {
+                GlStateManager.setFogDensity(0.02F);
+            }
         } else if (block.getMaterial() == Material.lava) {
             GlStateManager.setFog(2048);
 
