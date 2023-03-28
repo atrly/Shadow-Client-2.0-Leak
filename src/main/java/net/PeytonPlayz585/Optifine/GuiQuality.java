@@ -22,7 +22,7 @@ public class GuiQuality extends GuiScreen {
 			//GameSettings.Options.AA_LEVEL,
 			GameSettings.Options.CLEAR_WATER,
 			GameSettings.Options.BETTER_GRASS,
-			//GameSettings.Options.BETTER_SNOW
+			GameSettings.Options.BETTER_SNOW,
 			GameSettings.Options.DYNAMIC_LIGHTS
 			//GameSettings.Options.CONNECTED_TEXTURES,
 			//GameSettings.Options.CUSTOM_COLORS,

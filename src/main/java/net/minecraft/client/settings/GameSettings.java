@@ -223,6 +223,7 @@ public class GameSettings {
 	public static boolean ofProfiler = false;
 	public static boolean hidePassword = true;
 	public static boolean ofClearWater = false;
+	public static boolean ofBetterSnow = false;
 
 	public static int ofAnimatedWater = 0;
 	public static int ofAnimatedLava = 0;
@@ -747,6 +748,11 @@ public class GameSettings {
             updateWaterOpacity();
         }
 
+		if (parOptions == GameSettings.Options.BETTER_SNOW) {
+            ofBetterSnow = !ofBetterSnow;
+            this.mc.renderGlobal.loadRenderers();
+        }
+
 		this.saveOptions();
 	}
 
@@ -860,6 +866,8 @@ public class GameSettings {
 			return ofSunMoon;
 		case CLEAR_WATER:
 			return ofClearWater;
+		case BETTER_SNOW:
+			return ofBetterSnow;
 		default:
 			return false;
 		}
@@ -1093,6 +1101,8 @@ public class GameSettings {
             }
         } else if (parOptions == GameSettings.Options.CLEAR_WATER) {
             return ofClearWater ? s + "ON" : s + "OFF";
+        } else if (parOptions == GameSettings.Options.BETTER_SNOW) {
+            return ofBetterSnow ? s + "ON" : s + "OFF";
         } else {
 			return s;
 		}
@@ -1577,6 +1587,10 @@ public class GameSettings {
                         ofClearWater = Boolean.valueOf(astring[1]).booleanValue();
                         updateWaterOpacity();
                     }
+
+					if (astring[0].equals("ofBetterSnow") && astring.length >= 2) {
+                        ofBetterSnow = Boolean.valueOf(astring[1]).booleanValue();
+                    }
 				
 					for (KeyBinding keybinding : this.keyBindings) {
 						if (astring[0].equals("key_" + keybinding.getKeyDescription())) {
@@ -1733,6 +1747,7 @@ public class GameSettings {
             printwriter.println("ofSunMoon:" + ofSunMoon);
 			printwriter.println("ofMipmapType:" + ofMipmapType);
 			printwriter.println("ofClearWater:" + ofClearWater);
+			printwriter.println("ofBetterSnow:" + ofBetterSnow);
 
 			for (KeyBinding keybinding : this.keyBindings) {
 				printwriter.println("key_" + keybinding.getKeyDescription() + ":" + keybinding.getKeyCode());
@@ -1898,7 +1913,8 @@ public class GameSettings {
 		STARS("Stars", false, false),
         SUN_MOON("Sun & Moon", false, false),
         CLEAR_WATER("Clear Water", false, false),
-		MIPMAP_TYPE("Mipmap Type", true, false, 0.0F, 3.0F, 1.0F);
+		MIPMAP_TYPE("Mipmap Type", true, false, 0.0F, 3.0F, 1.0F),
+		BETTER_SNOW("Better Snow", false, false);
 
 		private final boolean enumFloat;
 		private final boolean enumBoolean;

@@ -373,4 +373,8 @@ public class Config {
     public static boolean isClearWater() {
         return GameSettings.ofClearWater;
     }
+
+    public static boolean isBetterSnow() {
+        return GameSettings.ofBetterSnow;
+    }
 }

@@ -25,6 +25,7 @@ import net.minecraft.world.IBlockAccess;
 import net.PeytonPlayz585.Optifine.Config;
 import net.PeytonPlayz585.Optifine.SmartLeaves;
 import net.PeytonPlayz585.Optifine.BetterGrass;
+import net.PeytonPlayz585.Optifine.BetterSnow;
 import net.PeytonPlayz585.Optifine.RenderEnv;
 
 /**+
@@ -67,7 +68,15 @@ public class BlockModelRenderer {
 
 		try {
 			Block block = blockStateIn.getBlock();
-			return flag ? this.renderModelAmbientOcclusion(blockAccessIn, modelIn, block, blockPosIn, worldRendererIn, checkSides) : this.renderModelStandard(blockAccessIn, modelIn, block, blockPosIn, worldRendererIn, checkSides);
+			
+			if (Config.isTreesSmart() && blockStateIn.getBlock() instanceof BlockLeavesBase) {
+                modelIn = SmartLeaves.getLeavesModel(modelIn);
+            }
+			
+			return flag
+					? this.renderModelAmbientOcclusion(blockAccessIn, modelIn, block, blockPosIn, worldRendererIn,
+							checkSides)
+					: this.renderModelStandard(blockAccessIn, modelIn, block, blockPosIn, worldRendererIn, checkSides);
 		} catch (Throwable throwable) {
 			CrashReport crashreport = CrashReport.makeCrashReport(throwable, "Tesselating block model");
 			CrashReportCategory crashreportcategory = crashreport.makeCategory("Block model being tesselated");
@@ -76,24 +85,28 @@ public class BlockModelRenderer {
 			throw new ReportedException(crashreport);
 		}
 	}
+	
+	public boolean renderModelAmbientOcclusion(IBlockAccess blockAccessIn, IBakedModel modelIn, Block blockIn, BlockPos blockPosIn, WorldRenderer worldRendererIn, boolean checkSides) {
+        return this.renderModelAmbientOcclusion(blockAccessIn, modelIn, blockIn, blockAccessIn.getBlockState(blockPosIn), blockPosIn, worldRendererIn, checkSides);
+    }
 
-	public boolean renderModelAmbientOcclusion(IBlockAccess blockAccessIn, IBakedModel modelIn, Block blockIn,
-			BlockPos blockPosIn, WorldRenderer worldRendererIn, boolean checkSides) {
+	@SuppressWarnings("unchecked")
+	public boolean renderModelAmbientOcclusion(IBlockAccess blockAccessIn, IBakedModel modelIn, Block blockIn, IBlockState blockStateIn, BlockPos blockPosIn, WorldRenderer worldRendererIn, boolean checkSides) {
 		boolean flag = false;
 		float[] afloat = new float[EnumFacing.values().length * 2];
 		BitSet bitset = new BitSet(3);
 		BlockModelRenderer.AmbientOcclusionFace blockmodelrenderer$ambientocclusionface = new BlockModelRenderer.AmbientOcclusionFace();
 
 		for (EnumFacing enumfacing : EnumFacing.values()) {
-			List list = modelIn.getFaceQuads(enumfacing);
+			List<BakedQuad> list = modelIn.getFaceQuads(enumfacing);
 			if (!list.isEmpty()) {
 				BlockPos blockpos = blockPosIn.offset(enumfacing);
 				if (!checkSides || blockIn.shouldSideBeRendered(blockAccessIn, blockpos, enumfacing)) {
-
+					
 					if (!RenderEnv.isBreakingAnimation(list) && Config.isBetterGrass()) {
                         list = (List<BakedQuad>) BetterGrass.getFaceQuads(blockAccessIn, blockIn, blockPosIn, enumfacing, list);
                     }
-
+					
 					this.renderModelAmbientOcclusionQuads(blockAccessIn, blockIn, blockPosIn, worldRendererIn, list,
 							afloat, bitset, blockmodelrenderer$ambientocclusionface);
 					flag = true;
@@ -107,6 +120,13 @@ public class BlockModelRenderer {
 					bitset, blockmodelrenderer$ambientocclusionface);
 			flag = true;
 		}
+		
+		
+		if (Config.isBetterSnow() && !RenderEnv.isBreakingAnimation() && BetterSnow.shouldRender(blockAccessIn, blockIn, blockStateIn, blockPosIn)) {
+            IBakedModel ibakedmodel = BetterSnow.getModelSnowLayer();
+            IBlockState iblockstate = BetterSnow.getStateSnowLayer();
+            this.renderModelAmbientOcclusion(blockAccessIn, ibakedmodel, iblockstate.getBlock(), iblockstate, blockPosIn, worldRendererIn, true);
+        }
 
 		return flag;
 	}
@@ -114,22 +134,20 @@ public class BlockModelRenderer {
 	public boolean renderModelStandard(IBlockAccess blockAccessIn, IBakedModel modelIn, Block blockIn,
 			BlockPos blockPosIn, WorldRenderer worldRendererIn, boolean checkSides) {
 		boolean flag = false;
-		BitSet bitset = new BitSet(3);
-
 		BlockPos.MutableBlockPos pointer = new BlockPos.MutableBlockPos();
 		for (EnumFacing enumfacing : EnumFacing.values()) {
 			List list = modelIn.getFaceQuads(enumfacing);
 			if (!list.isEmpty()) {
 				BlockPos blockpos = blockPosIn.offsetEvenFaster(enumfacing, pointer);
 				if (!checkSides || blockIn.shouldSideBeRendered(blockAccessIn, blockpos, enumfacing)) {
-
+					
 					if (!RenderEnv.isBreakingAnimation(list) && Config.isBetterGrass()) {
                         list = BetterGrass.getFaceQuads(blockAccessIn, blockIn, blockPosIn, enumfacing, list);
                     }
-
+					
 					int i = blockIn.getMixedBrightnessForBlock(blockAccessIn, blockpos);
 					this.renderModelStandardQuads(blockAccessIn, blockIn, blockPosIn, enumfacing, i, false,
-							worldRendererIn, list, bitset);
+							worldRendererIn, list);
 					flag = true;
 				}
 			}
@@ -138,7 +156,7 @@ public class BlockModelRenderer {
 		List list1 = modelIn.getGeneralQuads();
 		if (list1.size() > 0) {
 			this.renderModelStandardQuads(blockAccessIn, blockIn, blockPosIn, (EnumFacing) null, -1, true,
-					worldRendererIn, list1, bitset);
+					worldRendererIn, list1);
 			flag = true;
 		}
 
@@ -267,55 +285,77 @@ public class BlockModelRenderer {
 
 	}
 
-	private void renderModelStandardQuads(IBlockAccess blockAccessIn, Block blockIn, BlockPos blockPosIn,
-			EnumFacing faceIn, int brightnessIn, boolean ownBrightness, WorldRenderer worldRendererIn,
-			List<BakedQuad> listQuadsIn, BitSet boundsFlags) {
-		double d0 = (double) blockPosIn.getX();
-		double d1 = (double) blockPosIn.getY();
-		double d2 = (double) blockPosIn.getZ();
-		Block.EnumOffsetType block$enumoffsettype = blockIn.getOffsetType();
-		if (block$enumoffsettype != Block.EnumOffsetType.NONE) {
-			int i = blockPosIn.getX();
-			int j = blockPosIn.getZ();
-			long k = (long) (i * 3129871) ^ (long) j * 116129781L;
-			k = k * k * 42317861L + k * 11L;
-			d0 += ((double) ((float) (k >> 16 & 15L) / 15.0F) - 0.5D) * 0.5D;
-			d2 += ((double) ((float) (k >> 24 & 15L) / 15.0F) - 0.5D) * 0.5D;
-			if (block$enumoffsettype == Block.EnumOffsetType.XYZ) {
-				d1 += ((double) ((float) (k >> 20 & 15L) / 15.0F) - 1.0D) * 0.2D;
-			}
-		}
+	private void renderModelStandardQuads(IBlockAccess p_renderModelStandardQuads_1_, Block p_renderModelStandardQuads_2_, BlockPos p_renderModelStandardQuads_3_, EnumFacing p_renderModelStandardQuads_4_, int p_renderModelStandardQuads_5_, boolean p_renderModelStandardQuads_6_, WorldRenderer p_renderModelStandardQuads_7_, List p_renderModelStandardQuads_8_) {
+		RenderEnv renderenv = new RenderEnv(p_renderModelStandardQuads_1_.getBlockState(p_renderModelStandardQuads_3_));
+        BitSet bitset = renderenv.getBoundsFlags();
+        IBlockState iblockstate = renderenv.getBlockState();
+        double d0 = (double)p_renderModelStandardQuads_3_.getX();
+        double d1 = (double)p_renderModelStandardQuads_3_.getY();
+        double d2 = (double)p_renderModelStandardQuads_3_.getZ();
+        Block.EnumOffsetType block$enumoffsettype = p_renderModelStandardQuads_2_.getOffsetType();
 
-		for (BakedQuad bakedquad : listQuadsIn) {
-			if (ownBrightness) {
-				this.fillQuadBounds(blockIn, bakedquad.getVertexData(), bakedquad.getFace(), (float[]) null,
-						boundsFlags);
-				brightnessIn = boundsFlags.get(0)
-						? blockIn.getMixedBrightnessForBlock(blockAccessIn, blockPosIn.offset(bakedquad.getFace()))
-						: blockIn.getMixedBrightnessForBlock(blockAccessIn, blockPosIn);
-			}
+        if (block$enumoffsettype != Block.EnumOffsetType.NONE) {
+            int i = p_renderModelStandardQuads_3_.getX();
+            int j = p_renderModelStandardQuads_3_.getZ();
+            long k = (long)(i * 3129871) ^ (long)j * 116129781L;
+            k = k * k * 42317861L + k * 11L;
+            d0 += ((double)((float)(k >> 16 & 15L) / 15.0F) - 0.5D) * 0.5D;
+            d2 += ((double)((float)(k >> 24 & 15L) / 15.0F) - 0.5D) * 0.5D;
 
-			worldRendererIn.addVertexData(bakedquad.getVertexData());
-			worldRendererIn.putBrightness4(brightnessIn, brightnessIn, brightnessIn, brightnessIn);
-			if (bakedquad.hasTintIndex()) {
-				int l = blockIn.colorMultiplier(blockAccessIn, blockPosIn, bakedquad.getTintIndex());
-				if (EntityRenderer.anaglyphEnable) {
-					l = TextureUtil.anaglyphColor(l);
-				}
+            if (block$enumoffsettype == Block.EnumOffsetType.XYZ) {
+                d1 += ((double)((float)(k >> 20 & 15L) / 15.0F) - 1.0D) * 0.2D;
+            }
+        }
 
-				float f = (float) (l >> 16 & 255) / 255.0F;
-				float f1 = (float) (l >> 8 & 255) / 255.0F;
-				float f2 = (float) (l & 255) / 255.0F;
-				worldRendererIn.putColorMultiplier(f, f1, f2, 4);
-				worldRendererIn.putColorMultiplier(f, f1, f2, 3);
-				worldRendererIn.putColorMultiplier(f, f1, f2, 2);
-				worldRendererIn.putColorMultiplier(f, f1, f2, 1);
-			}
+        for (Object bakedquad0 : p_renderModelStandardQuads_8_) {
+            BakedQuad bakedquad = (BakedQuad) bakedquad0;
 
-			worldRendererIn.putPosition(d0, d1, d2);
-		}
+            if (!RenderEnv.isBreakingAnimation(bakedquad)) {
+                BakedQuad bakedquad1 = bakedquad;
 
-	}
+                //if (Config.isConnectedTextures()) {
+                    //bakedquad = ConnectedTextures.getConnectedTexture(p_renderModelStandardQuads_1_, iblockstate, p_renderModelStandardQuads_3_, bakedquad, renderenv);
+                //}
+
+                //if (bakedquad == bakedquad1 && Config.isNaturalTextures()) {
+                    //bakedquad = NaturalTextures.getNaturalTexture(p_renderModelStandardQuads_3_, bakedquad);
+                //}
+            }
+
+            if (p_renderModelStandardQuads_6_) {
+                this.fillQuadBounds(p_renderModelStandardQuads_2_, bakedquad.getVertexData(), bakedquad.getFace(), (float[])null, bitset);
+                p_renderModelStandardQuads_5_ = bitset.get(0) ? p_renderModelStandardQuads_2_.getMixedBrightnessForBlock(p_renderModelStandardQuads_1_, p_renderModelStandardQuads_3_.offset(bakedquad.getFace())) : p_renderModelStandardQuads_2_.getMixedBrightnessForBlock(p_renderModelStandardQuads_1_, p_renderModelStandardQuads_3_);
+            }
+
+            p_renderModelStandardQuads_7_.addVertexData(bakedquad.getVertexData());
+            p_renderModelStandardQuads_7_.putBrightness4(p_renderModelStandardQuads_5_, p_renderModelStandardQuads_5_, p_renderModelStandardQuads_5_, p_renderModelStandardQuads_5_);
+            int i1 = p_renderModelStandardQuads_2_.colorMultiplier(p_renderModelStandardQuads_1_, p_renderModelStandardQuads_3_, bakedquad.getTintIndex());
+
+            if (bakedquad.hasTintIndex() || i1 != -1) {
+                int l;
+
+                if (i1 != -1) {
+                    l = i1;
+                } else {
+                    l = p_renderModelStandardQuads_2_.colorMultiplier(p_renderModelStandardQuads_1_, p_renderModelStandardQuads_3_, bakedquad.getTintIndex());
+                }
+
+                if (EntityRenderer.anaglyphEnable) {
+                    l = TextureUtil.anaglyphColor(l);
+                }
+
+                float f = (float)(l >> 16 & 255) / 255.0F;
+                float f1 = (float)(l >> 8 & 255) / 255.0F;
+                float f2 = (float)(l & 255) / 255.0F;
+                p_renderModelStandardQuads_7_.putColorMultiplier(f, f1, f2, 4);
+                p_renderModelStandardQuads_7_.putColorMultiplier(f, f1, f2, 3);
+                p_renderModelStandardQuads_7_.putColorMultiplier(f, f1, f2, 2);
+                p_renderModelStandardQuads_7_.putColorMultiplier(f, f1, f2, 1);
+            }
+
+            p_renderModelStandardQuads_7_.putPosition(d0, d1, d2);
+        }
+    }
 
 	public void renderModelBrightnessColor(IBakedModel bakedModel, float parFloat1, float parFloat2, float parFloat3,
 			float parFloat4) {
