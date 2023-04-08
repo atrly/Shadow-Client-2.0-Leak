@@ -13,6 +13,7 @@ import net.minecraft.util.BlockPos;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.MathHelper;
 import net.minecraft.world.World;
+
 import net.minecraft.client.Minecraft;
 
 public class DynamicLight {
@@ -32,7 +33,7 @@ public class DynamicLight {
         offsetY = (double)p_i36_1_.getEyeHeight();
     }
 
-    public static void update(RenderGlobal p_update_1_) {
+    public static void update() {
         if (Config.isDynamicLightsFast()) {
             long i = System.currentTimeMillis();
 
@@ -58,7 +59,7 @@ public class DynamicLight {
             lastPosZ = d1;
             lastLightLevel = j;
             underwater = false;
-            World world = p_update_1_.getWorld();
+            World world = Minecraft.getMinecraft().renderGlobal.getWorld();
 
             if (world != null) {
                 blockPosMutable.func_181079_c(MathHelper.floor_double(d6), MathHelper.floor_double(d0), MathHelper.floor_double(d1));
@@ -92,7 +93,7 @@ public class DynamicLight {
                 updateChunkLight(renderchunk7, setLitChunkPos, set);
             }
 
-            updateLitChunks(Minecraft.getMinecraft().renderGlobal);
+            updateLitChunks();
             setLitChunkPos = set;
         }
     }
@@ -117,17 +118,10 @@ public class DynamicLight {
         }
     }
 
-    public static void updateLitChunks(RenderGlobal p_updateLitChunks_1_) {
-        if(Minecraft.getMinecraft().blockPOS != null) {
-            int size = setLitChunkPos.size();
-            for (int i = size; --i >= 0;) {
-                RenderChunk renderchunk = p_updateLitChunks_1_.getRenderChunk(Minecraft.getMinecraft().blockPOS);
-                updateChunkLight(renderchunk, (Set<BlockPos>)null, (Set<BlockPos>)null);
-            }
-        } else {
-            if(Minecraft.getMinecraft().theWorld != null) {
-                Minecraft.getMinecraft().blockPOS = Minecraft.getMinecraft().objectMouseOver.getBlockPos();
-            }
+    public static void updateLitChunks() {
+        for (BlockPos blockpos : setLitChunkPos) {
+            RenderChunk renderchunk = Minecraft.getMinecraft().renderGlobal.getRenderChunk(blockpos);
+            updateChunkLight(renderchunk, (Set<BlockPos>)null, (Set<BlockPos>)null);
         }
     }
 

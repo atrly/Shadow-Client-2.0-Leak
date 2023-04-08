@@ -22,21 +22,32 @@ import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.BlockPos;
 import net.minecraft.world.World;
+
 import net.minecraft.client.Minecraft;
 
-public class DynamicLights {
+public class DynamicLights
+{
     private static Map<Integer, DynamicLight> mapDynamicLights = new HashMap();
     private static long timeUpdateMs = 0L;
+    private static final double MAX_DIST = 7.5D;
+    private static final double MAX_DIST_SQ = 56.25D;
+    private static final int LIGHT_LEVEL_MAX = 15;
+    private static final int LIGHT_LEVEL_FIRE = 15;
+    private static final int LIGHT_LEVEL_BLAZE = 10;
+    private static final int LIGHT_LEVEL_MAGMA_CUBE = 8;
+    private static final int LIGHT_LEVEL_MAGMA_CUBE_CORE = 13;
+    private static final int LIGHT_LEVEL_GLOWSTONE_DUST = 8;
+    private static final int LIGHT_LEVEL_PRISMARINE_CRYSTALS = 8;
 
     public static void entityAdded(Entity p_entityAdded_0_, RenderGlobal p_entityAdded_1_) {
     }
 
-    public static void entityRemoved(Entity p_entityRemoved_0_, RenderGlobal p_entityRemoved_1_) {
+    public static void entityRemoved(Entity p_entityRemoved_0_) {
         synchronized (mapDynamicLights) {
             DynamicLight dynamiclight = (DynamicLight)mapDynamicLights.remove(IntegerCache.valueOf(p_entityRemoved_0_.getEntityId()));
 
             if (dynamiclight != null) {
-                DynamicLight.updateLitChunks(p_entityRemoved_1_);
+                dynamiclight.updateLitChunks();
             }
         }
     }
@@ -48,41 +59,38 @@ public class DynamicLights {
             timeUpdateMs = i;
 
             synchronized (mapDynamicLights) {
-                updateMapDynamicLights(Minecraft.getMinecraft().renderGlobal);
+                updateMapDynamicLights();
 
                 if (mapDynamicLights.size() > 0) {
-                    int size = mapDynamicLights.values().size();
-
-                    for (int i1 = size; --i1 >= 0;) {
-                        DynamicLight.update(Minecraft.getMinecraft().renderGlobal);
+                    for (DynamicLight dynamiclight : mapDynamicLights.values()) {
+                        dynamiclight.update();
                     }
                 }
             }
         }
     }
 
-    private static void updateMapDynamicLights(RenderGlobal p_updateMapDynamicLights_0_) {
-        World world = p_updateMapDynamicLights_0_.getWorld();
+    private static void updateMapDynamicLights() {
+        World world = Minecraft.getMinecraft().renderGlobal.getWorld();
 
         if (world != null) {
-            int size = world.getLoadedEntityList().size();
-            for (int i1 = size; --i1 >= 0;) {
-                int i = getLightLevel(Minecraft.getMinecraft().renderViewEntity.getEntity());
+            for (Entity entity : world.getLoadedEntityList()) {
+                int i = getLightLevel(entity);
 
                 if (i > 0) {
-                    Integer integer = IntegerCache.valueOf(Minecraft.getMinecraft().renderViewEntity.getEntity().getEntityId());
+                    Integer integer = IntegerCache.valueOf(entity.getEntityId());
                     DynamicLight dynamiclight = (DynamicLight)mapDynamicLights.get(integer);
 
                     if (dynamiclight == null) {
-                        dynamiclight = new DynamicLight(Minecraft.getMinecraft().renderViewEntity.getEntity());
+                        dynamiclight = new DynamicLight(entity);
                         mapDynamicLights.put(integer, dynamiclight);
                     }
                 } else {
-                    Integer integer1 = IntegerCache.valueOf(Minecraft.getMinecraft().renderViewEntity.getEntity().getEntityId());
+                    Integer integer1 = IntegerCache.valueOf(entity.getEntityId());
                     DynamicLight dynamiclight1 = (DynamicLight)mapDynamicLights.remove(integer1);
 
                     if (dynamiclight1 != null) {
-                        DynamicLight.updateLitChunks(p_updateMapDynamicLights_0_);
+                        dynamiclight1.updateLitChunks();
                     }
                 }
             }
@@ -119,20 +127,19 @@ public class DynamicLights {
         double d0 = 0.0D;
 
         synchronized (mapDynamicLights) {
-            int size = mapDynamicLights.values().size();
-            for (int i1 = size; --i1 >= 0;) {
-                int i = DynamicLight.getLastLightLevel();
+            for (DynamicLight dynamiclight : mapDynamicLights.values()) {
+                int i = dynamiclight.getLastLightLevel();
 
                 if (i > 0) {
-                    double d1 = DynamicLight.getLastPosX();
-                    double d2 = DynamicLight.getLastPosY();
-                    double d3 = DynamicLight.getLastPosZ();
+                    double d1 = dynamiclight.getLastPosX();
+                    double d2 = dynamiclight.getLastPosY();
+                    double d3 = dynamiclight.getLastPosZ();
                     double d4 = (double)p_getLightLevel_0_.getX() - d1;
                     double d5 = (double)p_getLightLevel_0_.getY() - d2;
                     double d6 = (double)p_getLightLevel_0_.getZ() - d3;
                     double d7 = d4 * d4 + d5 * d5 + d6 * d6;
 
-                    if (DynamicLight.isUnderwater() && !Config.isDynamicLights()) {
+                    if (dynamiclight.isUnderwater() && !Config.isClearWater()) {
                         i = Config.limit(i - 2, 0, 15);
                         d7 *= 2.0D;
                     }
@@ -224,14 +231,15 @@ public class DynamicLights {
         }
     }
 
-    public static void removeLights(RenderGlobal p_removeLights_0_) {
+    public static void removeLights() {
         synchronized (mapDynamicLights) {
             Collection<DynamicLight> collection = mapDynamicLights.values();
             Iterator iterator = collection.iterator();
 
             while (iterator.hasNext()) {
+                DynamicLight dynamiclight = (DynamicLight)iterator.next();
                 iterator.remove();
-                DynamicLight.updateLitChunks(p_removeLights_0_);
+                dynamiclight.updateLitChunks();
             }
         }
     }

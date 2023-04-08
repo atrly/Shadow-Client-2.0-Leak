@@ -704,7 +704,7 @@ public class GameSettings {
 
 		if (parOptions == GameSettings.Options.DYNAMIC_LIGHTS) {
             ofDynamicLights = nextValue(ofDynamicLights, OF_DYNAMIC_LIGHTS);
-            DynamicLights.removeLights(this.mc.renderGlobal);
+            DynamicLights.removeLights();
         }
 
 		if (parOptions == GameSettings.Options.BETTER_GRASS) {

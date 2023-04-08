@@ -1951,7 +1951,7 @@ public class RenderGlobal implements IWorldAccess, IResourceManagerReloadListene
 	 */
 	public void onEntityRemoved(Entity var1) {
 		if (Config.isDynamicLights()) {
-            DynamicLights.entityRemoved(var1, this);
+            DynamicLights.entityRemoved(var1);
         }
 	}
 
